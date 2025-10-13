@@ -107,13 +107,22 @@ function toggleMobileSidebar() {
 }
 
 function navigateToPage(page) {
+    // Verificar se é redirecionamento para página externa
+    if (page === 'mesas') {
+        window.location.href = 'mesas.html';
+        return;
+    }
+    
     // Remover classe active de todos os links
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
     });
     
     // Adicionar classe active ao link atual
-    document.querySelector(`[data-page="${page}"]`).classList.add('active');
+    const currentLink = document.querySelector(`[data-page="${page}"]`);
+    if (currentLink) {
+        currentLink.classList.add('active');
+    }
     
     // Esconder todos os conteúdos
     document.querySelectorAll('.page-content').forEach(content => {
@@ -121,12 +130,16 @@ function navigateToPage(page) {
     });
     
     // Mostrar conteúdo da página atual
-    document.getElementById(`${page}-content`).classList.add('active');
+    const pageContent = document.getElementById(`${page}-content`);
+    if (pageContent) {
+        pageContent.classList.add('active');
+    }
     
     // Atualizar título da página
     const titles = {
         dashboard: 'Dashboard',
         vendas: 'Vendas',
+        mesas: 'Mesas',
         pedidos: 'Pedidos',
         cardapio: 'Cardápio',
         estoque: 'Estoque',
@@ -135,7 +148,10 @@ function navigateToPage(page) {
         configuracoes: 'Configurações'
     };
     
-    document.getElementById('pageTitle').textContent = titles[page] || 'Dashboard';
+    const titleElement = document.getElementById('pageTitle');
+    if (titleElement) {
+        titleElement.textContent = titles[page] || 'Dashboard';
+    }
     currentPage = page;
     
     // Carregar dados específicos da página

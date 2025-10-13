@@ -4,8 +4,14 @@ const jwt = require('jsonwebtoken');
 
 // Configuração do banco Neon
 let sql;
-if (process.env.DATABASE_URL) {
-    sql = neon(process.env.DATABASE_URL);
+const databaseUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
+if (databaseUrl) {
+    try {
+        sql = neon(databaseUrl);
+    } catch (error) {
+        console.log('Erro ao conectar com Neon DB:', error);
+        sql = null;
+    }
 }
 
 // Usuários padrão para fallback (quando não há banco)
