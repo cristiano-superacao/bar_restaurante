@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Maria Flor</title>
+    <meta name="description" content="Dashboard do Sistema Maria Flor - Gestão completa para restaurantes">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="../css/dashboard.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-utensils"></i> Maria Flor</h2>
+            <button class="toggle-btn" id="toggleBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#dashboard" class="nav-link active" data-page="dashboard">
+                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+                </a></li>
+                <li><a href="#vendas" class="nav-link" data-page="vendas" data-module="vendas">
+                    <i class="fas fa-cash-register"></i> <span>Vendas</span>
+                </a></li>
+                <li><a href="#mesas" class="nav-link" data-page="mesas" data-module="mesas">
+                    <i class="fas fa-chair"></i> <span>Mesas</span>
+                </a></li>
+                <li><a href="#pedidos" class="nav-link" data-page="pedidos" data-module="pedidos">
+                    <i class="fas fa-clipboard-list"></i> <span>Pedidos</span>
+                </a></li>
+                <li><a href="#cardapio" class="nav-link" data-page="cardapio" data-module="cardapio">
+                    <i class="fas fa-book-open"></i> <span>Cardápio</span>
+                </a></li>
+                <li><a href="#estoque" class="nav-link" data-page="estoque" data-module="estoque">
+                    <i class="fas fa-boxes"></i> <span>Estoque</span>
+                </a></li>
+                <li><a href="#financeiro" class="nav-link" data-page="financeiro" data-module="financeiro">
+                    <i class="fas fa-chart-line"></i> <span>Financeiro</span>
+                </a></li>
+                <li><a href="#relatorios" class="nav-link" data-page="relatorios">
+                    <i class="fas fa-file-alt"></i> <span>Relatórios</span>
+                </a></li>
+                <li><a href="#configuracoes" class="nav-link" data-page="configuracoes">
+                    <i class="fas fa-cog"></i> <span>Configurações</span>
+                </a></li>
+            </ul>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <i class="fas fa-user-circle"></i>
+                <span class="user-name" id="userName">Usuário</span>
+            </div>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> <span>Sair</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 id="pageTitle">Dashboard</h1>
+            </div>
+            <div class="header-right">
+                <div class="notifications">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-count">3</span>
+                </div>
+                <div class="user-profile">
+                    <i class="fas fa-user-circle"></i>
+                    <span id="headerUserName">Usuário</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content" id="content">
+            <!-- Dashboard Content -->
+            <div id="dashboard-content" class="page-content active">
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>R$ 2.450,00</h3>
+                            <p>Vendas Hoje</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>23</h3>
+                            <p>Pedidos Hoje</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>45</h3>
+                            <p>Clientes Atendidos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>+15%</h3>
+                            <p>Crescimento</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-charts">
+                    <div class="chart-container">
+                        <h3>Vendas por Dia</h3>
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Produtos Mais Vendidos</h3>
+                        <canvas id="productsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="recent-orders">
+                    <h3>Pedidos Recentes</h3>
+                    <div class="orders-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Cliente</th>
+                                    <th>Itens</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#001</td>
+                                    <td>João Silva</td>
+                                    <td>Hambúrguer, Batata Frita</td>
+                                    <td>R$ 35,00</td>
+                                    <td><span class="status preparing">Preparando</span></td>
+                                    <td>
+                                        <button class="btn-small" onclick="viewRecentOrder('#001')" title="Visualizar"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-small" onclick="editRecentOrder('#001')" title="Editar"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#002</td>
+                                    <td>Maria Santos</td>
+                                    <td>Pizza Margherita</td>
+                                    <td>R$ 45,00</td>
+                                    <td><span class="status ready">Pronto</span></td>
+                                    <td>
+                                        <button class="btn-small" onclick="viewRecentOrder('#002')" title="Visualizar"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-small" onclick="editRecentOrder('#002')" title="Editar"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>#003</td>
+                                    <td>Carlos Oliveira</td>
+                                    <td>Salada Caesar, Suco</td>
+                                    <td>R$ 28,00</td>
+                                    <td><span class="status delivered">Entregue</span></td>
+                                    <td>
+                                        <button class="btn-small" onclick="viewRecentOrder('#003')" title="Visualizar"><i class="fas fa-eye"></i></button>
+                                        <button class="btn-small" onclick="editRecentOrder('#003')" title="Editar"><i class="fas fa-edit"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Vendas Content -->
+            <div id="vendas-content" class="page-content">
+                <div class="page-header">
+                    <h2>Vendas</h2>
+                    <button class="btn-primary" onclick="openSaleModal()">
+                        <i class="fas fa-plus"></i> Nova Venda
+                    </button>
+                </div>
+                
+                <div class="filters">
+                    <input type="date" id="dateFilter" class="filter-input">
+                    <select id="statusFilter" class="filter-input">
+                        <option value="">Todos os Status</option>
+                        <option value="completed">Concluída</option>
+                        <option value="pending">Pendente</option>
+                        <option value="cancelled">Cancelada</option>
+                    </select>
+                    <button class="btn-secondary" onclick="filterSales()">
+                        <i class="fas fa-filter"></i> Filtrar
+                    </button>
+                </div>
+
+                <div class="sales-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Venda</th>
+                                <th>Data/Hora</th>
+                                <th>Cliente</th>
+                                <th>Itens</th>
+                                <th>Valor Total</th>
+                                <th>Método Pagamento</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="salesTableBody">
+                            <!-- Sales data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Mesas Content -->
+            <div id="mesas-content" class="page-content">
+                <div class="page-header">
+                    <h2><i class="fas fa-chair"></i> Controle de Mesas</h2>
+                    <div class="header-actions">
+                        <button class="btn-success" onclick="addNewTable()">
+                            <i class="fas fa-plus"></i> Nova Mesa
+                        </button>
+                        <button class="btn-secondary" onclick="refreshTables()">
+                            <i class="fas fa-sync-alt"></i> Atualizar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Status Summary -->
+                <div class="tables-summary">
+                    <div class="summary-card available">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="summary-info">
+                            <span class="summary-number" id="availableTablesCount">0</span>
+                            <span class="summary-label">Disponíveis</span>
+                        </div>
+                    </div>
+                    <div class="summary-card occupied">
+                        <i class="fas fa-users"></i>
+                        <div class="summary-info">
+                            <span class="summary-number" id="occupiedTablesCount">0</span>
+                            <span class="summary-label">Ocupadas</span>
+                        </div>
+                    </div>
+                    <div class="summary-card reserved">
+                        <i class="fas fa-clock"></i>
+                        <div class="summary-info">
+                            <span class="summary-number" id="reservedTablesCount">0</span>
+                            <span class="summary-label">Reservadas</span>
+                        </div>
+                    </div>
+                    <div class="summary-card cleaning">
+                        <i class="fas fa-broom"></i>
+                        <div class="summary-info">
+                            <span class="summary-number" id="cleaningTablesCount">0</span>
+                            <span class="summary-label">Limpeza</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tables Grid -->
+                <div class="tables-container">
+                    <div class="tables-grid" id="tablesGrid">
+                        <!-- Tables will be dynamically generated here -->
+                    </div>
+                </div>
+
+                <!-- Table Details Modal -->
+                <div class="modal fade" id="tableModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="tableModalTitle">Detalhes da Mesa</h5>
+                                <button type="button" class="close" onclick="closeModal('tableModal')">
+                                    <span>&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="tableForm">
+                                    <input type="hidden" id="tableId">
+                                    
+                                    <div class="form-group">
+                                        <label for="tableNumber">Número da Mesa:</label>
+                                        <input type="number" id="tableNumber" class="form-control" min="1" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="tableCapacity">Capacidade:</label>
+                                        <select id="tableCapacity" class="form-control" required>
+                                            <option value="2">2 pessoas</option>
+                                            <option value="4">4 pessoas</option>
+                                            <option value="6">6 pessoas</option>
+                                            <option value="8">8 pessoas</option>
+                                            <option value="10">10 pessoas</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="tableStatus">Status:</label>
+                                        <select id="tableStatus" class="form-control">
+                                            <option value="available">Disponível</option>
+                                            <option value="occupied">Ocupada</option>
+                                            <option value="reserved">Reservada</option>
+                                            <option value="cleaning">Limpeza</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="form-group" id="customerGroup" style="display: none;">
+                                        <label for="customerName">Nome do Cliente:</label>
+                                        <input type="text" id="customerName" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group" id="reservationGroup" style="display: none;">
+                                        <label for="reservationTime">Horário da Reserva:</label>
+                                        <input type="datetime-local" id="reservationTime" class="form-control">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="tableNotes">Observações:</label>
+                                        <textarea id="tableNotes" class="form-control" rows="3"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn-secondary" onclick="closeModal('tableModal')">Cancelar</button>
+                                <button type="button" class="btn-primary" onclick="saveTable()">Salvar</button>
+                                <button type="button" class="btn-success" onclick="openOrderForTable()" id="orderButton" style="display: none;">
+                                    <i class="fas fa-utensils"></i> Fazer Pedido
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other page contents will be added here -->
+            <!-- Pedidos Content -->
+            <div id="pedidos-content" class="page-content">
+                <div class="page-header">
+                    <h2>Gerenciar Pedidos</h2>
+                    <button class="btn-primary" onclick="openOrderModal()">
+                        <i class="fas fa-plus"></i> Novo Pedido
+                    </button>
+                </div>
+                
+                <div class="orders-board">
+                    <div class="order-column">
+                        <h3><i class="fas fa-clock text-warning"></i> Pendentes</h3>
+                        <div class="order-list" id="pendingOrders">
+                            <!-- Pending orders -->
+                        </div>
+                    </div>
+                    
+                    <div class="order-column">
+                        <h3><i class="fas fa-fire text-orange"></i> Preparando</h3>
+                        <div class="order-list" id="preparingOrders">
+                            <!-- Preparing orders -->
+                        </div>
+                    </div>
+                    
+                    <div class="order-column">
+                        <h3><i class="fas fa-check-circle text-success"></i> Prontos</h3>
+                        <div class="order-list" id="readyOrders">
+                            <!-- Ready orders -->
+                        </div>
+                    </div>
+                    
+                    <div class="order-column">
+                        <h3><i class="fas fa-shipping-fast text-info"></i> Entregues</h3>
+                        <div class="order-list" id="deliveredOrders">
+                            <!-- Delivered orders -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cardápio Content -->
+            <div id="cardapio-content" class="page-content">
+                <div class="page-header">
+                    <h2>Gerenciar Cardápio</h2>
+                    <button class="btn-primary" onclick="openProductModal()">
+                        <i class="fas fa-plus"></i> Novo Produto
+                    </button>
+                </div>
+                
+                <div class="filters">
+                    <select id="categoryFilter" class="filter-input" onchange="safeFilterProducts()">
+                        <option value="">Todas as Categorias</option>
+                    </select>
+                    <input type="text" id="productSearch" class="filter-input" placeholder="Buscar produto..." onkeyup="safeFilterProducts()">
+                    <select id="productStatusFilter" class="filter-input" onchange="safeFilterProducts()">
+                        <option value="">Todos</option>
+                        <option value="true">Ativos</option>
+                        <option value="false">Inativos</option>
+                    </select>
+                </div>
+
+                <div class="products-grid" id="productsGrid">
+                    <!-- Products will be populated here -->
+                </div>
+            </div>
+
+            <!-- Estoque Content -->
+            <div id="estoque-content" class="page-content">
+                <div class="page-header">
+                    <h2>Controle de Estoque</h2>
+                    <button class="btn-primary" onclick="openStockModal()">
+                        <i class="fas fa-plus"></i> Ajustar Estoque
+                    </button>
+                </div>
+                
+                <div class="stock-alerts" id="stockAlerts">
+                    <!-- Low stock alerts will appear here -->
+                </div>
+                
+                <div class="stock-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Produto</th>
+                                <th>Categoria</th>
+                                <th>Estoque Atual</th>
+                                <th>Estoque Mínimo</th>
+                                <th>Status</th>
+                                <th>Última Movimentação</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody">
+                            <!-- Stock data will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Financeiro Content -->
+            <div id="financeiro-content" class="page-content">
+                <div class="page-header">
+                    <h2>Controle Financeiro</h2>
+                    <div class="header-actions">
+                        <button class="btn-secondary" onclick="openExpenseModal()">
+                            <i class="fas fa-minus"></i> Nova Despesa
+                        </button>
+                        <button class="btn-primary" onclick="generateFinancialReport()">
+                            <i class="fas fa-chart-bar"></i> Gerar Relatório
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="financial-cards">
+                    <div class="financial-card revenue">
+                        <div class="card-icon">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="totalRevenue">R$ 0,00</h3>
+                            <p>Receitas do Mês</p>
+                        </div>
+                    </div>
+                    
+                    <div class="financial-card expenses">
+                        <div class="card-icon">
+                            <i class="fas fa-arrow-down"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="totalExpenses">R$ 0,00</h3>
+                            <p>Despesas do Mês</p>
+                        </div>
+                    </div>
+                    
+                    <div class="financial-card profit">
+                        <div class="card-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="card-info">
+                            <h3 id="netProfit">R$ 0,00</h3>
+                            <p>Lucro Líquido</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="financial-charts">
+                    <div class="chart-container">
+                        <h3>Receitas vs Despesas</h3>
+                        <canvas id="financialChart"></canvas>
+                    </div>
+                    
+                    <div class="chart-container">
+                        <h3>Formas de Pagamento</h3>
+                        <canvas id="paymentMethodsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="relatorios-content" class="page-content">
+                <h2>Relatórios</h2>
+                <p>Sistema de relatórios em desenvolvimento...</p>
+            </div>
+
+            <div id="configuracoes-content" class="page-content">
+                <h2>Configurações</h2>
+                <p>Configurações do sistema em desenvolvimento...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Nova Venda -->
+    <div id="saleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nova Venda</h3>
+                <span class="close" onclick="closeSaleModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="saleForm">
+                    <div class="form-group">
+                        <label for="customerName">Nome do Cliente:</label>
+                        <input type="text" id="customerName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="saleItems">Itens:</label>
+                        <div id="saleItems">
+                            <!-- Items will be added dynamically -->
+                        </div>
+                        <button type="button" onclick="addItem()" class="btn-secondary">
+                            <i class="fas fa-plus"></i> Adicionar Item
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paymentMethod">Método de Pagamento:</label>
+                        <select id="paymentMethod" required>
+                            <option value="">Selecione</option>
+                            <option value="cash">Dinheiro</option>
+                            <option value="card">Cartão</option>
+                            <option value="pix">PIX</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="totalAmount">Total: R$ <span id="totalAmount">0,00</span></label>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" onclick="closeSaleModal()" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Finalizar Venda</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Produto -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Novo Produto</h3>
+                <span class="close" onclick="closeProductModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productName">Nome do Produto:</label>
+                            <input type="text" id="productName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productCategory">Categoria:</label>
+                            <select id="productCategory" required>
+                                <option value="">Selecione uma categoria</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productDescription">Descrição:</label>
+                        <textarea id="productDescription" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="productPrice">Preço (R$):</label>
+                            <input type="number" id="productPrice" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="productStock">Estoque Inicial:</label>
+                            <input type="number" id="productStock" min="0" value="0">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="productImage">URL da Imagem:</label>
+                        <input type="url" id="productImage" placeholder="https://exemplo.com/imagem.jpg">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" onclick="closeProductModal()" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Salvar Produto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Pedido -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Novo Pedido</h3>
+                <span class="close" onclick="closeOrderModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="orderForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="orderTable">Mesa:</label>
+                            <input type="number" id="orderTable" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="orderPriority">Prioridade:</label>
+                            <select id="orderPriority">
+                                <option value="1">Normal</option>
+                                <option value="2">Alta</option>
+                                <option value="3">Urgente</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Itens do Pedido:</label>
+                        <div id="orderItems">
+                            <!-- Order items will be added here -->
+                        </div>
+                        <button type="button" onclick="addOrderItem()" class="btn-secondary">
+                            <i class="fas fa-plus"></i> Adicionar Item
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="orderNotes">Observações:</label>
+                        <textarea id="orderNotes" rows="2" placeholder="Observações especiais..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" onclick="closeOrderModal()" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Criar Pedido</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Ajuste de Estoque -->
+    <div id="stockModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajustar Estoque</h3>
+                <span class="close" onclick="closeStockModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="stockForm">
+                    <div class="form-group">
+                        <label for="stockProduct">Produto:</label>
+                        <select id="stockProduct" required>
+                            <option value="">Selecione um produto</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stockType">Tipo de Movimentação:</label>
+                        <select id="stockType" required>
+                            <option value="">Selecione</option>
+                            <option value="in">Entrada (Compra)</option>
+                            <option value="out">Saída (Perda/Uso)</option>
+                            <option value="adjustment">Ajuste de Inventário</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stockQuantity">Quantidade:</label>
+                            <input type="number" id="stockQuantity" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="stockReason">Motivo:</label>
+                            <select id="stockReason">
+                                <option value="purchase">Compra</option>
+                                <option value="loss">Perda</option>
+                                <option value="adjustment">Ajuste</option>
+                                <option value="return">Devolução</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="stockNotes">Observações:</label>
+                        <textarea id="stockNotes" rows="2"></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" onclick="closeStockModal()" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Confirmar Ajuste</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Despesa -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nova Despesa</h3>
+                <span class="close" onclick="closeExpenseModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="expenseForm">
+                    <div class="form-group">
+                        <label for="expenseDescription">Descrição:</label>
+                        <input type="text" id="expenseDescription" required placeholder="Ex: Conta de luz, Salários, etc.">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expenseAmount">Valor (R$):</label>
+                            <input type="number" id="expenseAmount" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expenseCategory">Categoria:</label>
+                            <select id="expenseCategory" required>
+                                <option value="">Selecione</option>
+                                <option value="utilities">Utilidades (Luz, Água, etc.)</option>
+                                <option value="rent">Aluguel</option>
+                                <option value="salaries">Salários</option>
+                                <option value="supplies">Suprimentos</option>
+                                <option value="maintenance">Manutenção</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="other">Outros</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="expenseDate">Data:</label>
+                            <input type="date" id="expenseDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="expensePayment">Forma de Pagamento:</label>
+                            <select id="expensePayment">
+                                <option value="cash">Dinheiro</option>
+                                <option value="card">Cartão</option>
+                                <option value="transfer">Transferência</option>
+                                <option value="check">Cheque</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" onclick="closeExpenseModal()" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Salvar Despesa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Client Mode Scripts -->
+    <!-- Sistema de Autenticação -->
+    <script src="../js/auth-system.js"></script>
+    <script src="../js/client-config.js"></script>
+    <script src="../js/dashboard.js"></script>
+    
+    <!-- Validador do Sistema -->
+    <script src="../js/system-validator.js"></script>
+</body>
+</html>

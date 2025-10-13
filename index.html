@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maria Flor - Sistema de Gestão</title>
+    <meta name="description" content="Sistema completo de gestão para bares e restaurantes com controle de vendas, estoque e pedidos">
+    <meta name="keywords" content="restaurante, gestão, vendas, estoque, pedidos, POS">
+    <meta name="author" content="Maria Flor Sistema">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Maria Flor">
+    <meta name="msapplication-TileColor" content="#667eea">
+    <meta name="msapplication-tap-highlight" content="no">
+    
+    <!-- Icons -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://via.placeholder.com/32x32?text=MF">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://via.placeholder.com/16x16?text=MF">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://via.placeholder.com/180x180?text=MF">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/login.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="login-container">
+            <div class="login-header">
+                <h1 class="logo">Maria Flor</h1>
+                <p class="subtitle">Sistema de Gestão</p>
+                <p class="location">Salvador, BA - Bairro do Resgate</p>
+            </div>
+            
+            <div class="login-form">
+                <h2>Entrar no Sistema</h2>
+                <p class="form-description">Digite suas credenciais para acessar o sistema</p>
+                
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="username">Usuário</label>
+                        <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
+                        <i class="fas fa-user input-icon"></i>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <span class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Entrar
+                    </button>
+                </form>
+                
+                <!-- Container para mensagens (será preenchido pelo JavaScript) -->
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <div class="hero-section">
+            <div class="hero-content">
+                <div class="hero-image">
+                    <i class="fas fa-utensils hero-icon"></i>
+                </div>
+                <h3>Gestão Completa para seu Restaurante</h3>
+                <p>Sistema profissional para controle de vendas, estoque, cardápio e muito mais.</p>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Made with <span style="color: #e74c3c;">♥</span> Manus</p>
+    </footer>
+
+    <!-- Client Mode Configuration -->
+    <script src="js/client-config.js"></script>
+    <!-- Sistema de Autenticação -->
+    <script src="js/auth-system.js"></script>
+    <script src="js/login.js"></script>
+    
+    <!-- Validador do Sistema -->
+    <script src="js/system-validator.js"></script>
+</body>
+</html>
