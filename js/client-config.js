@@ -4,22 +4,69 @@
 
 class ClientConfig {
     constructor() {
-        this.mode = 'client'; // 'client' ou 'server'
+        this.mode = this.detectMode(); // 'client', 'netlify' ou 'server'
         this.storage = 'localStorage'; // 'localStorage' ou 'indexedDB'
         this.enableBackup = true;
         this.autoSave = true;
-        this.version = '1.0.0';
+        this.version = '2.0.0';
+        this.apiBase = this.getApiBase();
         
         this.initializeClient();
     }
     
+    // Detectar modo de funcionamento
+    detectMode() {
+        if (window.location.hostname.includes('netlify.app')) {
+            return 'netlify';
+        } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return 'local';
+        } else {
+            return 'client';
+        }
+    }
+    
+    // Obter base da API
+    getApiBase() {
+        switch (this.mode) {
+            case 'netlify':
+                return '/api';
+            case 'local':
+                return 'http://localhost:3000/api';
+            default:
+                return null; // Modo client puro
+        }
+    }
+    
     initializeClient() {
-        console.log('🎯 Modo Cliente Ativado - Maria Flor Sistema');
-        console.log('💾 Armazenamento: Local (Browser)');
-        console.log('🌐 Compatível com: GitHub Pages + Netlify');
+        console.log(`🎯 Modo ${this.mode.toUpperCase()} Ativado - Maria Flor Sistema v${this.version}`);
+        console.log(`💾 Armazenamento: ${this.storage}`);
+        console.log(`🌐 API Base: ${this.apiBase || 'Local Storage'}`);
+        console.log(`🔗 URL: ${window.location.hostname}`);
         
         this.setupDefaultData();
         this.enableOfflineMode();
+        
+        // Testar conexão com API se disponível
+        if (this.apiBase) {
+            this.testApiConnection();
+        }
+    }
+    
+    // Testar conexão com a API
+    async testApiConnection() {
+        try {
+            const response = await fetch(`${this.apiBase}/status`);
+            if (response.ok) {
+                const data = await response.json();
+                console.log('✅ API conectada:', data.message);
+            } else {
+                console.log('⚠️ API retornou erro, usando modo local');
+                this.apiBase = null;
+            }
+        } catch (error) {
+            console.log('⚠️ API não disponível, funcionando em modo local');
+            this.apiBase = null;
+        }
     }
     
     setupDefaultData() {

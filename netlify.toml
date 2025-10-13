@@ -1,26 +1,45 @@
-# Netlify configuration file
+# Configuração Netlify - Sistema Maria Flor v2.0
 
 [build]
-  # Diretório de build (não necessário para este projeto)
+  # Diretório de publicação (raiz do projeto)
   publish = "."
   
   # Comando de build
   command = "npm run build"
+  
+  # Ignorar builds se apenas README foi alterado  
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':!README.md' ':!*.md'"
 
 [build.environment]
+  # Versão do Node.js
   NODE_VERSION = "18"
+  
+  # Variáveis de ambiente padrão
+  JWT_SECRET = "maria-flor-netlify-secret-2024"
+  NODE_ENV = "production"
 
-# Redirecionamentos para SPA
-[[redirects]]
-  from = "/pages/*"
-  to = "/pages/:splat"
-  status = 200
-
+# Redirecionamentos para API e SPA
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/:splat"
+  to = "/.netlify/functions/api/:splat"
   status = 200
 
+[[redirects]]
+  from = "/pages/dashboard.html"
+  to = "/pages/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/dashboard"
+  to = "/pages/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/login"
+  to = "/index.html"
+  status = 200
+
+# Fallback para SPA (deve ser o último)
 [[redirects]]
   from = "/*"
   to = "/index.html"
