@@ -18,7 +18,9 @@ class ClientConfig {
     detectMode() {
         if (window.location.hostname.includes('netlify.app')) {
             return 'netlify';
-        } else if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        } else if (window.location.hostname === 'localhost' || 
+                   window.location.hostname === '127.0.0.1' ||
+                   window.location.protocol === 'file:') {
             return 'local';
         } else {
             return 'client';

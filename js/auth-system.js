@@ -5,11 +5,19 @@ class AuthSystem {
     constructor() {
         this.currentUser = null;
         this.sessionTimeout = 8 * 60 * 60 * 1000; // 8 horas
-        this.initializeUsers();
+        this.isLocalMode = window.LOCAL_MODE && window.LOCAL_MODE.enabled;
+        
+        if (this.isLocalMode) {
+            console.log('🏠 Auth System: Modo Local Detectado');
+            this.users = window.MOCK_USERS || {};
+        } else {
+            this.initializeUsers();
+        }
+        
         this.setupSessionManagement();
     }
 
-    // Usuários pré-cadastrados no sistema
+    // Usuários pré-cadastrados no sistema (modo produção)
     initializeUsers() {
         const defaultUsers = [
             // GERENTES (Acesso Total)
@@ -251,6 +259,33 @@ class AuthSystem {
     // Realizar login
     async login(username, password) {
         try {
+            // Modo local - usar API local
+            if (this.isLocalMode && window.LocalAPI) {
+                console.log('🏠 Login: Usando API Local');
+                const response = await window.LocalAPI.login(username, password);
+                
+                if (response.success) {
+                    this.currentUser = response.user;
+                    
+                    // Criar sessão local
+                    const session = {
+                        user: this.currentUser,
+                        loginTime: new Date().getTime(),
+                        lastActivity: new Date().getTime(),
+                        token: response.token
+                    };
+                    localStorage.setItem('maria_flor_session', JSON.stringify(session));
+                    localStorage.setItem('maria_flor_current_user', JSON.stringify(this.currentUser));
+                    localStorage.setItem('maria_flor_token', response.token);
+                    
+                    console.log('✅ Login realizado com sucesso (modo local):', this.currentUser);
+                    return { success: true, user: this.currentUser };
+                } else {
+                    throw new Error(response.error || 'Credenciais inválidas');
+                }
+            }
+            
+            // Modo produção - usar localStorage
             const users = JSON.parse(localStorage.getItem('maria_flor_users') || '[]');
             const user = users.find(u => u.username === username && u.active);
             

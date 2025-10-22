@@ -25,6 +25,7 @@
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/corrections.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -82,13 +83,25 @@
         <p>Made with <span style="color: #e74c3c;">♥</span> Manus</p>
     </footer>
 
-    <!-- Client Mode Configuration -->
-    <script src="js/client-config.js"></script>
-    <!-- Sistema de Autenticação -->
-    <script src="js/auth-system.js"></script>
-    <script src="js/login.js"></script>
+    <!-- Scripts Simplificados -->
+    <script src="js/server-simulator.js"></script>
+    <script src="js/auth-simple.js"></script>
+    <script src="js/login-simple.js"></script>
     
-    <!-- Validador do Sistema -->
-    <script src="js/system-validator.js"></script>
+    <!-- Função para mostrar/esconder senha -->
+    <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.querySelector('.toggle-password i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.className = 'fas fa-eye';
+            }
+        }
+    </script>
 </body>
 </html>

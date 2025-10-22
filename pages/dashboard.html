@@ -52,6 +52,9 @@
                 <li><a href="#financeiro" class="nav-link" data-page="financeiro" data-module="financeiro">
                     <i class="fas fa-chart-line"></i> <span>Financeiro</span>
                 </a></li>
+                <li><a href="#usuarios" class="nav-link" data-page="usuarios" data-module="usuarios">
+                    <i class="fas fa-users-cog"></i> <span>Usuários</span>
+                </a></li>
                 <li><a href="#relatorios" class="nav-link" data-page="relatorios">
                     <i class="fas fa-file-alt"></i> <span>Relatórios</span>
                 </a></li>
@@ -415,9 +418,14 @@
             <div id="cardapio-content" class="page-content">
                 <div class="page-header">
                     <h2>Gerenciar Cardápio</h2>
-                    <button class="btn-primary" onclick="openProductModal()">
-                        <i class="fas fa-plus"></i> Novo Produto
-                    </button>
+                    <div class="header-actions">
+                        <button class="btn-primary" onclick="openProductModal()">
+                            <i class="fas fa-plus"></i> Novo Produto
+                        </button>
+                        <button class="btn-secondary" onclick="openTechnicalSheetModal()" style="margin-left: 10px;">
+                            <i class="fas fa-list-alt"></i> Ficha Técnica
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="filters">
@@ -529,14 +537,588 @@
                 </div>
             </div>
 
+            <!-- Usuários Content -->
+            <div id="usuarios-content" class="page-content">
+                <div class="page-header">
+                    <h2>Gestão de Usuários</h2>
+                    <button class="btn-primary" onclick="openUserModal()">
+                        <i class="fas fa-user-plus"></i> Novo Usuário
+                    </button>
+                </div>
+                
+                <div class="filters">
+                    <select id="roleFilter" class="filter-input" onchange="filterUsers()">
+                        <option value="">Todos os Perfis</option>
+                        <option value="admin">Administrador</option>
+                        <option value="gerente">Gerente</option>
+                        <option value="garcom">Garçom</option>
+                        <option value="cozinha">Cozinha</option>
+                        <option value="caixa">Caixa</option>
+                    </select>
+                    <input type="text" id="userSearch" class="filter-input" placeholder="Buscar usuário..." onkeyup="filterUsers()">
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Usuário</th>
+                                <th>Email</th>
+                                <th>Perfil</th>
+                                <th>Status</th>
+                                <th>Último Login</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <tr>
+                                <td>Administrador</td>
+                                <td>admin</td>
+                                <td>admin@mariaflor.com</td>
+                                <td><span class="badge admin">Administrador</span></td>
+                                <td><span class="status active">Ativo</span></td>
+                                <td>Hoje 14:30</td>
+                                <td>
+                                    <button class="btn-small" onclick="editUser('admin')" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="toggleUserStatus('admin')" title="Desativar">
+                                        <i class="fas fa-user-slash"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="resetPassword('admin')" title="Resetar Senha">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Maria Santos</td>
+                                <td>gerente</td>
+                                <td>gerente@mariaflor.com</td>
+                                <td><span class="badge manager">Gerente</span></td>
+                                <td><span class="status active">Ativo</span></td>
+                                <td>Hoje 13:45</td>
+                                <td>
+                                    <button class="btn-small" onclick="editUser('gerente')" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="toggleUserStatus('gerente')" title="Desativar">
+                                        <i class="fas fa-user-slash"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="resetPassword('gerente')" title="Resetar Senha">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn-small btn-danger" onclick="deleteUser('gerente')" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>João Silva</td>
+                                <td>garcom</td>
+                                <td>garcom@mariaflor.com</td>
+                                <td><span class="badge waiter">Garçom</span></td>
+                                <td><span class="status active">Ativo</span></td>
+                                <td>Hoje 12:20</td>
+                                <td>
+                                    <button class="btn-small" onclick="editUser('garcom')" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="toggleUserStatus('garcom')" title="Desativar">
+                                        <i class="fas fa-user-slash"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="resetPassword('garcom')" title="Resetar Senha">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn-small btn-danger" onclick="deleteUser('garcom')" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Ana Costa</td>
+                                <td>cozinha</td>
+                                <td>cozinha@mariaflor.com</td>
+                                <td><span class="badge kitchen">Cozinha</span></td>
+                                <td><span class="status active">Ativo</span></td>
+                                <td>Hoje 11:15</td>
+                                <td>
+                                    <button class="btn-small" onclick="editUser('cozinha')" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="toggleUserStatus('cozinha')" title="Desativar">
+                                        <i class="fas fa-user-slash"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="resetPassword('cozinha')" title="Resetar Senha">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn-small btn-danger" onclick="deleteUser('cozinha')" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Carlos Oliveira</td>
+                                <td>caixa</td>
+                                <td>caixa@mariaflor.com</td>
+                                <td><span class="badge cashier">Caixa</span></td>
+                                <td><span class="status active">Ativo</span></td>
+                                <td>Hoje 10:30</td>
+                                <td>
+                                    <button class="btn-small" onclick="editUser('caixa')" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="toggleUserStatus('caixa')" title="Desativar">
+                                        <i class="fas fa-user-slash"></i>
+                                    </button>
+                                    <button class="btn-small" onclick="resetPassword('caixa')" title="Resetar Senha">
+                                        <i class="fas fa-key"></i>
+                                    </button>
+                                    <button class="btn-small btn-danger" onclick="deleteUser('caixa')" title="Excluir">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="users-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>5</h3>
+                            <p>Total de Usuários</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>5</h3>
+                            <p>Usuários Ativos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>3</h3>
+                            <p>Online Agora</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="relatorios-content" class="page-content">
-                <h2>Relatórios</h2>
-                <p>Sistema de relatórios em desenvolvimento...</p>
+                <div class="page-header">
+                    <h2>Relatórios Gerenciais</h2>
+                    <div class="header-actions">
+                        <button class="btn-secondary" onclick="exportReport()">
+                            <i class="fas fa-file-export"></i> Exportar
+                        </button>
+                        <button class="btn-primary" onclick="generateReport()">
+                            <i class="fas fa-chart-bar"></i> Gerar Relatório
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Filtros de Relatório -->
+                <div class="report-filters">
+                    <div class="filter-group">
+                        <label for="reportType">Tipo de Relatório:</label>
+                        <select id="reportType" class="filter-input" onchange="updateReportOptions()">
+                            <option value="vendas">Vendas</option>
+                            <option value="produtos">Produtos</option>
+                            <option value="funcionarios">Funcionários</option>
+                            <option value="financeiro">Financeiro</option>
+                            <option value="estoque">Estoque</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="reportPeriod">Período:</label>
+                        <select id="reportPeriod" class="filter-input">
+                            <option value="hoje">Hoje</option>
+                            <option value="semana">Esta Semana</option>
+                            <option value="mes" selected>Este Mês</option>
+                            <option value="trimestre">Trimestre</option>
+                            <option value="ano">Este Ano</option>
+                            <option value="custom">Período Personalizado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group" id="customPeriod" style="display: none;">
+                        <label for="startDate">De:</label>
+                        <input type="date" id="startDate" class="filter-input">
+                        <label for="endDate">Até:</label>
+                        <input type="date" id="endDate" class="filter-input">
+                    </div>
+                </div>
+                
+                <!-- Resumo Executivo -->
+                <div class="report-summary">
+                    <h3>Resumo Executivo - Este Mês</h3>
+                    <div class="summary-cards">
+                        <div class="summary-card revenue">
+                            <div class="card-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="card-info">
+                                <h4>R$ 45.680,50</h4>
+                                <p>Receita Total</p>
+                                <span class="trend positive">+12.5%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card orders">
+                            <div class="card-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="card-info">
+                                <h4>567</h4>
+                                <p>Pedidos</p>
+                                <span class="trend positive">+8.3%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card customers">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-info">
+                                <h4>234</h4>
+                                <p>Clientes</p>
+                                <span class="trend positive">+15.2%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="summary-card ticket">
+                            <div class="card-icon">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <div class="card-info">
+                                <h4>R$ 80,56</h4>
+                                <p>Ticket Médio</p>
+                                <span class="trend positive">+3.8%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gráficos de Relatório -->
+                <div class="report-charts">
+                    <div class="chart-row">
+                        <div class="chart-container">
+                            <h4>Vendas por Período</h4>
+                            <canvas id="reportSalesChart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h4>Métodos de Pagamento</h4>
+                            <canvas id="reportPaymentChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <div class="chart-row">
+                        <div class="chart-container">
+                            <h4>Produtos Mais Vendidos</h4>
+                            <canvas id="reportProductsChart"></canvas>
+                        </div>
+                        
+                        <div class="chart-container">
+                            <h4>Performance por Funcionário</h4>
+                            <canvas id="reportStaffChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Tabelas Detalhadas -->
+                <div class="report-tables">
+                    <div class="table-section">
+                        <h4>Top 10 Produtos</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th>Quantidade</th>
+                                        <th>Receita</th>
+                                        <th>Margem</th>
+                                        <th>Tendência</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Hambúrguer Artesanal</td>
+                                        <td>89</td>
+                                        <td>R$ 2.928,10</td>
+                                        <td>65%</td>
+                                        <td><span class="trend positive">↗ +15%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Pizza Margherita</td>
+                                        <td>67</td>
+                                        <td>R$ 3.015,00</td>
+                                        <td>70%</td>
+                                        <td><span class="trend positive">↗ +8%</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Salada Caesar</td>
+                                        <td>45</td>
+                                        <td>R$ 1.260,00</td>
+                                        <td>75%</td>
+                                        <td><span class="trend negative">↘ -3%</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="table-section">
+                        <h4>Performance por Funcionário</h4>
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Funcionário</th>
+                                        <th>Vendas</th>
+                                        <th>Pedidos</th>
+                                        <th>Ticket Médio</th>
+                                        <th>Avaliação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>João Silva (Garçom)</td>
+                                        <td>R$ 12.450,00</td>
+                                        <td>156</td>
+                                        <td>R$ 79,81</td>
+                                        <td><span class="rating">⭐⭐⭐⭐⭐</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Maria Santos (Gerente)</td>
+                                        <td>R$ 18.320,00</td>
+                                        <td>198</td>
+                                        <td>R$ 92,53</td>
+                                        <td><span class="rating">⭐⭐⭐⭐⭐</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Carlos Oliveira (Caixa)</td>
+                                        <td>R$ 14.910,50</td>
+                                        <td>213</td>
+                                        <td>R$ 70,00</td>
+                                        <td><span class="rating">⭐⭐⭐⭐</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Alertas e Insights -->
+                <div class="report-insights">
+                    <h4>Insights e Recomendações</h4>
+                    <div class="insights-grid">
+                        <div class="insight-card success">
+                            <div class="insight-icon">
+                                <i class="fas fa-arrow-up"></i>
+                            </div>
+                            <div class="insight-content">
+                                <h5>Crescimento de Vendas</h5>
+                                <p>Vendas aumentaram 12.5% comparado ao mês anterior. Continue com as estratégias atuais.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-card warning">
+                            <div class="insight-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="insight-content">
+                                <h5>Estoque de Ingredientes</h5>
+                                <p>5 ingredientes estão com estoque baixo. Considere fazer pedido de reposição.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="insight-card info">
+                            <div class="insight-icon">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="insight-content">
+                                <h5>Oportunidade de Menu</h5>
+                                <p>Pratos vegetarianos têm alta demanda. Considere expandir essas opções.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div id="configuracoes-content" class="page-content">
-                <h2>Configurações</h2>
-                <p>Configurações do sistema em desenvolvimento...</p>
+                <div class="page-header">
+                    <h2>Configurações do Sistema</h2>
+                    <button class="btn-primary" onclick="saveConfigurations()">
+                        <i class="fas fa-save"></i> Salvar Configurações
+                    </button>
+                </div>
+                
+                <div class="config-sections">
+                    <!-- Dados do Restaurante -->
+                    <div class="config-section">
+                        <h3><i class="fas fa-utensils"></i> Dados do Restaurante</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="restaurantName">Nome do Restaurante:</label>
+                                <input type="text" id="restaurantName" value="Maria Flor" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="restaurantAddress">Endereço:</label>
+                                <input type="text" id="restaurantAddress" value="Salvador, BA - Bairro do Resgate" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="restaurantPhone">Telefone:</label>
+                                <input type="text" id="restaurantPhone" value="(71) 99999-9999" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="restaurantEmail">Email:</label>
+                                <input type="email" id="restaurantEmail" value="contato@mariaflor.com" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Configurações de Venda -->
+                    <div class="config-section">
+                        <h3><i class="fas fa-cash-register"></i> Configurações de Venda</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="serviceFee">Taxa de Serviço (%):</label>
+                                <input type="number" id="serviceFee" value="10" min="0" max="20" step="0.1" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="defaultPrepTime">Tempo Padrão de Preparo (min):</label>
+                                <input type="number" id="defaultPrepTime" value="20" min="5" max="120" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Métodos de Pagamento Aceitos:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" checked> Dinheiro</label>
+                                    <label><input type="checkbox" checked> Cartão de Crédito</label>
+                                    <label><input type="checkbox" checked> Cartão de Débito</label>
+                                    <label><input type="checkbox" checked> PIX</label>
+                                    <label><input type="checkbox"> Transferência</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Configurações do Sistema -->
+                    <div class="config-section">
+                        <h3><i class="fas fa-cog"></i> Sistema</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="autoRefresh">Atualização Automática (segundos):</label>
+                                <input type="number" id="autoRefresh" value="30" min="10" max="300" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="theme">Tema do Sistema:</label>
+                                <select id="theme" class="form-control">
+                                    <option value="light" selected>Claro</option>
+                                    <option value="dark">Escuro</option>
+                                    <option value="auto">Automático</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Notificações:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" checked> Novos pedidos</label>
+                                    <label><input type="checkbox" checked> Estoque baixo</label>
+                                    <label><input type="checkbox"> Metas de vendas</label>
+                                    <label><input type="checkbox"> Backup automático</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Configurações de Estoque -->
+                    <div class="config-section">
+                        <h3><i class="fas fa-boxes"></i> Estoque</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="lowStockThreshold">Alerta de Estoque Baixo (%):</label>
+                                <input type="number" id="lowStockThreshold" value="20" min="5" max="50" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="criticalStockThreshold">Alerta de Estoque Crítico (%):</label>
+                                <input type="number" id="criticalStockThreshold" value="5" min="1" max="20" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>Movimentação Automática:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" checked> Deduzir ao fazer pedido</label>
+                                    <label><input type="checkbox"> Alertas por email</label>
+                                    <label><input type="checkbox"> Sugestão de compras</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Backup e Segurança -->
+                    <div class="config-section">
+                        <h3><i class="fas fa-shield-alt"></i> Backup e Segurança</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="backupFrequency">Frequência de Backup:</label>
+                                <select id="backupFrequency" class="form-control">
+                                    <option value="hourly">A cada hora</option>
+                                    <option value="daily" selected>Diário</option>
+                                    <option value="weekly">Semanal</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sessionTimeout">Timeout de Sessão (min):</label>
+                                <input type="number" id="sessionTimeout" value="60" min="15" max="480" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <button class="btn-secondary" onclick="performBackup()">
+                                    <i class="fas fa-download"></i> Fazer Backup Agora
+                                </button>
+                                <button class="btn-secondary" onclick="exportData()">
+                                    <i class="fas fa-file-export"></i> Exportar Dados
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Informações do Sistema -->
+                <div class="system-info">
+                    <h3><i class="fas fa-info-circle"></i> Informações do Sistema</h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Versão:</strong> 2.0.0
+                        </div>
+                        <div class="info-item">
+                            <strong>Última Atualização:</strong> 22/10/2025
+                        </div>
+                        <div class="info-item">
+                            <strong>Banco de Dados:</strong> PostgreSQL (Neon)
+                        </div>
+                        <div class="info-item">
+                            <strong>Hospedagem:</strong> Netlify
+                        </div>
+                        <div class="info-item">
+                            <strong>Uptime:</strong> 99.9%
+                        </div>
+                        <div class="info-item">
+                            <strong>Desenvolvedores:</strong> Cristiano Superação
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -803,13 +1385,170 @@
         </div>
     </div>
 
+    <!-- Modal para Usuário -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Novo Usuário</h3>
+                <span class="close" onclick="closeUserModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userFullName">Nome Completo:</label>
+                            <input type="text" id="userFullName" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="userName">Nome de Usuário:</label>
+                            <input type="text" id="userName" required class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userEmail">Email:</label>
+                            <input type="email" id="userEmail" required class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="userPhone">Telefone:</label>
+                            <input type="tel" id="userPhone" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userRole">Perfil de Acesso:</label>
+                            <select id="userRole" required class="form-control">
+                                <option value="">Selecione o perfil</option>
+                                <option value="admin">Administrador</option>
+                                <option value="gerente">Gerente</option>
+                                <option value="garcom">Garçom</option>
+                                <option value="cozinha">Cozinha</option>
+                                <option value="caixa">Caixa</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="userStatus">Status:</label>
+                            <select id="userStatus" class="form-control">
+                                <option value="ativo">Ativo</option>
+                                <option value="inativo">Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="userPassword">Senha:</label>
+                            <input type="password" id="userPassword" required class="form-control">
+                            <small>Mínimo 6 caracteres</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="userPasswordConfirm">Confirmar Senha:</label>
+                            <input type="password" id="userPasswordConfirm" required class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Permissões Especiais:</label>
+                        <div class="permissions-grid">
+                            <label><input type="checkbox" id="permDashboard"> Dashboard</label>
+                            <label><input type="checkbox" id="permVendas"> Vendas</label>
+                            <label><input type="checkbox" id="permMesas"> Mesas</label>
+                            <label><input type="checkbox" id="permPedidos"> Pedidos</label>
+                            <label><input type="checkbox" id="permCardapio"> Cardápio</label>
+                            <label><input type="checkbox" id="permEstoque"> Estoque</label>
+                            <label><input type="checkbox" id="permFinanceiro"> Financeiro</label>
+                            <label><input type="checkbox" id="permRelatorios"> Relatórios</label>
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" onclick="closeUserModal()" class="btn-secondary">Cancelar</button>
+                        <button type="submit" class="btn-primary">Salvar Usuário</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ficha Técnica -->
+    <div id="technicalSheetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="technicalSheetModalTitle">Gerenciar Fichas Técnicas</h3>
+                <span class="close" onclick="closeTechnicalSheetModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <!-- Seletor de Produto -->
+                <div class="form-group">
+                    <label for="technicalSheetProduct">Produto:</label>
+                    <select id="technicalSheetProduct" class="form-control" onchange="loadTechnicalSheet()">
+                        <option value="">Selecione um produto</option>
+                    </select>
+                    <button type="button" class="btn-secondary" onclick="createNewTechnicalSheet()" style="margin-top: 10px;">
+                        <i class="fas fa-plus"></i> Nova Ficha Técnica
+                    </button>
+                </div>
+
+                <!-- Formulário de Ficha Técnica -->
+                <div id="technicalSheetForm" style="display: none;">
+                    <h4>Ingredientes e Quantidades</h4>
+                    <div class="ingredients-section">
+                        <div class="form-group">
+                            <label>Descrição do Produto:</label>
+                            <textarea id="productDescription" class="form-control" rows="3" placeholder="Descreva o produto e modo de preparo..."></textarea>
+                        </div>
+                        
+                        <div class="ingredients-header">
+                            <h5>Lista de Ingredientes</h5>
+                            <button type="button" class="btn-small btn-primary" onclick="addIngredient()">
+                                <i class="fas fa-plus"></i> Adicionar Ingrediente
+                            </button>
+                        </div>
+                        
+                        <div id="ingredientsList" class="ingredients-list">
+                            <!-- Ingredientes serão adicionados aqui dinamicamente -->
+                        </div>
+                        
+                        <div class="cost-summary">
+                            <div class="cost-row">
+                                <label>Custo Total dos Ingredientes:</label>
+                                <span id="totalIngredientsCost">R$ 0,00</span>
+                            </div>
+                            <div class="cost-row">
+                                <label>Margem de Lucro (%):</label>
+                                <input type="number" id="profitMargin" class="form-control" value="60" min="0" max="1000" onchange="calculateSuggestedPrice()">
+                            </div>
+                            <div class="cost-row">
+                                <label>Preço Sugerido:</label>
+                                <span id="suggestedPrice">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Lista de Fichas Técnicas Existentes -->
+                <div id="technicalSheetsList">
+                    <h4>Fichas Técnicas Cadastradas</h4>
+                    <div class="technical-sheets-grid" id="technicalSheetsGrid">
+                        <!-- Fichas técnicas serão listadas aqui -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="closeTechnicalSheetModal()">Fechar</button>
+                <button type="button" class="btn-primary" onclick="saveTechnicalSheet()" id="saveTechnicalSheetBtn" style="display: none;">
+                    <i class="fas fa-save"></i> Salvar Ficha Técnica
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Client Mode Scripts -->
     <!-- Sistema de Autenticação -->
-    <script src="../js/auth-system.js"></script>
-    <script src="../js/client-config.js"></script>
+    <script src="../js/auth-simple.js"></script>
     <script src="../js/dashboard.js"></script>
-    
-    <!-- Validador do Sistema -->
-    <script src="../js/system-validator.js"></script>
+    <script src="../js/dashboard-api.js"></script>
 </body>
 </html>

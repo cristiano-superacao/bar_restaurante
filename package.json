@@ -11,7 +11,9 @@
     "dev": "netlify dev",
     "build": "npm install && echo 'Maria Flor Sistema - Build completed for Netlify'",
     "deploy": "netlify deploy --prod",
-    "test": "echo 'Sistema testado e funcionando 100%'"
+    "test": "echo 'Sistema testado e funcionando 100%'",
+    "create-users": "node scripts/create-test-users.js",
+    "generate-hashes": "node scripts/generate-password-hashes.js"
   },
   "dependencies": {
     "@netlify/functions": "^2.4.1",

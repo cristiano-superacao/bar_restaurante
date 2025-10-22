@@ -1,18 +1,18 @@
-const { neon } = require('@neondatabase/serverless');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const { 
+  userService, 
+  menuService, 
+  tableService, 
+  orderService, 
+  salesService, 
+  dashboardService 
+} = require('../../api/services');
 
-// Configuração do banco Neon
-let sql;
-const databaseUrl = process.env.NEON_DATABASE_URL || process.env.DATABASE_URL;
-if (databaseUrl) {
-    try {
-        sql = neon(databaseUrl);
-    } catch (error) {
-        console.log('Erro ao conectar com Neon DB:', error);
-        sql = null;
-    }
-}
+// Headers CORS
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
+};
 
 // Usuários padrão para fallback (quando não há banco)
 const defaultUsers = [
