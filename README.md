@@ -1,21 +1,25 @@
-# 🌸 Sistema Maria Flor - Gestão de Restaurante
+# �️ Sistema Bar Restaurante Maria Flor
 
-> **Sistema completo de gestão para restaurantes e bares**  
-> Desenvolvido para o Restaurante Maria Flor - Salvador, BA
+> **Sistema completo de gestão para bar e restaurante**  
+> Desenvolvido e idealizado por **Cristiano Santos**
 
-[![Deploy Status](https://api.netlify.com/api/v1/badges/sua-badge-netlify/deploy-status)](https://app.netlify.com/sites/seu-site/deploys)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/your-badge-id/deploy-status)](https://barestaurente.netlify.app)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Status](https://img.shields.io/badge/Status-✅%20Produção-success)](https://github.com/cristiano-superacao/bar_restaurante)
+[![Status](https://img.shields.io/badge/Status-✅%20Online-success)](https://barestaurente.netlify.app)
 [![Versão](https://img.shields.io/badge/Versão-2.0.0-blue)](https://github.com/cristiano-superacao/bar_restaurante)
+
+## 🌟 **Deploy Live**
+**🚀 Sistema Online**: [https://barestaurente.netlify.app](https://barestaurente.netlify.app)
 
 ## 🚀 Características Principais
 
 - 💻 **100% Web-based** - Funciona em qualquer navegador
 - 📱 **Responsivo** - Interface adaptável para desktop, tablet e mobile
-- ☁️ **Cloud-ready** - Deploy em Netlify + banco Neon PostgreSQL
+- ☁️ **Cloud-ready** - Deploy automático Netlify + PostgreSQL
 - 🔐 **Seguro** - Autenticação JWT com senhas criptografadas (bcrypt)
 - ⚡ **Rápido** - APIs otimizadas e interface moderna
 - 🎨 **Intuitivo** - Design clean e fácil de usar
+- 📝 **Ficha Técnica** - Controle completo de ingredientes e custos
 
 ## 📚 Documentação Completa
 
@@ -41,16 +45,30 @@
 - ✅ **Sistema de Mesas** - Controle visual e interativo
 - ✅ **Gerenciamento de Pedidos** - Kanban board completo
 - ✅ **Cardápio Digital** - Gestão completa de produtos
+- ✅ **Ficha Técnica** - Controle de ingredientes e custos
 - ✅ **Controle de Estoque** - Inventário com alertas
 - ✅ **Módulo Financeiro** - Relatórios e controle de despesas
 - ✅ **Sistema de Permissões** - Controle por função de usuário
 
-## 🛠️ Tecnologias Utilizadas
+## 🔑 **Credenciais de Acesso**
+
+| Tipo | Email | Senha | Função |
+|------|-------|-------|---------|
+| **👑 Admin** | cristiano@mariaflor.com.br | admin123 | Administrador geral |
+| **�‍💼 Gerente** | maria@mariaflor.com.br | maria2024 | Gerente geral |
+| **👨‍🍳 Chef** | joao.chef@mariaflor.com.br | chef2024 | Chef de cozinha |
+| **🍽️ Garçom** | ana.garcom@mariaflor.com.br | garcom2024 | Atendimento senior |
+| **💰 Caixa** | carlos.caixa@mariaflor.com.br | caixa2024 | Financeiro |
+| **📦 Estoque** | pedro.estoque@mariaflor.com.br | estoque2024 | Controle de estoque |
+
+*[Ver todos os 10 usuários](USUARIOS_SISTEMA.md)*
+
+## �🛠️ Tecnologias Utilizadas
 
 - **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
 - **Backend**: Node.js + Express.js
 - **Banco de Dados**: PostgreSQL (Neon)
-- **Hospedagem**: Netlify + GitHub Pages
+- **Hospedagem**: Netlify com deploy automático
 - **Charts**: Chart.js
 - **Icons**: Font Awesome
 
@@ -300,23 +318,25 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 
 </div>
 
-## 🤝 Contribuição
+## 📄 Licença
 
-Contribuições são bem-vindas! Para contribuir:
+Copyright © 2024 Cristiano Santos. Todos os direitos reservados.
 
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
+Este é um projeto proprietário desenvolvido especificamente para gestão de bar e restaurante.
 
 ## ⭐ Agradecimentos
 
 - Font Awesome pelos ícones
 - Chart.js pelos gráficos
-- Neon pelo banco de dados
+- PostgreSQL pelo banco de dados
 - Netlify pela hospedagem
 
 ---
 
-**Desenvolvido com ❤️ para Maria Flor**
+<div align="center">
+
+**🍽️ Criado e Idealizado por ♥ Cristiano Santos**
+
+**🌟 Sistema Online**: [barestaurente.netlify.app](https://barestaurente.netlify.app)
+
+</div>
