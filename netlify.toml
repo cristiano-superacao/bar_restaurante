@@ -1,21 +1,21 @@
-# Configuração Netlify - Sistema Maria Flor v2.0
+# Configuração Netlify - Bar Restaurante Maria Flor
+# Deploy: https://barestaurente.netlify.app
 
 [build]
   # Diretório de publicação (raiz do projeto)
   publish = "."
   
-  # Comando de build
-  command = "npm run build"
+  # Comando de build (vazio para site estático)
+  command = ""
   
-  # Ignorar builds se apenas README foi alterado  
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- . ':!README.md' ':!*.md'"
+  # Diretório das functions
+  functions = "netlify/functions"
 
 [build.environment]
   # Versão do Node.js
   NODE_VERSION = "18"
   
   # Variáveis de ambiente padrão
-  JWT_SECRET = "maria-flor-netlify-secret-2024"
   NODE_ENV = "production"
 
 # Redirecionamentos para API e SPA
