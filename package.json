@@ -12,6 +12,8 @@
     "build": "echo 'Site estático - Build completo'",
     "deploy": "node deploy.js",
     "deploy:auto": "git add . && git commit -m 'Deploy automático' && git push origin main",
+    "setup-neon": "node setup-neon.js",
+    "check-system": "node setup-neon.js",
     "test": "echo 'Sistema testado e funcionando 100%'"
   },
   "dependencies": {
