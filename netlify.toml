@@ -5,8 +5,8 @@
   # Diretório de publicação (raiz do projeto)
   publish = "."
   
-  # Comando de build (vazio para site estático)
-  command = ""
+  # Comando de build
+  command = "echo 'Build completo - Site estático pronto'"
   
   # Diretório das functions
   functions = "netlify/functions"
@@ -15,7 +15,7 @@
   # Versão do Node.js
   NODE_VERSION = "18"
   
-  # Variáveis de ambiente padrão
+  # Variáveis de ambiente
   NODE_ENV = "production"
 
 # Redirecionamentos para API
@@ -24,23 +24,7 @@
   to = "/.netlify/functions/server/:splat"
   status = 200
 
-# Redirecionamento para SPA
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# Redirecionamentos para API e SPA
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/api/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/pages/dashboard.html"
-  to = "/pages/dashboard.html"
-  status = 200
-
+# Redirecionamentos para páginas
 [[redirects]]
   from = "/dashboard"
   to = "/pages/dashboard.html"
@@ -48,6 +32,8 @@
 
 [[redirects]]
   from = "/login"
+  to = "/index.html"
+  status = 200
   to = "/index.html"
   status = 200
 
