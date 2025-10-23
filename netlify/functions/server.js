@@ -14,11 +14,24 @@ const headers = {
 // Função de autenticação demo (fallback)
 function authenticateUserDemo(email, senha) {
   const validUsers = {
-    'cristiano@mariaflor.com.br': { id: 1, nome: 'Cristiano Santos', role: 'administrador', senha: 'admin123' },
-    'maria@mariaflor.com.br': { id: 2, nome: 'Maria Silva', role: 'gerente', senha: 'maria2024' },
-    'joao.chef@mariaflor.com.br': { id: 3, nome: 'João Chef', role: 'cozinheiro', senha: 'chef2024' },
-    'ana.garcom@mariaflor.com.br': { id: 4, nome: 'Ana Santos', role: 'garcom', senha: 'garcom2024' },
-    'teste@mariaflor.com.br': { id: 10, nome: 'Usuário Teste', role: 'usuario', senha: 'teste123' }
+    'admin@mariaflor.com.br': { 
+      id: 1, 
+      nome: 'Administrador do Sistema', 
+      role: 'administrador', 
+      senha: 'admin123' 
+    },
+    'gerente@mariaflor.com.br': { 
+      id: 2, 
+      nome: 'Gerente Maria Flor', 
+      role: 'gerente', 
+      senha: 'gerente123' 
+    },
+    'usuario@mariaflor.com.br': { 
+      id: 3, 
+      nome: 'Usuário do Sistema', 
+      role: 'usuario', 
+      senha: 'usuario123' 
+    }
   };
 
   const user = validUsers[email];
@@ -61,16 +74,9 @@ async function authenticateUser(email, senha) {
     // Para demonstração, aceitar senhas simples
     // Em produção, usar bcrypt para comparar hashes
     const validPasswords = {
-      'cristiano@mariaflor.com.br': 'admin123',
-      'maria@mariaflor.com.br': 'maria2024',
-      'joao.chef@mariaflor.com.br': 'chef2024',
-      'ana.garcom@mariaflor.com.br': 'garcom2024',
-      'carlos.caixa@mariaflor.com.br': 'caixa2024',
-      'pedro.estoque@mariaflor.com.br': 'estoque2024',
-      'juliana.garcom@mariaflor.com.br': 'garcom123',
-      'roberto.ajudante@mariaflor.com.br': 'ajudante123',
-      'sandra.supervisor@mariaflor.com.br': 'supervisor2024',
-      'teste@mariaflor.com.br': 'teste123'
+      'admin@mariaflor.com.br': 'admin123',
+      'gerente@mariaflor.com.br': 'gerente123',
+      'usuario@mariaflor.com.br': 'usuario123'
     };
 
     if (validPasswords[email] === senha) {

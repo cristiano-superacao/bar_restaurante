@@ -114,16 +114,42 @@ function loadUserInfo() {
 }
 
 function setupEventListeners() {
-    document.getElementById('toggleBtn').addEventListener('click', toggleSidebar);
-    document.getElementById('mobileToggle').addEventListener('click', toggleMobileSidebar);
+    // Toggle buttons
+    const toggleBtn = document.getElementById('toggleBtn');
+    const mobileToggle = document.getElementById('mobileToggle');
     
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', toggleSidebar);
+    }
+    
+    if (mobileToggle) {
+        mobileToggle.addEventListener('click', toggleMobileSidebar);
+    }
+    
+    // Navigation links
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', function(e) {
             e.preventDefault();
             const page = this.getAttribute('data-page');
-            navigateToPage(page);
+            if (page) {
+                navigateToPage(page);
+            }
         });
     });
+    
+    // Handle hash changes from URL
+    window.addEventListener('hashchange', function() {
+        const hash = window.location.hash.substr(1);
+        if (hash) {
+            navigateToPage(hash);
+        }
+    });
+    
+    // Check initial hash
+    const initialHash = window.location.hash.substr(1);
+    if (initialHash) {
+        setTimeout(() => navigateToPage(initialHash), 100);
+    }
     
     if (document.getElementById('saleForm')) {
         document.getElementById('saleForm').addEventListener('submit', submitSale);
@@ -146,29 +172,42 @@ function toggleMobileSidebar() {
 }
 
 function navigateToPage(page) {
-    if (page === 'mesas') {
-        window.location.href = 'mesas.html';
-        return;
-    }
+    console.log('🔄 Navegando para:', page);
     
+    // Remove active class from all navigation links
     document.querySelectorAll('.nav-link').forEach(link => {
         link.classList.remove('active');
     });
     
+    // Add active class to current link
     const currentLink = document.querySelector(`[data-page="${page}"]`);
     if (currentLink) {
         currentLink.classList.add('active');
     }
     
+    // Hide all page content
     document.querySelectorAll('.page-content').forEach(content => {
         content.classList.remove('active');
+        content.style.display = 'none';
     });
     
+    // Show current page content
     const pageContent = document.getElementById(`${page}-content`);
     if (pageContent) {
         pageContent.classList.add('active');
+        pageContent.style.display = 'block';
+        console.log('✅ Página exibida:', page);
+    } else {
+        console.warn('⚠️ Conteúdo não encontrado para:', page);
+        // Fallback to dashboard
+        const dashboardContent = document.getElementById('dashboard-content');
+        if (dashboardContent) {
+            dashboardContent.classList.add('active');
+            dashboardContent.style.display = 'block';
+        }
     }
     
+    // Update page title
     const titles = {
         dashboard: 'Dashboard',
         vendas: 'Vendas',
@@ -186,18 +225,49 @@ function navigateToPage(page) {
     if (titleElement) {
         titleElement.textContent = titles[page] || 'Dashboard';
     }
+    
+    // Update current page variable
     currentPage = page;
     
-    if (page === 'vendas') {
-        loadSalesTable();
-    } else if (page === 'usuarios') {
-        setTimeout(() => loadUsers(), 100);
-    } else if (page === 'relatorios') {
-        setTimeout(() => {
-            updateReportOptions();
-            setTimeout(() => initializeReportCharts(), 500);
-        }, 100);
+    // Update URL hash
+    if (window.location.hash !== `#${page}`) {
+        window.history.replaceState(null, null, `#${page}`);
     }
+    
+    // Load specific page data
+    switch(page) {
+        case 'vendas':
+            setTimeout(() => loadSalesTable(), 100);
+            break;
+        case 'usuarios':
+            setTimeout(() => loadUsers(), 100);
+            break;
+        case 'relatorios':
+            setTimeout(() => {
+                updateReportOptions();
+                setTimeout(() => initializeReportCharts(), 500);
+            }, 100);
+            break;
+        case 'cardapio':
+            setTimeout(() => loadCardapio(), 100);
+            break;
+        case 'estoque':
+            setTimeout(() => loadEstoque(), 100);
+            break;
+        case 'mesas':
+            setTimeout(() => loadMesas(), 100);
+            break;
+        case 'pedidos':
+            setTimeout(() => loadPedidos(), 100);
+            break;
+        case 'financeiro':
+            setTimeout(() => loadFinanceiro(), 100);
+            break;
+        case 'configuracoes':
+            setTimeout(() => loadConfiguracoes(), 100);
+            break;
+    }
+}
 }
 
 // ===============================
@@ -1396,6 +1466,42 @@ function loadTechnicalSheetsList() {
         return;
     }
     
+    // Renderizar fichas técnicas (implementar depois)
+}
+
+// ===============================
+// FUNÇÕES LOAD PARA MÓDULOS
+// ===============================
+
+function loadCardapio() {
+    console.log('📖 Carregando cardápio...');
+    // Cardápio já está implementado no HTML
+}
+
+function loadEstoque() {
+    console.log('📦 Carregando estoque...');
+    // Estoque já está implementado no HTML
+}
+
+function loadMesas() {
+    console.log('🪑 Carregando mesas...');
+    // Mesas já está implementado no HTML
+}
+
+function loadPedidos() {
+    console.log('📋 Carregando pedidos...');
+    // Pedidos já está implementado no HTML
+}
+
+function loadFinanceiro() {
+    console.log('💰 Carregando financeiro...');
+    // Financeiro já está implementado no HTML
+}
+
+function loadConfiguracoes() {
+    console.log('⚙️ Carregando configurações...');
+    // Configurações já está implementado no HTML
+}
     grid.innerHTML = '';
     
     technicalSheetsData.forEach(sheet => {

@@ -3,6 +3,30 @@
  * Mantendo o layout original com melhorias de estabilidade
  */
 
+/* Fix para navegação de páginas */
+.page-content {
+    display: none !important;
+}
+
+.page-content.active {
+    display: block !important;
+}
+
+/* Garantir que a navegação funcione */
+.nav-link {
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-link.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+}
+
 /* Fix para links quebrados de ícones */
 .fas, .far, .fab {
     font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands", sans-serif !important;
