@@ -14,6 +14,7 @@
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="../css/dashboard.css">
+    <link rel="stylesheet" href="../css/fixes.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
     <!-- Scripts -->
@@ -1546,9 +1547,17 @@
     </div>
 
     <!-- Client Mode Scripts -->
-    <!-- Sistema de Autenticação -->
-    <script src="../js/auth-simple.js"></script>
+    <!-- Sistema de Autenticação Neon -->
+    <script src="../js/auth-neon.js"></script>
     <script src="../js/dashboard.js"></script>
-    <script src="../js/dashboard-api.js"></script>
+    <script>
+        // Inicializar autenticação
+        const auth = new AuthSystemNeon();
+        
+        // Verificar se usuário está logado
+        if (!auth.isAuthenticated()) {
+            window.location.href = '../index.html';
+        }
+    </script>
 </body>
 </html>

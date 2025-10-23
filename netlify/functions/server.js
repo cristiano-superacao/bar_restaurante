@@ -1,7 +1,7 @@
 const { neon } = require('@neondatabase/serverless');
 
 // Configuração do banco Neon
-const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL || 'postgresql://localhost:5432/test');
 
 // Headers CORS para todas as respostas
 const headers = {
@@ -11,9 +11,41 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
+// Função de autenticação demo (fallback)
+function authenticateUserDemo(email, senha) {
+  const validUsers = {
+    'cristiano@mariaflor.com.br': { id: 1, nome: 'Cristiano Santos', role: 'administrador', senha: 'admin123' },
+    'maria@mariaflor.com.br': { id: 2, nome: 'Maria Silva', role: 'gerente', senha: 'maria2024' },
+    'joao.chef@mariaflor.com.br': { id: 3, nome: 'João Chef', role: 'cozinheiro', senha: 'chef2024' },
+    'ana.garcom@mariaflor.com.br': { id: 4, nome: 'Ana Santos', role: 'garcom', senha: 'garcom2024' },
+    'teste@mariaflor.com.br': { id: 10, nome: 'Usuário Teste', role: 'usuario', senha: 'teste123' }
+  };
+
+  const user = validUsers[email];
+  if (user && user.senha === senha) {
+    return {
+      success: true,
+      user: {
+        id: user.id,
+        nome: user.nome,
+        email: email,
+        role: user.role
+      }
+    };
+  }
+  
+  return { success: false, message: 'Credenciais inválidas' };
+}
+
 // Função principal para autenticação
 async function authenticateUser(email, senha) {
   try {
+    // Verificar se DATABASE_URL está configurada
+    if (!process.env.DATABASE_URL) {
+      console.warn('⚠️ DATABASE_URL não configurada, usando dados demo');
+      return authenticateUserDemo(email, senha);
+    }
+
     const users = await sql`
       SELECT id, nome, email, role, ativo 
       FROM usuarios 
@@ -43,11 +75,15 @@ async function authenticateUser(email, senha) {
 
     if (validPasswords[email] === senha) {
       // Atualizar último login
-      await sql`
-        UPDATE usuarios 
-        SET ultimo_login = NOW() 
-        WHERE id = ${user.id}
-      `;
+      try {
+        await sql`
+          UPDATE usuarios 
+          SET ultimo_login = NOW() 
+          WHERE id = ${user.id}
+        `;
+      } catch (updateError) {
+        console.warn('⚠️ Erro ao atualizar último login:', updateError);
+      }
 
       return {
         success: true,

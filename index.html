@@ -26,6 +26,7 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/corrections.css">
+    <link rel="stylesheet" href="css/fixes.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -84,15 +85,13 @@
     </footer>
 
     <!-- Scripts Simplificados -->
-    <script src="js/server-simulator.js"></script>
-    <script src="js/auth-simple.js"></script>
-    <script src="js/login-simple.js"></script>
-    
-    <!-- Sistema de Autenticação Neon -->
     <script src="js/auth-neon.js"></script>
     
     <!-- Script de Login -->
     <script>
+        // Inicializar sistema de autenticação
+        const auth = new AuthSystemNeon();
+        
         // Função para mostrar/esconder senha
         function togglePassword() {
             const passwordInput = document.getElementById('password');
@@ -154,6 +153,7 @@
                     submitBtn.disabled = false;
                 }
             });
+        });
         });
     </script>
 </body>
