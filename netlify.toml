@@ -18,6 +18,18 @@
   # Variáveis de ambiente padrão
   NODE_ENV = "production"
 
+# Redirecionamentos para API
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/server/:splat"
+  status = 200
+
+# Redirecionamento para SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
 # Redirecionamentos para API e SPA
 [[redirects]]
   from = "/api/*"

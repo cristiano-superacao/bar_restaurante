@@ -88,8 +88,12 @@
     <script src="js/auth-simple.js"></script>
     <script src="js/login-simple.js"></script>
     
-    <!-- Função para mostrar/esconder senha -->
+    <!-- Sistema de Autenticação Neon -->
+    <script src="js/auth-neon.js"></script>
+    
+    <!-- Script de Login -->
     <script>
+        // Função para mostrar/esconder senha
         function togglePassword() {
             const passwordInput = document.getElementById('password');
             const toggleIcon = document.querySelector('.toggle-password i');
@@ -102,6 +106,55 @@
                 toggleIcon.className = 'fas fa-eye';
             }
         }
+
+        // Sistema de login
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Se já estiver logado, redirecionar
+            if (auth.isAuthenticated()) {
+                window.location.href = 'pages/dashboard.html';
+                return;
+            }
+
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('username').value;
+                const senha = document.getElementById('password').value;
+                
+                // Limpar mensagens anteriores
+                errorMessage.style.display = 'none';
+                
+                // Desabilitar botão durante login
+                const submitBtn = loginForm.querySelector('button[type="submit"]');
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+                submitBtn.disabled = true;
+                
+                try {
+                    const result = await auth.login(email, senha);
+                    
+                    if (result.success) {
+                        // Sucesso - redirecionar
+                        window.location.href = 'pages/dashboard.html';
+                    } else {
+                        // Erro - mostrar mensagem
+                        errorMessage.textContent = result.message || 'Erro ao fazer login';
+                        errorMessage.style.display = 'block';
+                    }
+                } catch (error) {
+                    console.error('Erro no login:', error);
+                    errorMessage.textContent = 'Erro de conexão. Tente novamente.';
+                    errorMessage.style.display = 'block';
+                } finally {
+                    // Reabilitar botão
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        });
     </script>
 </body>
 </html>
