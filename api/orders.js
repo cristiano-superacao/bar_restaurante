@@ -167,7 +167,8 @@ router.post('/', async (req, res) => {
                 `;
             }
         } else {
-            orderId = Math.floor(Math.random() * 1000);
+            // In development mode, generate a simple sequential ID (not security-sensitive)
+            orderId = Date.now();
         }
 
         res.status(201).json({

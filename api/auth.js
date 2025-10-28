@@ -174,7 +174,8 @@ router.post('/register', async (req, res) => {
                 userId = result[0].id;
             }
         } else {
-            userId = Math.floor(Math.random() * 1000);
+            // In development mode, generate a simple sequential ID (not security-sensitive)
+            userId = Date.now();
         }
 
         res.json({
