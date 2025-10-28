@@ -1,0 +1,10 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#667eea" rx="64"/>
+  
+  <!-- Letter M -->
+  <text x="128" y="360" font-family="Arial, sans-serif" font-size="320" font-weight="bold" fill="white">M</text>
+  
+  <!-- Letter F -->
+  <text x="300" y="360" font-family="Arial, sans-serif" font-size="320" font-weight="bold" fill="white">F</text>
+</svg>

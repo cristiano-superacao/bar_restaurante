@@ -14,49 +14,49 @@
     "categories": ["business", "productivity", "food"],
     "icons": [
         {
-            "src": "https://via.placeholder.com/72x72?text=MF",
+            "src": "/icons/icon-72x72.png",
             "sizes": "72x72",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "https://via.placeholder.com/96x96?text=MF",
+            "src": "/icons/icon-96x96.png",
             "sizes": "96x96",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "https://via.placeholder.com/128x128?text=MF",
+            "src": "/icons/icon-128x128.png",
             "sizes": "128x128",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "https://via.placeholder.com/144x144?text=MF",
+            "src": "/icons/icon-144x144.png",
             "sizes": "144x144",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "https://via.placeholder.com/152x152?text=MF",
+            "src": "/icons/icon-152x152.png",
             "sizes": "152x152",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "https://via.placeholder.com/192x192?text=MF",
+            "src": "/icons/icon-192x192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "https://via.placeholder.com/384x384?text=MF",
+            "src": "/icons/icon-384x384.png",
             "sizes": "384x384",
             "type": "image/png",
             "purpose": "maskable any"
         },
         {
-            "src": "https://via.placeholder.com/512x512?text=MF",
+            "src": "/icons/icon-512x512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable any"
@@ -70,7 +70,7 @@
             "url": "/pages/dashboard.html#vendas",
             "icons": [
                 {
-                    "src": "https://via.placeholder.com/96x96?text=$",
+                    "src": "/icons/icon-96x96.png",
                     "sizes": "96x96"
                 }
             ]
@@ -82,24 +82,10 @@
             "url": "/pages/dashboard.html#pedidos",
             "icons": [
                 {
-                    "src": "https://via.placeholder.com/96x96?text=P",
+                    "src": "/icons/icon-96x96.png",
                     "sizes": "96x96"
                 }
             ]
-        }
-    ],
-    "screenshots": [
-        {
-            "src": "https://via.placeholder.com/540x720?text=Dashboard",
-            "sizes": "540x720",
-            "type": "image/png",
-            "form_factor": "narrow"
-        },
-        {
-            "src": "https://via.placeholder.com/1280x720?text=Desktop+View",
-            "sizes": "1280x720",
-            "type": "image/png",
-            "form_factor": "wide"
         }
     ]
 }
