@@ -54,33 +54,32 @@ function authenticateUserDemo(email, senha) {
 // Função principal para autenticação
 async function authenticateUser(email, senha) {
   try {
-    // Verificar se DATABASE_URL está configurada
-    if (!process.env.DATABASE_URL) {
-      console.warn('⚠️ DATABASE_URL não configurada, usando dados demo');
+    // Verificar se NETLIFY_DATABASE_URL está configurada
+    if (!DATABASE_URL || !sql) {
+      console.warn('⚠️ Banco Neon não configurado, usando dados demo');
       return authenticateUserDemo(email, senha);
     }
 
     const users = await sql`
-      SELECT id, nome, email, role, ativo 
+      SELECT id, nome, email, senha_hash, role, ativo 
       FROM usuarios 
       WHERE email = ${email} AND ativo = true
     `;
     
     if (users.length === 0) {
-      return { success: false, message: 'Usuário não encontrado' };
+      console.log('❌ Usuário não encontrado no banco:', email);
+      return authenticateUserDemo(email, senha);
     }
 
     const user = users[0];
     
-    // Para demonstração, aceitar senhas simples
-    // Em produção, usar bcrypt para comparar hashes
-    const validPasswords = {
-      'admin@mariaflor.com.br': 'admin123',
-      'gerente@mariaflor.com.br': 'gerente123',
-      'usuario@mariaflor.com.br': 'usuario123'
-    };
+    // Verificar senha (usando senha_hash do banco)
+    // Para demonstração, senha_hash contém a senha em texto simples
+    console.log('🔍 Verificando senha para usuário:', user.email);
+    console.log('🔍 Senha no banco:', user.senha_hash);
+    console.log('🔍 Senha fornecida:', senha);
 
-    if (validPasswords[email] === senha) {
+    if (user.senha_hash === senha) {
       // Atualizar último login
       try {
         await sql`
