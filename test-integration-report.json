@@ -1,0 +1,387 @@
+{
+  "passed": 71,
+  "failed": 2,
+  "warnings": 3,
+  "tests": [
+    {
+      "name": "Package.json",
+      "status": "PASS",
+      "details": "package.json"
+    },
+    {
+      "name": "Servidor Express",
+      "status": "PASS",
+      "details": "server.js"
+    },
+    {
+      "name": "Página de login",
+      "status": "PASS",
+      "details": "index.html"
+    },
+    {
+      "name": "Exemplo de variáveis de ambiente",
+      "status": "PASS",
+      "details": ".env.example"
+    },
+    {
+      "name": "Rotas da API",
+      "status": "PASS",
+      "details": "api/routes.js"
+    },
+    {
+      "name": "Módulo de autenticação",
+      "status": "PASS",
+      "details": "api/auth.js"
+    },
+    {
+      "name": "Módulo de vendas",
+      "status": "PASS",
+      "details": "api/sales.js"
+    },
+    {
+      "name": "Módulo de produtos",
+      "status": "PASS",
+      "details": "api/products.js"
+    },
+    {
+      "name": "Módulo de pedidos",
+      "status": "PASS",
+      "details": "api/orders.js"
+    },
+    {
+      "name": "Módulo de relatórios",
+      "status": "PASS",
+      "details": "api/reports.js"
+    },
+    {
+      "name": "Netlify Function principal",
+      "status": "PASS",
+      "details": "netlify/functions/server.js"
+    },
+    {
+      "name": "Schema do banco de dados",
+      "status": "PASS",
+      "details": "database/schema.sql"
+    },
+    {
+      "name": "JavaScript de autenticação",
+      "status": "PASS",
+      "details": "js/auth-neon.js"
+    },
+    {
+      "name": "JavaScript de login",
+      "status": "PASS",
+      "details": "js/login.js"
+    },
+    {
+      "name": "JavaScript do dashboard",
+      "status": "PASS",
+      "details": "js/dashboard.js"
+    },
+    {
+      "name": "Neon Database Client",
+      "status": "PASS",
+      "details": "v^0.7.2"
+    },
+    {
+      "name": "Netlify Functions",
+      "status": "PASS",
+      "details": "v^2.8.2"
+    },
+    {
+      "name": "Express.js",
+      "status": "PASS",
+      "details": "v^4.18.2"
+    },
+    {
+      "name": "BCrypt (criptografia)",
+      "status": "PASS",
+      "details": "v^2.4.3"
+    },
+    {
+      "name": "JWT (autenticação)",
+      "status": "PASS",
+      "details": "v^9.0.2"
+    },
+    {
+      "name": "CORS",
+      "status": "PASS",
+      "details": "v^2.8.5"
+    },
+    {
+      "name": "DotEnv",
+      "status": "PASS",
+      "details": "v^16.6.1"
+    },
+    {
+      "name": "Auth API - Importação Neon",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Auth API - Configuração env",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Auth API - Express Router",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Auth API - Rotas definidas",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Sales API - Importação Neon",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Sales API - Configuração env",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Sales API - Express Router",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Sales API - Rotas definidas",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Products API - Importação Neon",
+      "status": "WARN",
+      "details": "Neon não importado"
+    },
+    {
+      "name": "Products API - Configuração env",
+      "status": "FAIL",
+      "details": "DATABASE_URL não encontrada"
+    },
+    {
+      "name": "Products API - Express Router",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Products API - Rotas definidas",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Orders API - Importação Neon",
+      "status": "WARN",
+      "details": "Neon não importado"
+    },
+    {
+      "name": "Orders API - Configuração env",
+      "status": "FAIL",
+      "details": "DATABASE_URL não encontrada"
+    },
+    {
+      "name": "Orders API - Express Router",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Orders API - Rotas definidas",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Handler Netlify",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Neon importado na function",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "DATABASE_URL configurada",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Rota Login",
+      "status": "PASS",
+      "details": "/auth/login"
+    },
+    {
+      "name": "Rota Dashboard",
+      "status": "PASS",
+      "details": "/dashboard"
+    },
+    {
+      "name": "Rota Health check",
+      "status": "PASS",
+      "details": "/test"
+    },
+    {
+      "name": "Rota Usuários",
+      "status": "PASS",
+      "details": "/users"
+    },
+    {
+      "name": "Tabela users",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela categories",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela products",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela customers",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela sales",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela sale_items",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela orders",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela order_items",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela stock_movements",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela suppliers",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela purchases",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Tabela expenses",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Índices de performance",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Classe AuthSystemNeon",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "URL da API configurada",
+      "status": "PASS",
+      "details": "/.netlify/functions/server"
+    },
+    {
+      "name": "Fetch API utilizada",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "LocalStorage para sessão",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Variável DATABASE_URL",
+      "status": "PASS",
+      "details": "Documentada no .env.example"
+    },
+    {
+      "name": "Variável JWT_SECRET",
+      "status": "PASS",
+      "details": "Documentada no .env.example"
+    },
+    {
+      "name": "Variável NODE_ENV",
+      "status": "PASS",
+      "details": "Documentada no .env.example"
+    },
+    {
+      "name": "Arquivo .env",
+      "status": "WARN",
+      "details": "Arquivo não existe (usar .env.example)"
+    },
+    {
+      "name": "Módulo auth importado",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Módulo sales importado",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Módulo products importado",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Módulo orders importado",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Módulo reports importado",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Rota /auth registrada",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Rota /sales registrada",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Rota /products registrada",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Rota /orders registrada",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Rota /reports registrada",
+      "status": "PASS",
+      "details": ""
+    }
+  ]
+}
