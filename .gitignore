@@ -135,7 +135,28 @@ config/local.js
 # Deploy scripts (manter apenas o necessário)
 deploy_local.bat
 setup_dev.bat
+*.bat
+*.ps1
 
 # Documentação de desenvolvimento
 docs/dev/
 DEVELOPMENT.md
+
+# Arquivos temporários de status e relatórios
+STATUS_*.md
+RELATORIO_*.md
+DEPLOY_STATUS*.md
+*_STATUS*.md
+*_FINAL*.md
+CORRECOES_*.md
+
+# Scripts de servidor local (usar apenas npm scripts)
+servidor_*.py
+server_local.*
+iniciar_servidor.*
+start-server.*
+
+# Scripts de teste e validação temporários
+test-*.js
+validate-*.js
+check-*.js
