@@ -268,7 +268,6 @@ function navigateToPage(page) {
             break;
     }
 }
-}
 
 // ===============================
 // SISTEMA DE GRÁFICOS
@@ -1501,38 +1500,6 @@ function loadFinanceiro() {
 function loadConfiguracoes() {
     console.log('⚙️ Carregando configurações...');
     // Configurações já está implementado no HTML
-}
-    grid.innerHTML = '';
-    
-    technicalSheetsData.forEach(sheet => {
-        const card = document.createElement('div');
-        card.className = 'technical-sheet-card';
-        
-        const lastUpdated = new Date(sheet.updatedAt).toLocaleDateString('pt-BR');
-        
-        card.innerHTML = `
-            <div class="technical-sheet-header">
-                <h4 class="technical-sheet-title">${sheet.productName}</h4>
-                <div class="technical-sheet-actions">
-                    <button class="btn-small" onclick="editTechnicalSheet('${sheet.id}')" title="Editar">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-small btn-danger" onclick="deleteTechnicalSheet('${sheet.id}')" title="Excluir">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="technical-sheet-info">
-                <p><strong>Ingredientes:</strong> <span class="ingredients-count">${sheet.ingredients.length} itens</span></p>
-                <p><strong>Custo Total:</strong> <span class="cost-display">R$ ${sheet.totalCost.toFixed(2).replace('.', ',')}</span></p>
-                <p><strong>Margem:</strong> ${sheet.profitMargin}%</p>
-                <p><strong>Preço Sugerido:</strong> <span class="cost-display">R$ ${sheet.suggestedPrice.toFixed(2).replace('.', ',')}</span></p>
-                <p><small>Atualizado em: ${lastUpdated}</small></p>
-            </div>
-        `;
-        
-        grid.appendChild(card);
-    });
 }
 
 // Editar ficha técnica

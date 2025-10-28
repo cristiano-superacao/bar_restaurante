@@ -4,7 +4,7 @@
   "description": "Sistema de Gestão para Bar e Restaurante - Deploy barestaurente.netlify.app",
   "main": "index.html",
   "engines": {
-    "node": "18.x"
+    "node": ">=18.x"
   },
   "scripts": {
     "start": "echo 'Sistema funcionando em https://barestaurante.netlify.app'",
