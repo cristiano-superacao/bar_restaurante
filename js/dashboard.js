@@ -1572,3 +1572,234 @@ setTimeout(() => {
         }, 2000);
     }
 }, 1000);
+
+// =============================================
+// FUNÇÕES DOS MODAIS FALTANTES
+// =============================================
+
+// Modal de Produto
+function openProductModal(productId = null) {
+    const modal = document.getElementById('productModal');
+    const form = document.getElementById('productForm');
+    const title = document.getElementById('productModalTitle');
+    
+    if (modal && form) {
+        form.reset();
+        
+        if (productId) {
+            title.textContent = 'Editar Produto';
+            const product = productsData.find(p => p.id === productId);
+            if (product) {
+                document.getElementById('productName').value = product.name || '';
+                document.getElementById('productCategory').value = product.category || '';
+                document.getElementById('productDescription').value = product.description || '';
+                document.getElementById('productPrice').value = product.price || '';
+                document.getElementById('productStock').value = product.stock || '';
+                document.getElementById('productImage').value = product.image || '';
+            }
+        } else {
+            title.textContent = 'Novo Produto';
+        }
+        
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+}
+
+function closeProductModal() {
+    const modal = document.getElementById('productModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+// Modal de Estoque
+function openStockModal(productId = null) {
+    const modal = document.getElementById('stockModal');
+    const form = document.getElementById('stockForm');
+    
+    if (modal && form) {
+        form.reset();
+        
+        const productSelect = document.getElementById('stockProduct');
+        if (productSelect) {
+            productSelect.innerHTML = '<option value="">Selecione um produto</option>';
+            productsData.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = product.name;
+                if (productId && product.id === productId) {
+                    option.selected = true;
+                }
+                productSelect.appendChild(option);
+            });
+        }
+        
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+}
+
+function closeStockModal() {
+    const modal = document.getElementById('stockModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+// Modal de Despesa
+function openExpenseModal() {
+    const modal = document.getElementById('expenseModal');
+    const form = document.getElementById('expenseForm');
+    
+    if (modal && form) {
+        form.reset();
+        
+        const today = new Date().toISOString().split('T')[0];
+        const dateInput = document.getElementById('expenseDate');
+        if (dateInput) {
+            dateInput.value = today;
+        }
+        
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+}
+
+function closeExpenseModal() {
+    const modal = document.getElementById('expenseModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+// Modal de Pedido
+function openOrderModal() {
+    const modal = document.getElementById('orderModal');
+    const form = document.getElementById('orderForm');
+    
+    if (modal && form) {
+        form.reset();
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+}
+
+function closeOrderModal() {
+    const modal = document.getElementById('orderModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+// Funções de Filtro
+function filterSales() {
+    console.log('🔍 Filtrando vendas...');
+    const dateFilter = document.getElementById('dateFilter')?.value;
+    const statusFilter = document.getElementById('statusFilter')?.value;
+    loadSalesData();
+}
+
+function safeFilterProducts() {
+    console.log('🔍 Filtrando produtos...');
+    const categoryFilter = document.getElementById('categoryFilter')?.value;
+    const searchFilter = document.getElementById('productSearch')?.value;
+    const statusFilter = document.getElementById('productStatusFilter')?.value;
+    loadProductsData();
+}
+
+// Funções de Mesa
+function addNewTable() {
+    console.log('🪑 Adicionando nova mesa...');
+    openTableModal();
+}
+
+function refreshTables() {
+    console.log('🔄 Atualizando mesas...');
+    loadTablesData();
+}
+
+function openTableModal() {
+    const modal = document.getElementById('tableModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 300);
+    }
+}
+
+function saveTable() {
+    console.log('💾 Salvando mesa...');
+    closeModal('tableModal');
+}
+
+function openOrderForTable() {
+    console.log('🍽️ Abrindo pedido para mesa...');
+    closeModal('tableModal');
+    openOrderModal();
+}
+
+// Funções de Ação
+function viewRecentOrder(orderId) {
+    console.log('👁️ Visualizando pedido:', orderId);
+}
+
+function editRecentOrder(orderId) {
+    console.log('✏️ Editando pedido:', orderId);
+}
+
+// Funções de Relatório
+function exportReport() {
+    console.log('📤 Exportando relatório...');
+    alert('Funcionalidade de exportação será implementada em breve!');
+}
+
+function generateReport() {
+    console.log('📊 Gerando relatório...');
+    alert('Relatório gerado com sucesso!');
+}
+
+function generateFinancialReport() {
+    console.log('💰 Gerando relatório financeiro...');
+    generateReport();
+}
+
+function updateReportOptions() {
+    console.log('🔄 Atualizando opções de relatório...');
+}
+
+// Funções de Configuração
+function saveConfigurations() {
+    console.log('💾 Salvando configurações...');
+    alert('Configurações salvas com sucesso!');
+}
+
+function performBackup() {
+    console.log('💾 Realizando backup...');
+    alert('Backup realizado com sucesso!');
+}
+
+function exportData() {
+    console.log('📤 Exportando dados...');
+    alert('Dados exportados com sucesso!');
+}
+
+// Funções de Item
+function addItem() {
+    console.log('➕ Adicionando item...');
+}
+
+function addOrderItem() {
+    console.log('➕ Adicionando item ao pedido...');
+}

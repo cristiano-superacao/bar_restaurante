@@ -281,8 +281,8 @@ Encontrou um bug? [Abra uma issue](https://github.com/cristiano-superacao/bar_re
 ## 📞 Suporte
 
 ### 🆘 Suporte Técnico
-- 📧 Email: `suporte.tecnico@mariaflor.com`
-- 📱 WhatsApp: `(71) 99999-9999`
+- 📧 Email: `cristiano.s.santos@ba.estudante.senai.br`
+- 📱 WhatsApp: `(71) 99337-2960`
 - 🐙 GitHub: [Issues](https://github.com/cristiano-superacao/bar_restaurante/issues)
 
 ### 👨‍💻 Desenvolvimento
@@ -296,7 +296,7 @@ Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](L
 ## 👨‍💻 Autor
 
 **Cristiano Superação**  
-📧 Email: cristiano@mariaflor.com  
+📧 Email: cristiano.s.santos@ba.estudante.senai.br
 🐙 GitHub: [@cristiano-superacao](https://github.com/cristiano-superacao)  
 💼 LinkedIn: [Cristiano Superação](https://linkedin.com/in/cristiano-superacao)
 

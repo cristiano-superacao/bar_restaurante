@@ -31,11 +31,13 @@ async function testAPI() {
                         data: result
                     });
                 } catch (error) {
+                    console.log('🔍 Resposta recebida:', body.substring(0, 200) + '...');
                     resolve({
                         success: false,
                         status: res.statusCode,
-                        error: 'Erro ao processar resposta',
-                        body: body
+                        error: 'Resposta não é JSON válido',
+                        contentType: res.headers['content-type'],
+                        body: body.substring(0, 500)
                     });
                 }
             });

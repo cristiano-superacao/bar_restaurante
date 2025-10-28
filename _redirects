@@ -1,0 +1,5 @@
+# Netlify redirects for local development
+/api/*  /.netlify/functions/server/:splat  200
+/dashboard  /pages/dashboard.html  200
+/login  /index.html  200
+/*  /index.html  200

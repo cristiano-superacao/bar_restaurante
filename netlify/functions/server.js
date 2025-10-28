@@ -1,7 +1,7 @@
 const { neon } = require('@neondatabase/serverless');
 
 // Configuração do banco Neon
-const sql = neon(process.env.DATABASE_URL || 'postgresql://localhost:5432/test');
+const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
 
 // Headers CORS para todas as respostas
 const headers = {
