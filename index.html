@@ -122,6 +122,10 @@
                 const email = document.getElementById('username').value;
                 const senha = document.getElementById('password').value;
                 
+                console.log('🚀 Formulário enviado');
+                console.log('📧 Email:', email);
+                console.log('🔒 Senha:', senha ? '***' : 'vazia');
+                
                 // Limpar mensagens anteriores
                 errorMessage.style.display = 'none';
                 
