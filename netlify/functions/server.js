@@ -1,7 +1,8 @@
 const { neon } = require('@neondatabase/serverless');
 
-// Configuração do banco Neon
-const sql = process.env.DATABASE_URL ? neon(process.env.DATABASE_URL) : null;
+// Configuração do banco Neon - usando variável oficial do Netlify
+const DATABASE_URL = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
+const sql = DATABASE_URL ? neon(DATABASE_URL) : null;
 
 // Headers CORS para todas as respostas
 const headers = {
