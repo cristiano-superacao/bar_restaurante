@@ -1,7 +1,7 @@
 {
-  "passed": 71,
-  "failed": 2,
-  "warnings": 3,
+  "passed": 75,
+  "failed": 0,
+  "warnings": 1,
   "tests": [
     {
       "name": "Package.json",
@@ -155,13 +155,13 @@
     },
     {
       "name": "Products API - Importação Neon",
-      "status": "WARN",
-      "details": "Neon não importado"
+      "status": "PASS",
+      "details": ""
     },
     {
       "name": "Products API - Configuração env",
-      "status": "FAIL",
-      "details": "DATABASE_URL não encontrada"
+      "status": "PASS",
+      "details": ""
     },
     {
       "name": "Products API - Express Router",
@@ -175,13 +175,13 @@
     },
     {
       "name": "Orders API - Importação Neon",
-      "status": "WARN",
-      "details": "Neon não importado"
+      "status": "PASS",
+      "details": ""
     },
     {
       "name": "Orders API - Configuração env",
-      "status": "FAIL",
-      "details": "DATABASE_URL não encontrada"
+      "status": "PASS",
+      "details": ""
     },
     {
       "name": "Orders API - Express Router",
