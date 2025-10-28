@@ -31,6 +31,9 @@ class AuthSystemNeon {
     // Fazer login
     async login(email, senha) {
         try {
+            console.log('🔄 Tentando login:', email);
+            console.log('🔗 URL da API:', `${this.apiUrl}/auth/login`);
+            
             const response = await fetch(`${this.apiUrl}/auth/login`, {
                 method: 'POST',
                 headers: {
@@ -39,7 +42,10 @@ class AuthSystemNeon {
                 body: JSON.stringify({ email, senha })
             });
 
+            console.log('📡 Response status:', response.status);
+            
             const data = await response.json();
+            console.log('📄 Response data:', data);
 
             if (data.success) {
                 this.currentUser = data.user;
@@ -50,6 +56,7 @@ class AuthSystemNeon {
                 localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
                 
                 console.log('✅ Login realizado:', this.currentUser.nome);
+                console.log('👤 Usuário logado:', this.currentUser);
                 return { success: true, user: this.currentUser };
             } else {
                 console.error('❌ Erro no login:', data.message);
@@ -95,14 +102,14 @@ class AuthSystemNeon {
     hasRole(role) {
         if (!this.currentUser) return false;
         
-        if (this.currentUser.role === 'admin') return true; // Admin tem acesso a tudo
+        if (this.currentUser.role === 'administrador' || this.currentUser.role === 'admin') return true; // Admin tem acesso a tudo
         
         return this.currentUser.role === role;
     }
 
     // Verificar se é admin
     isAdmin() {
-        return this.hasRole('admin');
+        return this.hasRole('administrador') || this.hasRole('admin');
     }
 
     // Verificar se é gerente
