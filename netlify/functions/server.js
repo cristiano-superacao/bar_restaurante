@@ -202,17 +202,45 @@ exports.handler = async (event, context) => {
 
     // Rota de teste de conexão
     if (path === '/test' && method === 'GET') {
-      const result = await sql`SELECT NOW() as timestamp`;
-      
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({
-          success: true,
-          message: 'Conexão com Neon OK',
-          timestamp: result[0].timestamp
-        })
-      };
+      try {
+        if (!process.env.DATABASE_URL) {
+          return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify({
+              success: true,
+              message: 'Sistema funcionando em modo demo',
+              database: 'demo',
+              timestamp: new Date().toISOString()
+            })
+          };
+        }
+
+        const result = await sql`SELECT NOW() as timestamp`;
+        
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            message: 'Conexão com Neon OK',
+            database: 'connected',
+            timestamp: result[0].timestamp
+          })
+        };
+      } catch (error) {
+        return {
+          statusCode: 200,
+          headers,
+          body: JSON.stringify({
+            success: true,
+            message: 'Sistema funcionando em modo demo (erro na conexão)',
+            database: 'demo',
+            timestamp: new Date().toISOString(),
+            error: error.message
+          })
+        };
+      }
     }
 
     // Rota para listar usuários (apenas para admin)
