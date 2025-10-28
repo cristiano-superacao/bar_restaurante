@@ -26,7 +26,11 @@
 - **[📖 Documentação Completa](docs/DOCUMENTACAO_COMPLETA.md)** - Guia completo do sistema
 - **[🛠️ Implementação](docs/IMPLEMENTACAO_COMPLETA.md)** - Detalhes técnicos
 - **[🎯 Como Usar](docs/COMO_USAR.md)** - Guia do usuário
+- **[🚀 Guia Rápido](docs/GUIA_RAPIDO.md)** - Início rápido em 5 minutos
+- **[🗄️ Configurar Neon](docs/CONFIGURAR_NEON.md)** - Setup do banco de dados
+- **[👥 Usuários do Sistema](docs/USUARIOS_SISTEMA.md)** - Credenciais e perfis
 - **[🔌 API Reference](docs/API_REFERENCE.md)** - Endpoints e exemplos
+- **[⚙️ Setup](docs/SETUP.md)** - Instalação e configuração
 
 ## 🔑 Acesso Rápido
 
@@ -61,7 +65,7 @@
 | **💰 Caixa** | carlos.caixa@mariaflor.com.br | caixa2024 | Financeiro |
 | **📦 Estoque** | pedro.estoque@mariaflor.com.br | estoque2024 | Controle de estoque |
 
-*[Ver todos os 10 usuários](USUARIOS_SISTEMA.md)*
+*[Ver todos os 10 usuários](docs/USUARIOS_SISTEMA.md)*
 
 ## �🛠️ Tecnologias Utilizadas
 
