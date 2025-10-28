@@ -13,6 +13,28 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 - Sistema de delivery integrado
 - Relatórios avançados com Business Intelligence
 
+## [2.0.1] - 2025-10-28
+
+### 🧹 Limpeza e Organização
+- **Removidos 41 arquivos desnecessários** (documentação duplicada, scripts temporários, status files)
+- **Consolidada documentação** em docs/ (movidos 4 arquivos principais)
+- **Atualizado .gitignore** para prevenir arquivos temporários futuros
+- **Atualizado README.md** com referências corretas para a documentação consolidada
+- **Reduzidas ~3500 linhas** de código e documentação redundante
+
+### 📦 Arquivos Removidos
+- 16 arquivos de documentação redundante e temporária
+- 6 scripts de servidor local não utilizados em produção
+- 9 scripts de setup/deploy duplicados
+- 3 arquivos SQL de usuários de teste duplicados
+- 3 scripts JavaScript de geração de hash duplicados
+- 1 arquivo HTML de teste temporário
+
+### 📚 Documentação Consolidada
+- Toda documentação agora organizada em `/docs`
+- Links do README.md atualizados para apontar para `/docs`
+- Estrutura mais clara e fácil de manter
+
 ## [2.0.0] - 2025-10-22
 
 ### ✨ Adicionado
