@@ -19,9 +19,9 @@
     
     <!-- Icons -->
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://via.placeholder.com/32x32?text=MF">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://via.placeholder.com/16x16?text=MF">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://via.placeholder.com/180x180?text=MF">
+    <link rel="icon" type="image/svg+xml" sizes="32x32" href="/icons/icon-32x32.svg">
+    <link rel="icon" type="image/svg+xml" sizes="16x16" href="/icons/icon-16x16.svg">
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180x180.svg">
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/login.css">
@@ -88,8 +88,7 @@
     
     <!-- Script de Login -->
     <script>
-        // Inicializar sistema de autenticação
-        const auth = new AuthSystemNeon();
+        // auth is already initialized globally in auth-neon.js
         
         // Função para mostrar/esconder senha
         function togglePassword() {
@@ -156,7 +155,6 @@
                     submitBtn.disabled = false;
                 }
             });
-        });
         });
     </script>
 </body>
