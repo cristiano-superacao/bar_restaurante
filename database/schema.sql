@@ -1,7 +1,7 @@
 -- Script de criação do banco de dados para Maria Flor Sistema
 -- Execute este script no seu banco Neon PostgreSQL
 
--- Tabela de usuários
+-- Tabela de usuários (formato padrão para APIs)
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -12,6 +12,21 @@ CREATE TABLE IF NOT EXISTS users (
     active BOOLEAN DEFAULT true,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Tabela de usuários (formato alternativo para compatibilidade com Netlify Functions)
+-- Essa tabela usa nomenclatura em português para melhor alinhamento com o sistema
+CREATE TABLE IF NOT EXISTS usuarios (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(200) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    senha_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'usuario',
+    ativo BOOLEAN DEFAULT true,
+    data_criacao TIMESTAMP DEFAULT NOW(),
+    ultimo_login TIMESTAMP,
+    telefone VARCHAR(20),
+    observacoes TEXT
 );
 
 -- Tabela de categorias de produtos
