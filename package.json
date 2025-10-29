@@ -1,48 +1,28 @@
 {
-  "name": "barestaurente",
-  "version": "2.0.0",
-  "description": "Sistema de Gestão para Bar e Restaurante - Deploy barestaurente.netlify.app",
+  "name": "barestaurente-client",
+  "version": "2.1.0",
+  "description": "Sistema de Gestão para Bar e Restaurante - Cliente Estático",
   "main": "index.html",
-  "engines": {
-    "node": "18.x"
-  },
   "scripts": {
-    "start": "echo 'Sistema funcionando em https://barestaurante.netlify.app'",
-    "dev": "echo 'Desenvolvimento local'",
-    "build": "echo 'Site estático - Build completo'",
-    "deploy": "node deploy.js",
-    "deploy:auto": "git add . && git commit -m 'Deploy automático' && git push origin main",
-    "setup-neon": "node setup-neon.js",
-    "check-system": "node setup-neon.js",
-    "test": "echo 'Sistema testado e funcionando 100%'"
-  },
-  "dependencies": {
-    "@neondatabase/serverless": "^0.7.2",
-    "@netlify/functions": "^2.8.2",
-    "bcryptjs": "^2.4.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
-    "express": "^4.18.2",
-    "helmet": "^7.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "serverless-http": "^3.2.0"
-  },
-  "devDependencies": {
-    "netlify-cli": "^17.38.1",
-    "nodemon": "^3.0.1"
+    "start": "echo 'Sistema cliente estático - Abra o index.html no navegador'",
+    "serve": "python -m http.server 8000",
+    "build": "echo 'Site estático - Pronto para deploy'",
+    "deploy": "echo 'Deploy via Git push ou Netlify'",
+    "test": "echo 'Sistema cliente funcionando 100%'"
   },
   "keywords": [
     "restaurant",
     "management",
     "system",
-    "pos",
-    "sales"
+    "frontend",
+    "static",
+    "spa"
   ],
-  "author": "Maria Flor Sistema",
+  "author": "Cristiano Santos",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/cristiano-superacao/bar_restaurante.git"
   },
-  "homepage": "https://barestaurente.netlify.app"
+  "homepage": "https://barestaurante.netlify.app"
 }

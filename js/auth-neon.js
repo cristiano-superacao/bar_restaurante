@@ -1,5 +1,5 @@
 /**
- * Sistema de Autenticação - Neon + Netlify
+ * Sistema de Autenticação Simplificado - Cliente Estático
  * Sistema Bar Restaurante Maria Flor
  */
 
@@ -7,7 +7,6 @@ class AuthSystemNeon {
     constructor() {
         this.currentUser = null;
         this.token = null;
-        this.apiUrl = '/.netlify/functions/server';
         this.init();
     }
 
@@ -28,28 +27,64 @@ class AuthSystemNeon {
         }
     }
 
-    // Fazer login
+    // Fazer login - Sistema estático com credenciais fixas
     async login(email, senha) {
         try {
             console.log('🔄 Tentando login:', email);
-            console.log('🔗 URL da API:', `${this.apiUrl}/auth/login`);
             
-            const response = await fetch(`${this.apiUrl}/auth/login`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
+            // Credenciais válidas para o sistema
+            const validUsers = {
+                'admin@mariaflor.com.br': {
+                    senha: 'admin123',
+                    user: {
+                        id: 1,
+                        nome: 'Administrador',
+                        email: 'admin@mariaflor.com.br',
+                        role: 'admin'
+                    }
                 },
-                body: JSON.stringify({ email, senha })
-            });
+                'gerente@mariaflor.com.br': {
+                    senha: 'gerente123',
+                    user: {
+                        id: 2,
+                        nome: 'Maria Santos',
+                        email: 'gerente@mariaflor.com.br',
+                        role: 'gerente'
+                    }
+                },
+                'garcom@mariaflor.com.br': {
+                    senha: 'garcom123',
+                    user: {
+                        id: 3,
+                        nome: 'João Silva',
+                        email: 'garcom@mariaflor.com.br',
+                        role: 'garcom'
+                    }
+                },
+                'cozinha@mariaflor.com.br': {
+                    senha: 'cozinha123',
+                    user: {
+                        id: 4,
+                        nome: 'Ana Costa',
+                        email: 'cozinha@mariaflor.com.br',
+                        role: 'cozinha'
+                    }
+                },
+                'caixa@mariaflor.com.br': {
+                    senha: 'caixa123',
+                    user: {
+                        id: 5,
+                        nome: 'Carlos Oliveira',
+                        email: 'caixa@mariaflor.com.br',
+                        role: 'caixa'
+                    }
+                }
+            };
 
-            console.log('📡 Response status:', response.status);
-            
-            const data = await response.json();
-            console.log('📄 Response data:', data);
-
-            if (data.success) {
-                this.currentUser = data.user;
-                this.token = 'user-logged-in'; // Token simples para demo
+            // Verificar credenciais
+            if (validUsers[email] && validUsers[email].senha === senha) {
+                this.currentUser = validUsers[email].user;
+                this.token = 'static-auth-token'; // Token simples para demo
                 
                 // Salvar no localStorage
                 localStorage.setItem('authToken', this.token);
@@ -59,14 +94,14 @@ class AuthSystemNeon {
                 console.log('👤 Usuário logado:', this.currentUser);
                 return { success: true, user: this.currentUser };
             } else {
-                console.error('❌ Erro no login:', data.message);
-                return { success: false, message: data.message };
+                console.error('❌ Credenciais inválidas');
+                return { success: false, message: 'Email ou senha incorretos' };
             }
         } catch (error) {
-            console.error('❌ Erro na requisição:', error);
+            console.error('❌ Erro no login:', error);
             return { 
                 success: false, 
-                message: 'Erro de conexão com o servidor' 
+                message: 'Erro interno do sistema' 
             };
         }
     }
@@ -117,48 +152,38 @@ class AuthSystemNeon {
         return this.hasRole('gerente') || this.isAdmin();
     }
 
-    // Obter dados do dashboard
+    // Obter dados do dashboard - Dados mockados para sistema estático
     async getDashboardData() {
-        try {
-            const response = await fetch(`${this.apiUrl}/dashboard`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.token}`
-                }
-            });
-
-            const data = await response.json();
-
-            if (data.success) {
-                return data.data;
-            } else {
-                console.error('❌ Erro ao obter dados:', data.message);
-                return null;
+        return {
+            vendas: {
+                hoje: 2500.00,
+                ontem: 2100.00,
+                semana: 15750.00,
+                mes: 67500.00
+            },
+            pedidos: {
+                pendentes: 8,
+                preparando: 12,
+                prontos: 3,
+                entregues: 47
+            },
+            mesas: {
+                ocupadas: 15,
+                livres: 5,
+                total: 20
+            },
+            produtos: {
+                total: 156,
+                baixoEstoque: 12,
+                ativos: 144
             }
-        } catch (error) {
-            console.error('❌ Erro na requisição:', error);
-            return null;
-        }
+        };
     }
 
-    // Testar conexão com API
+    // Testar conexão - Simulado para sistema estático
     async testConnection() {
-        try {
-            const response = await fetch(`${this.apiUrl}/test`);
-            const data = await response.json();
-            
-            if (data.success) {
-                console.log('✅ Conexão com API OK:', data.timestamp);
-                return true;
-            } else {
-                console.error('❌ Erro na conexão:', data.message);
-                return false;
-            }
-        } catch (error) {
-            console.error('❌ Erro ao testar conexão:', error);
-            return false;
-        }
+        console.log('✅ Sistema estático funcionando');
+        return true;
     }
 }
 
@@ -230,10 +255,10 @@ function updateUserInterface() {
 document.addEventListener('DOMContentLoaded', function() {
     updateUserInterface();
     
-    // Testar conexão com API (só no dashboard)
+    // Testar sistema (só no dashboard)
     if (window.location.pathname.includes('dashboard.html')) {
         auth.testConnection();
     }
 });
 
-console.log('🔐 Sistema de autenticação Neon carregado');
+console.log('🔐 Sistema de autenticação estático carregado');
