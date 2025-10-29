@@ -4,11 +4,14 @@
   "description": "Sistema de Gestão para Bar e Restaurante - Cliente Estático",
   "main": "index.html",
   "scripts": {
-    "start": "echo 'Sistema cliente estático - Abra o index.html no navegador'",
+    "start": "python utils/dev-server.py",
+    "dev": "python -m http.server 8000",
     "serve": "python -m http.server 8000",
+    "serve:node": "npx http-server . -p 8000 -c-1 -o",
     "build": "echo 'Site estático - Pronto para deploy'",
-    "deploy": "echo 'Deploy via Git push ou Netlify'",
-    "test": "echo 'Sistema cliente funcionando 100%'"
+    "deploy": "git add . && git commit -m 'Deploy automático' && git push origin main",
+    "test": "echo 'Abrindo página de testes...' && start http://localhost:8000/test",
+    "status": "echo 'Verificando status...' && start http://localhost:8000/status"
   },
   "keywords": [
     "restaurant",

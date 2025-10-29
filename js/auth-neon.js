@@ -32,111 +32,46 @@ class AuthSystemNeon {
         try {
             console.log('🔄 Tentando login:', username);
             
-            // Credenciais válidas para o sistema (aceita email ou username)
-            const validUsers = {
-                // Por email
-                'admin@mariaflor.com.br': {
+            // Usar credenciais do arquivo de configuração
+            const validUsers = {};
+            
+            // Criar mapa de usuários a partir da configuração
+            if (typeof CONFIG !== 'undefined' && CONFIG.USERS) {
+                Object.values(CONFIG.USERS).forEach(userConfig => {
+                    // Por username
+                    validUsers[userConfig.username] = {
+                        senha: userConfig.password,
+                        user: {
+                            id: Object.keys(CONFIG.USERS).indexOf(userConfig.username) + 1,
+                            nome: userConfig.name,
+                            email: userConfig.email,
+                            username: userConfig.username,
+                            role: userConfig.role,
+                            permissions: userConfig.permissions || []
+                        }
+                    };
+                    
+                    // Por email
+                    validUsers[userConfig.email] = {
+                        senha: userConfig.password,
+                        user: {
+                            id: Object.keys(CONFIG.USERS).indexOf(userConfig.username) + 1,
+                            nome: userConfig.name,
+                            email: userConfig.email,
+                            username: userConfig.username,
+                            role: userConfig.role,
+                            permissions: userConfig.permissions || []
+                        }
+                    };
+                });
+            } else {
+                // Fallback para credenciais hardcoded se CONFIG não estiver disponível
+                console.warn('⚠️ CONFIG não encontrado, usando credenciais padrão');
+                validUsers['admin'] = {
                     senha: 'admin123',
-                    user: {
-                        id: 1,
-                        nome: 'Administrador',
-                        email: 'admin@mariaflor.com.br',
-                        username: 'admin',
-                        role: 'admin'
-                    }
-                },
-                'gerente@mariaflor.com.br': {
-                    senha: 'gerente123',
-                    user: {
-                        id: 2,
-                        nome: 'Maria Santos',
-                        email: 'gerente@mariaflor.com.br',
-                        username: 'gerente',
-                        role: 'gerente'
-                    }
-                },
-                'garcom@mariaflor.com.br': {
-                    senha: 'garcom123',
-                    user: {
-                        id: 3,
-                        nome: 'João Silva',
-                        email: 'garcom@mariaflor.com.br',
-                        username: 'garcom',
-                        role: 'garcom'
-                    }
-                },
-                'cozinha@mariaflor.com.br': {
-                    senha: 'cozinha123',
-                    user: {
-                        id: 4,
-                        nome: 'Ana Costa',
-                        email: 'cozinha@mariaflor.com.br',
-                        username: 'cozinha',
-                        role: 'cozinha'
-                    }
-                },
-                'caixa@mariaflor.com.br': {
-                    senha: 'caixa123',
-                    user: {
-                        id: 5,
-                        nome: 'Carlos Oliveira',
-                        email: 'caixa@mariaflor.com.br',
-                        username: 'caixa',
-                        role: 'caixa'
-                    }
-                },
-                // Por username (atalho)
-                'admin': {
-                    senha: 'admin123',
-                    user: {
-                        id: 1,
-                        nome: 'Administrador',
-                        email: 'admin@mariaflor.com.br',
-                        username: 'admin',
-                        role: 'admin'
-                    }
-                },
-                'gerente': {
-                    senha: 'gerente123',
-                    user: {
-                        id: 2,
-                        nome: 'Maria Santos',
-                        email: 'gerente@mariaflor.com.br',
-                        username: 'gerente',
-                        role: 'gerente'
-                    }
-                },
-                'garcom': {
-                    senha: 'garcom123',
-                    user: {
-                        id: 3,
-                        nome: 'João Silva',
-                        email: 'garcom@mariaflor.com.br',
-                        username: 'garcom',
-                        role: 'garcom'
-                    }
-                },
-                'cozinha': {
-                    senha: 'cozinha123',
-                    user: {
-                        id: 4,
-                        nome: 'Ana Costa',
-                        email: 'cozinha@mariaflor.com.br',
-                        username: 'cozinha',
-                        role: 'cozinha'
-                    }
-                },
-                'caixa': {
-                    senha: 'caixa123',
-                    user: {
-                        id: 5,
-                        nome: 'Carlos Oliveira',
-                        email: 'caixa@mariaflor.com.br',
-                        username: 'caixa',
-                        role: 'caixa'
-                    }
-                }
-            };
+                    user: { id: 1, nome: 'Administrador', email: 'admin@mariaflor.com.br', username: 'admin', role: 'admin' }
+                };
+            }
 
             // Verificar credenciais
             if (validUsers[username] && validUsers[username].senha === senha) {
@@ -211,29 +146,17 @@ class AuthSystemNeon {
 
     // Obter dados do dashboard - Dados mockados para sistema estático
     async getDashboardData() {
+        // Usar dados do arquivo de configuração se disponível
+        if (typeof CONFIG !== 'undefined' && CONFIG.MOCK_DATA) {
+            return CONFIG.MOCK_DATA;
+        }
+        
+        // Fallback para dados hardcoded
         return {
-            vendas: {
-                hoje: 2500.00,
-                ontem: 2100.00,
-                semana: 15750.00,
-                mes: 67500.00
-            },
-            pedidos: {
-                pendentes: 8,
-                preparando: 12,
-                prontos: 3,
-                entregues: 47
-            },
-            mesas: {
-                ocupadas: 15,
-                livres: 5,
-                total: 20
-            },
-            produtos: {
-                total: 156,
-                baixoEstoque: 12,
-                ativos: 144
-            }
+            vendas: { hoje: 2500.00, ontem: 2100.00, semana: 15750.00, mes: 67500.00 },
+            pedidos: { pendentes: 8, preparando: 12, prontos: 3, entregues: 47 },
+            mesas: { ocupadas: 15, livres: 5, total: 20 },
+            produtos: { total: 156, baixoEstoque: 12, ativos: 144 }
         };
     }
 
