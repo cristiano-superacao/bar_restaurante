@@ -12,13 +12,19 @@
 
 ## 🔑 **Credenciais de Acesso**
 
-| Perfil | Email | Senha | Função |
-|--------|-------|-------|---------|
-| **👑 Admin** | admin@mariaflor.com.br | admin123 | Administrador completo |
-| **👨‍💼 Gerente** | gerente@mariaflor.com.br | gerente123 | Gerente geral |
-| **🍽️ Garçom** | garcom@mariaflor.com.br | garcom123 | Atendimento |
-| **👨‍🍳 Cozinha** | cozinha@mariaflor.com.br | cozinha123 | Cozinha |
-| **💰 Caixa** | caixa@mariaflor.com.br | caixa123 | Financeiro |
+*Você pode usar tanto o **username** quanto o **email** para fazer login*
+
+| Perfil | Username | Email | Senha | Função |
+|--------|----------|-------|-------|---------|
+| **👑 Admin** | `admin` | admin@mariaflor.com.br | `admin123` | Administrador completo |
+| **👨‍💼 Gerente** | `gerente` | gerente@mariaflor.com.br | `gerente123` | Gerente geral |
+| **🍽️ Garçom** | `garcom` | garcom@mariaflor.com.br | `garcom123` | Atendimento |
+| **👨‍🍳 Cozinha** | `cozinha` | cozinha@mariaflor.com.br | `cozinha123` | Cozinha |
+| **💰 Caixa** | `caixa` | caixa@mariaflor.com.br | `caixa123` | Financeiro |
+
+### 💡 **Exemplo de Login:**
+- **Username**: `admin` + Senha: `admin123` ✅
+- **Email**: `admin@mariaflor.com.br` + Senha: `admin123` ✅
 
 ## 🚀 **Características**
 

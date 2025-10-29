@@ -119,12 +119,12 @@
             loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const email = document.getElementById('username').value;
-                const senha = document.getElementById('password').value;
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
                 
                 console.log('🚀 Formulário enviado');
-                console.log('📧 Email:', email);
-                console.log('🔒 Senha:', senha ? '***' : 'vazia');
+                console.log('� Usuário:', username);
+                console.log('🔒 Senha:', password ? '***' : 'vazia');
                 
                 // Limpar mensagens anteriores
                 errorMessage.style.display = 'none';
@@ -136,18 +136,22 @@
                 submitBtn.disabled = true;
                 
                 try {
-                    const result = await auth.login(email, senha);
+                    const result = await auth.login(username, password);
                     
                     if (result.success) {
-                        // Sucesso - redirecionar
-                        window.location.href = 'pages/dashboard.html';
+                        console.log('✅ Login bem-sucedido, redirecionando...');
+                        // Sucesso - redirecionar com delay para mostrar sucesso
+                        setTimeout(() => {
+                            window.location.href = 'pages/dashboard.html';
+                        }, 500);
                     } else {
                         // Erro - mostrar mensagem
+                        console.error('❌ Erro no login:', result.message);
                         errorMessage.textContent = result.message || 'Erro ao fazer login';
                         errorMessage.style.display = 'block';
                     }
                 } catch (error) {
-                    console.error('Erro no login:', error);
+                    console.error('❌ Erro no login:', error);
                     errorMessage.textContent = 'Erro de conexão. Tente novamente.';
                     errorMessage.style.display = 'block';
                 } finally {

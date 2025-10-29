@@ -28,18 +28,20 @@ class AuthSystemNeon {
     }
 
     // Fazer login - Sistema estático com credenciais fixas
-    async login(email, senha) {
+    async login(username, senha) {
         try {
-            console.log('🔄 Tentando login:', email);
+            console.log('🔄 Tentando login:', username);
             
-            // Credenciais válidas para o sistema
+            // Credenciais válidas para o sistema (aceita email ou username)
             const validUsers = {
+                // Por email
                 'admin@mariaflor.com.br': {
                     senha: 'admin123',
                     user: {
                         id: 1,
                         nome: 'Administrador',
                         email: 'admin@mariaflor.com.br',
+                        username: 'admin',
                         role: 'admin'
                     }
                 },
@@ -49,6 +51,7 @@ class AuthSystemNeon {
                         id: 2,
                         nome: 'Maria Santos',
                         email: 'gerente@mariaflor.com.br',
+                        username: 'gerente',
                         role: 'gerente'
                     }
                 },
@@ -58,6 +61,7 @@ class AuthSystemNeon {
                         id: 3,
                         nome: 'João Silva',
                         email: 'garcom@mariaflor.com.br',
+                        username: 'garcom',
                         role: 'garcom'
                     }
                 },
@@ -67,6 +71,7 @@ class AuthSystemNeon {
                         id: 4,
                         nome: 'Ana Costa',
                         email: 'cozinha@mariaflor.com.br',
+                        username: 'cozinha',
                         role: 'cozinha'
                     }
                 },
@@ -76,14 +81,66 @@ class AuthSystemNeon {
                         id: 5,
                         nome: 'Carlos Oliveira',
                         email: 'caixa@mariaflor.com.br',
+                        username: 'caixa',
+                        role: 'caixa'
+                    }
+                },
+                // Por username (atalho)
+                'admin': {
+                    senha: 'admin123',
+                    user: {
+                        id: 1,
+                        nome: 'Administrador',
+                        email: 'admin@mariaflor.com.br',
+                        username: 'admin',
+                        role: 'admin'
+                    }
+                },
+                'gerente': {
+                    senha: 'gerente123',
+                    user: {
+                        id: 2,
+                        nome: 'Maria Santos',
+                        email: 'gerente@mariaflor.com.br',
+                        username: 'gerente',
+                        role: 'gerente'
+                    }
+                },
+                'garcom': {
+                    senha: 'garcom123',
+                    user: {
+                        id: 3,
+                        nome: 'João Silva',
+                        email: 'garcom@mariaflor.com.br',
+                        username: 'garcom',
+                        role: 'garcom'
+                    }
+                },
+                'cozinha': {
+                    senha: 'cozinha123',
+                    user: {
+                        id: 4,
+                        nome: 'Ana Costa',
+                        email: 'cozinha@mariaflor.com.br',
+                        username: 'cozinha',
+                        role: 'cozinha'
+                    }
+                },
+                'caixa': {
+                    senha: 'caixa123',
+                    user: {
+                        id: 5,
+                        nome: 'Carlos Oliveira',
+                        email: 'caixa@mariaflor.com.br',
+                        username: 'caixa',
                         role: 'caixa'
                     }
                 }
             };
 
             // Verificar credenciais
-            if (validUsers[email] && validUsers[email].senha === senha) {
-                this.currentUser = validUsers[email].user;
+            if (validUsers[username] && validUsers[username].senha === senha) {
+                this.currentUser = validUsers[username].user;
                 this.token = 'static-auth-token'; // Token simples para demo
                 
                 // Salvar no localStorage
@@ -94,8 +151,8 @@ class AuthSystemNeon {
                 console.log('👤 Usuário logado:', this.currentUser);
                 return { success: true, user: this.currentUser };
             } else {
-                console.error('❌ Credenciais inválidas');
-                return { success: false, message: 'Email ou senha incorretos' };
+                console.error('❌ Credenciais inválidas para:', username);
+                return { success: false, message: 'Usuário ou senha incorretos' };
             }
         } catch (error) {
             console.error('❌ Erro no login:', error);
