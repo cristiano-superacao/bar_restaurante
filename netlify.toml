@@ -7,16 +7,12 @@
   
   # Comando de build
   command = "echo 'Build completo - Site estático pronto'"
-  
-  # Diretório das functions
-  functions = "netlify/functions"
 
 [dev]
   # Configurações para desenvolvimento local
   command = "echo 'Servidor de desenvolvimento iniciado'"
   port = 8888
   publish = "."
-  functions = "netlify/functions"
 
 [build.environment]
   # Versão do Node.js
@@ -24,12 +20,6 @@
   
   # Variáveis de ambiente
   NODE_ENV = "production"
-
-# Redirecionamentos para API
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/server/:splat"
-  status = 200
 
 # Redirecionamentos para páginas
 [[redirects]]
@@ -72,6 +62,4 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000"
 
-# Configurações de função serverless
-[functions]
-  directory = "netlify/functions"
+# Site estático - não precisa de functions
