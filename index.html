@@ -24,6 +24,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="https://via.placeholder.com/180x180?text=MF">
     
     <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="css/fixes.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -57,7 +58,7 @@
                         </span>
                     </div>
                     
-                    <button type="submit" class="login-btn">
+                    <button type="submit" class="btn btn-primary login-btn">
                         <i class="fas fa-sign-in-alt"></i>
                         Entrar
                     </button>
@@ -112,7 +113,7 @@
             const errorMessage = document.getElementById('errorMessage');
 
             // Se já estiver logado, redirecionar
-            if (auth.isAuthenticated()) {
+            if (typeof auth !== 'undefined' && auth.isAuthenticated()) {
                 window.location.href = 'pages/dashboard.html';
                 return;
             }
@@ -137,6 +138,11 @@
                 submitBtn.disabled = true;
                 
                 try {
+                    // Verificar se auth existe antes de usar
+                    if (typeof auth === 'undefined') {
+                        throw new Error('Sistema de autenticação não carregado');
+                    }
+                    
                     const result = await auth.login(username, password);
                     
                     if (result.success) {

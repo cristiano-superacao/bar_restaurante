@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎯 Teste Funcional - Sistema Organizado</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 1000px; 
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+        .header h1 { 
+            color: #4CAF50; 
+            font-size: 2.5rem; 
+            margin-bottom: 10px;
+        }
+        .test-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 8px;
+            transition: all 0.3s;
+        }
+        .btn:hover { background: #45a049; transform: translateY(-2px); }
+        .btn.test { background: #2196F3; }
+        .btn.test:hover { background: #1976D2; }
+        .result {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            min-height: 50px;
+        }
+        .success { background: #d4edda; color: #155724; border-left: 5px solid #28a745; }
+        .error { background: #f8d7da; color: #721c24; border-left: 5px solid #dc3545; }
+        .info { background: #d1ecf1; color: #0c5460; border-left: 5px solid #17a2b8; }
+        .credentials {
+            background: #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+        }
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .quick-link {
+            display: block;
+            text-decoration: none;
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .quick-link:hover {
+            background: #5a67d8;
+            transform: translateY(-3px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Sistema Funcionando Localmente!</h1>
+            <p>Teste completo do Bar Restaurante Maria Flor</p>
+            <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 8px; margin-top: 15px;">
+                ✅ Servidor ativo em <strong>http://localhost:8000</strong>
+            </div>
+        </div>
+
+        <!-- Teste de Conectividade -->
+        <div class="test-section">
+            <h2>🌐 Teste de Conectividade</h2>
+            <button class="btn test" onclick="testConnectivity()">🔍 Testar Conexões</button>
+            <div id="connectivity-result" class="result">Clique no botão para testar...</div>
+        </div>
+
+        <!-- Teste de Autenticação -->
+        <div class="test-section">
+            <h2>🔐 Teste de Login</h2>
+            <div class="credentials">
+                <strong>Credenciais para teste:</strong><br>
+                👑 admin / admin123<br>
+                👨‍💼 gerente / gerente123<br>
+                🍽️ garcom / garcom123<br>
+                👨‍🍳 cozinha / cozinha123<br>
+                💰 caixa / caixa123
+            </div>
+            <button class="btn test" onclick="testLogin()">🧪 Testar Login Automático</button>
+            <div id="login-result" class="result">Clique no botão para testar...</div>
+        </div>
+
+        <!-- Navegação Rápida -->
+        <div class="test-section">
+            <h2>🚀 Acesso Rápido</h2>
+            <div class="quick-links">
+                <a href="/" class="quick-link">🏠 Login</a>
+                <a href="/pages/dashboard.html" class="quick-link">📊 Dashboard</a>
+                <a href="/pages/mesas.html" class="quick-link">🍽️ Mesas</a>
+                <a href="/docs/status.html" class="quick-link">📈 Status</a>
+            </div>
+        </div>
+
+        <!-- Log de Testes -->
+        <div class="test-section">
+            <h2>📋 Log de Testes</h2>
+            <div id="test-log" class="result" style="max-height: 200px; overflow-y: auto;">
+[SISTEMA] Página de teste carregada<br>
+[INFO] Servidor local detectado<br>
+[READY] Sistema pronto para testes<br>
+            </div>
+            <button class="btn" onclick="clearLog()">🗑️ Limpar Log</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/config.js"></script>
+    <script src="/js/auth-neon.js"></script>
+    <script>
+        function log(message, type = 'INFO') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logElement = document.getElementById('test-log');
+            logElement.innerHTML += `<br>[${timestamp}] [${type}] ${message}`;
+            logElement.scrollTop = logElement.scrollHeight;
+        }
+
+        function clearLog() {
+            document.getElementById('test-log').innerHTML = '[SISTEMA] Log limpo<br>[READY] Pronto para novos testes';
+        }
+
+        async function testConnectivity() {
+            const resultDiv = document.getElementById('connectivity-result');
+            resultDiv.innerHTML = 'Testando conectividade...';
+            resultDiv.className = 'result info';
+            
+            const tests = [
+                { url: '/js/config.js', name: 'Configurações' },
+                { url: '/js/auth-neon.js', name: 'Autenticação' },
+                { url: '/pages/dashboard.html', name: 'Dashboard' },
+                { url: '/css/login.css', name: 'Estilos' }
+            ];
+            
+            let results = [];
+            
+            for (let test of tests) {
+                try {
+                    const response = await fetch(test.url);
+                    if (response.ok) {
+                        results.push(`✅ ${test.name}: OK (${response.status})`);
+                        log(`${test.name} carregado com sucesso`, 'SUCCESS');
+                    } else {
+                        results.push(`❌ ${test.name}: Erro ${response.status}`);
+                        log(`Erro ao carregar ${test.name}`, 'ERROR');
+                    }
+                } catch (error) {
+                    results.push(`❌ ${test.name}: ${error.message}`);
+                    log(`Erro de conexão: ${test.name}`, 'ERROR');
+                }
+            }
+            
+            resultDiv.innerHTML = results.join('<br>');
+            resultDiv.className = results.every(r => r.includes('✅')) ? 'result success' : 'result error';
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('login-result');
+            resultDiv.innerHTML = 'Testando sistema de login...';
+            resultDiv.className = 'result info';
+            
+            try {
+                // Verificar se CONFIG está carregado
+                if (typeof CONFIG === 'undefined') {
+                    throw new Error('CONFIG não carregado');
+                }
+                
+                // Verificar se auth está disponível
+                if (typeof auth === 'undefined') {
+                    throw new Error('Sistema de autenticação não carregado');
+                }
+                
+                // Testar login com admin
+                const loginResult = await auth.login('admin', 'admin123');
+                
+                if (loginResult.success) {
+                    resultDiv.innerHTML = `
+                        ✅ Login funcionando!<br>
+                        👤 Usuário: ${loginResult.user.nome}<br>
+                        🔑 Role: ${loginResult.user.role}<br>
+                        📊 Permissões: ${loginResult.user.permissions.length} itens
+                    `;
+                    resultDiv.className = 'result success';
+                    log('Login teste realizado com sucesso', 'SUCCESS');
+                } else {
+                    throw new Error('Login falhou');
+                }
+                
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Erro no teste de login: ${error.message}`;
+                resultDiv.className = 'result error';
+                log(`Erro no teste de login: ${error.message}`, 'ERROR');
+            }
+        }
+
+        // Verificações automáticas na inicialização
+        window.onload = function() {
+            log('Sistema de teste iniciado');
+            
+            // Verificar se os scripts foram carregados
+            setTimeout(() => {
+                if (typeof CONFIG !== 'undefined') {
+                    log('✅ CONFIG carregado');
+                } else {
+                    log('❌ CONFIG não carregado', 'ERROR');
+                }
+                
+                if (typeof auth !== 'undefined') {
+                    log('✅ Sistema de autenticação carregado');
+                } else {
+                    log('❌ Sistema de autenticação não carregado', 'ERROR');
+                }
+            }, 1000);
+            
+            // Teste automático de conectividade
+            setTimeout(() => {
+                testConnectivity();
+            }, 2000);
+        };
+    </script>
+</body>
+</html>
