@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Login - Maria Flor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #667eea; }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-left: 4px solid #667eea;
+        }
+        .success { color: #27ae60; }
+        .error { color: #e74c3c; }
+        .info { color: #3498db; }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #5568d3; }
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        .credential {
+            background: #e8f5e9;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .credential:hover { background: #c8e6c9; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 Teste de Login - Sistema Maria Flor</h1>
+        
+        <div class="test-section">
+            <h3>📋 Status do Sistema</h3>
+            <div id="systemStatus"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>👤 Credenciais Disponíveis (clique para testar)</h3>
+            <div id="credentials"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔑 Teste Manual</h3>
+            <input type="text" id="testUser" placeholder="Usuário" style="padding: 10px; margin: 5px; width: 200px;">
+            <input type="password" id="testPass" placeholder="Senha" style="padding: 10px; margin: 5px; width: 200px;">
+            <button onclick="testLogin()">Testar Login</button>
+        </div>
+        
+        <div class="test-section">
+            <h3>📊 Resultado do Teste</h3>
+            <div id="testResult"></div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth-neon.js"></script>
+    <script>
+        // Verificar carregamento dos scripts
+        function checkSystemStatus() {
+            const statusDiv = document.getElementById('systemStatus');
+            let html = '';
+            
+            // Verificar CONFIG
+            if (typeof CONFIG !== 'undefined') {
+                html += '<p class="success">✅ CONFIG carregado</p>';
+                html += `<pre>${JSON.stringify(CONFIG.APP, null, 2)}</pre>`;
+            } else {
+                html += '<p class="error">❌ CONFIG não carregado</p>';
+            }
+            
+            // Verificar AuthSystemNeon
+            if (typeof AuthSystemNeon !== 'undefined') {
+                html += '<p class="success">✅ AuthSystemNeon carregado</p>';
+            } else {
+                html += '<p class="error">❌ AuthSystemNeon não carregado</p>';
+            }
+            
+            // Verificar usuários
+            if (typeof CONFIG !== 'undefined' && CONFIG.USERS) {
+                html += `<p class="info">📝 ${Object.keys(CONFIG.USERS).length} usuários configurados</p>`;
+            }
+            
+            statusDiv.innerHTML = html;
+        }
+        
+        // Mostrar credenciais
+        function showCredentials() {
+            const credDiv = document.getElementById('credentials');
+            let html = '';
+            
+            if (typeof CONFIG !== 'undefined' && CONFIG.USERS) {
+                Object.entries(CONFIG.USERS).forEach(([key, user]) => {
+                    html += `
+                        <div class="credential" onclick="quickTest('${user.username}', '${user.password}')">
+                            <strong>${user.name}</strong><br>
+                            👤 Usuário: <code>${user.username}</code><br>
+                            📧 Email: <code>${user.email}</code><br>
+                            🔑 Senha: <code>${user.password}</code><br>
+                            🎭 Papel: <code>${user.role}</code>
+                        </div>
+                    `;
+                });
+            }
+            
+            credDiv.innerHTML = html;
+        }
+        
+        // Teste rápido
+        async function quickTest(username, password) {
+            document.getElementById('testUser').value = username;
+            document.getElementById('testPass').value = password;
+            await testLogin();
+        }
+        
+        // Testar login
+        async function testLogin() {
+            const username = document.getElementById('testUser').value;
+            const password = document.getElementById('testPass').value;
+            const resultDiv = document.getElementById('testResult');
+            
+            resultDiv.innerHTML = '<p class="info">🔄 Testando login...</p>';
+            
+            try {
+                const auth = new AuthSystemNeon();
+                const result = await auth.login(username, password);
+                
+                if (result.success) {
+                    resultDiv.innerHTML = `
+                        <p class="success">✅ LOGIN SUCESSO!</p>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                        <p class="info">📍 Seria redirecionado para: ${result.redirectTo}</p>
+                        <button onclick="testLogout()">Fazer Logout</button>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <p class="error">❌ LOGIN FALHOU</p>
+                        <pre>${JSON.stringify(result, null, 2)}</pre>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <p class="error">❌ ERRO NO TESTE</p>
+                    <pre>${error.message}\n${error.stack}</pre>
+                `;
+            }
+        }
+        
+        // Testar logout
+        function testLogout() {
+            const auth = new AuthSystemNeon();
+            auth.logout();
+            document.getElementById('testResult').innerHTML = '<p class="success">✅ Logout realizado</p>';
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSystemStatus();
+            showCredentials();
+        });
+    </script>
+</body>
+</html>

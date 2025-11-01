@@ -1,11 +1,17 @@
-const { 
-  userService, 
-  menuService, 
-  tableService, 
-  orderService, 
-  salesService, 
-  dashboardService 
-} = require('../../api/services');
+// Dependências necessárias
+const { neon } = require('@neondatabase/serverless');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
+// Dependências comentadas - usando apenas dados mockados
+// const { 
+//   userService, 
+//   menuService, 
+//   tableService, 
+//   orderService, 
+//   salesService, 
+//   dashboardService 
+// } = require('../../api/services');
 
 // Headers CORS
 const corsHeaders = {

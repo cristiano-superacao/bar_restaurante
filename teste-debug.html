@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug - Sistema Maria Flor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .debug-box {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .success { color: green; }
+        .error { color: red; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Debug do Sistema</h1>
+    
+    <div class="debug-box">
+        <h2>Status dos Arquivos</h2>
+        <div id="status"></div>
+    </div>
+    
+    <div class="debug-box">
+        <h2>Console Log</h2>
+        <div id="console"></div>
+    </div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const consoleDiv = document.getElementById('console');
+        
+        function log(message, type = 'info') {
+            const p = document.createElement('p');
+            p.className = type;
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            consoleDiv.appendChild(p);
+            console.log(message);
+        }
+
+        // Testar carregamento de config.js
+        log('Testando carregamento de config.js...', 'info');
+        fetch('js/config.js')
+            .then(response => {
+                if (response.ok) {
+                    log('✅ config.js carregado com sucesso', 'success');
+                    statusDiv.innerHTML += '<p class="success">✅ js/config.js - OK</p>';
+                } else {
+                    log('❌ Erro ao carregar config.js: ' + response.status, 'error');
+                    statusDiv.innerHTML += '<p class="error">❌ js/config.js - ERRO ' + response.status + '</p>';
+                }
+            })
+            .catch(error => {
+                log('❌ Erro de rede ao carregar config.js: ' + error, 'error');
+                statusDiv.innerHTML += '<p class="error">❌ js/config.js - ERRO DE REDE</p>';
+            });
+
+        // Testar carregamento de auth-neon.js
+        log('Testando carregamento de auth-neon.js...', 'info');
+        fetch('js/auth-neon.js')
+            .then(response => {
+                if (response.ok) {
+                    log('✅ auth-neon.js carregado com sucesso', 'success');
+                    statusDiv.innerHTML += '<p class="success">✅ js/auth-neon.js - OK</p>';
+                } else {
+                    log('❌ Erro ao carregar auth-neon.js: ' + response.status, 'error');
+                    statusDiv.innerHTML += '<p class="error">❌ js/auth-neon.js - ERRO ' + response.status + '</p>';
+                }
+            })
+            .catch(error => {
+                log('❌ Erro de rede ao carregar auth-neon.js: ' + error, 'error');
+                statusDiv.innerHTML += '<p class="error">❌ js/auth-neon.js - ERRO DE REDE</p>';
+            });
+
+        // Testar CSS
+        log('Testando arquivos CSS...', 'info');
+        ['base.css', 'login.css', 'fixes.css'].forEach(file => {
+            fetch(`css/${file}`)
+                .then(response => {
+                    if (response.ok) {
+                        log(`✅ ${file} carregado com sucesso`, 'success');
+                        statusDiv.innerHTML += `<p class="success">✅ css/${file} - OK</p>`;
+                    } else {
+                        log(`❌ Erro ao carregar ${file}: ` + response.status, 'error');
+                        statusDiv.innerHTML += `<p class="error">❌ css/${file} - ERRO ${response.status}</p>`;
+                    }
+                })
+                .catch(error => {
+                    log(`❌ Erro de rede ao carregar ${file}: ` + error, 'error');
+                    statusDiv.innerHTML += `<p class="error">❌ css/${file} - ERRO DE REDE</p>`;
+                });
+        });
+
+        // Aguardar 2 segundos e depois carregar os scripts
+        setTimeout(() => {
+            log('Tentando carregar scripts dinamicamente...', 'info');
+            
+            const configScript = document.createElement('script');
+            configScript.src = 'js/config.js';
+            configScript.onload = () => {
+                log('✅ CONFIG carregado e executado', 'success');
+                if (typeof CONFIG !== 'undefined') {
+                    log(`✅ CONFIG disponível: ${CONFIG.APP.name}`, 'success');
+                    statusDiv.innerHTML += `<p class="success">✅ CONFIG object disponível</p>`;
+                } else {
+                    log('❌ CONFIG não definido após carregamento', 'error');
+                    statusDiv.innerHTML += '<p class="error">❌ CONFIG não definido</p>';
+                }
+            };
+            configScript.onerror = () => {
+                log('❌ Erro ao executar config.js', 'error');
+                statusDiv.innerHTML += '<p class="error">❌ Erro ao executar config.js</p>';
+            };
+            document.head.appendChild(configScript);
+
+            const authScript = document.createElement('script');
+            authScript.src = 'js/auth-neon.js';
+            authScript.onload = () => {
+                log('✅ AUTH carregado e executado', 'success');
+                if (typeof AuthSystemNeon !== 'undefined') {
+                    log('✅ AuthSystemNeon disponível', 'success');
+                    statusDiv.innerHTML += '<p class="success">✅ AuthSystemNeon disponível</p>';
+                    
+                    try {
+                        const auth = new AuthSystemNeon();
+                        log('✅ AuthSystemNeon instanciado com sucesso', 'success');
+                        statusDiv.innerHTML += '<p class="success">✅ AuthSystemNeon instanciado</p>';
+                    } catch (error) {
+                        log('❌ Erro ao instanciar AuthSystemNeon: ' + error, 'error');
+                        statusDiv.innerHTML += '<p class="error">❌ Erro ao instanciar: ' + error + '</p>';
+                    }
+                } else {
+                    log('❌ AuthSystemNeon não definido após carregamento', 'error');
+                    statusDiv.innerHTML += '<p class="error">❌ AuthSystemNeon não definido</p>';
+                }
+            };
+            authScript.onerror = () => {
+                log('❌ Erro ao executar auth-neon.js', 'error');
+                statusDiv.innerHTML += '<p class="error">❌ Erro ao executar auth-neon.js</p>';
+            };
+            document.head.appendChild(authScript);
+        }, 2000);
+    </script>
+</body>
+</html>

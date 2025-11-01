@@ -163,51 +163,32 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="suggestions-content" id="suggestionsContent">
                 <div class="suggestion-group">
                     <h5><i class="fas fa-crown" style="color: #e74c3c;"></i> Gerência</h5>
-                    <div class="suggestion-item" data-username="admin" data-password="MariaFlor2025!">
-                        <strong>admin</strong> / MariaFlor2025! <span class="role-badge admin">Administrador</span>
+                    <div class="suggestion-item" data-username="admin" data-password="admin123">
+                        <strong>admin</strong> / admin123 <span class="role-badge admin">Administrador</span>
                     </div>
-                    <div class="suggestion-item" data-username="gerente" data-password="Gerente123!">
-                        <strong>gerente</strong> / Gerente123! <span class="role-badge manager">Gerente</span>
+                    <div class="suggestion-item" data-username="gerente" data-password="gerente123">
+                        <strong>gerente</strong> / gerente123 <span class="role-badge manager">Gerente</span>
                     </div>
                 </div>
                 
                 <div class="suggestion-group">
                     <h5><i class="fas fa-concierge-bell" style="color: #3498db;"></i> Atendimento</h5>
-                    <div class="suggestion-item" data-username="garcom1" data-password="Garcom123!">
-                        <strong>garcom1</strong> / Garcom123! <span class="role-badge waiter">Garçonete</span>
-                    </div>
-                    <div class="suggestion-item" data-username="garcom2" data-password="Garcom123!">
-                        <strong>garcom2</strong> / Garcom123! <span class="role-badge waiter">Garçom</span>
+                    <div class="suggestion-item" data-username="garcom" data-password="garcom123">
+                        <strong>garcom</strong> / garcom123 <span class="role-badge waiter">Garçom</span>
                     </div>
                 </div>
                 
                 <div class="suggestion-group">
                     <h5><i class="fas fa-fire" style="color: #e67e22;"></i> Cozinha</h5>
-                    <div class="suggestion-item" data-username="cozinha1" data-password="Cozinha123!">
-                        <strong>cozinha1</strong> / Cozinha123! <span class="role-badge kitchen">Chef</span>
-                    </div>
-                    <div class="suggestion-item" data-username="cozinha2" data-password="Cozinha123!">
-                        <strong>cozinha2</strong> / Cozinha123! <span class="role-badge kitchen">Cozinheira</span>
+                    <div class="suggestion-item" data-username="cozinha" data-password="cozinha123">
+                        <strong>cozinha</strong> / cozinha123 <span class="role-badge kitchen">Cozinha</span>
                     </div>
                 </div>
                 
                 <div class="suggestion-group">
                     <h5><i class="fas fa-cash-register" style="color: #27ae60;"></i> Financeiro</h5>
-                    <div class="suggestion-item" data-username="caixa1" data-password="Caixa123!">
-                        <strong>caixa1</strong> / Caixa123! <span class="role-badge cashier">Operador</span>
-                    </div>
-                    <div class="suggestion-item" data-username="caixa2" data-password="Caixa123!">
-                        <strong>caixa2</strong> / Caixa123! <span class="role-badge cashier">Caixa</span>
-                    </div>
-                </div>
-                
-                <div class="suggestion-group">
-                    <h5><i class="fas fa-boxes" style="color: #f39c12;"></i> Estoque</h5>
-                    <div class="suggestion-item" data-username="estoque1" data-password="Estoque123!">
-                        <strong>estoque1</strong> / Estoque123! <span class="role-badge stock">Almoxarife</span>
-                    </div>
-                    <div class="suggestion-item" data-username="estoque2" data-password="Estoque123!">
-                        <strong>estoque2</strong> / Estoque123! <span class="role-badge stock">Estoque</span>
+                    <div class="suggestion-item" data-username="caixa" data-password="caixa123">
+                        <strong>caixa</strong> / caixa123 <span class="role-badge cashier">Caixa</span>
                     </div>
                 </div>
             </div>

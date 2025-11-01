@@ -66,6 +66,27 @@
                 
                 <!-- Container para mensagens (será preenchido pelo JavaScript) -->
                 <div id="errorMessage" class="error-message" style="display: none;"></div>
+                
+                <!-- Dica de Credenciais para Teste -->
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);">
+                    <p style="margin: 0 0 10px 0; color: rgba(255,255,255,0.8); font-size: 13px; text-align: center;">
+                        <i class="fas fa-info-circle"></i> Credenciais de Teste
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 12px;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; cursor: pointer;" onclick="document.getElementById('username').value='admin';document.getElementById('password').value='admin123';">
+                            <strong style="color: #fff;">Admin</strong><br>
+                            <span style="color: rgba(255,255,255,0.7);">admin / admin123</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; cursor: pointer;" onclick="document.getElementById('username').value='gerente';document.getElementById('password').value='gerente123';">
+                            <strong style="color: #fff;">Gerente</strong><br>
+                            <span style="color: rgba(255,255,255,0.7);">gerente / gerente123</span>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; cursor: pointer;" onclick="document.getElementById('username').value='garcom';document.getElementById('password').value='garcom123';">
+                            <strong style="color: #fff;">Garçom</strong><br>
+                            <span style="color: rgba(255,255,255,0.7);">garcom / garcom123</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -88,11 +109,8 @@
     <script src="js/config.js"></script>
     <script src="js/auth-neon.js"></script>
     
-    <!-- Script de Login -->
+    <!-- Script de Login Otimizado -->
     <script>
-        // Inicializar sistema de autenticação
-        const auth = new AuthSystemNeon();
-        
         // Função para mostrar/esconder senha
         function togglePassword() {
             const passwordInput = document.getElementById('password');
@@ -107,62 +125,48 @@
             }
         }
 
+        // Verificar se já está logado (antes do DOM)
+        if (localStorage.getItem('authToken')) {
+            window.location.href = 'pages/dashboard.html';
+        }
+
         // Sistema de login
         document.addEventListener('DOMContentLoaded', function() {
             const loginForm = document.getElementById('loginForm');
             const errorMessage = document.getElementById('errorMessage');
-
-            // Se já estiver logado, redirecionar
-            if (typeof auth !== 'undefined' && auth.isAuthenticated()) {
-                window.location.href = 'pages/dashboard.html';
-                return;
-            }
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
 
             loginForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
-                const username = document.getElementById('username').value;
+                const username = document.getElementById('username').value.trim();
                 const password = document.getElementById('password').value;
                 
-                console.log('🚀 Formulário enviado');
-                console.log('� Usuário:', username);
-                console.log('🔒 Senha:', password ? '***' : 'vazia');
+                if (!username || !password) {
+                    errorMessage.textContent = 'Preencha todos os campos';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
                 
-                // Limpar mensagens anteriores
                 errorMessage.style.display = 'none';
-                
-                // Desabilitar botão durante login
-                const submitBtn = loginForm.querySelector('button[type="submit"]');
-                const originalText = submitBtn.innerHTML;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
                 submitBtn.disabled = true;
                 
                 try {
-                    // Verificar se auth existe antes de usar
-                    if (typeof auth === 'undefined') {
-                        throw new Error('Sistema de autenticação não carregado');
-                    }
-                    
+                    const auth = new AuthSystemNeon();
                     const result = await auth.login(username, password);
                     
                     if (result.success) {
-                        console.log('✅ Login bem-sucedido, redirecionando...');
-                        // Sucesso - redirecionar com delay para mostrar sucesso
-                        setTimeout(() => {
-                            window.location.href = 'pages/dashboard.html';
-                        }, 500);
+                        window.location.href = 'pages/dashboard.html';
                     } else {
-                        // Erro - mostrar mensagem
-                        console.error('❌ Erro no login:', result.message);
-                        errorMessage.textContent = result.message || 'Erro ao fazer login';
+                        errorMessage.textContent = result.message || 'Usuário ou senha inválidos';
                         errorMessage.style.display = 'block';
                     }
                 } catch (error) {
-                    console.error('❌ Erro no login:', error);
-                    errorMessage.textContent = 'Erro de conexão. Tente novamente.';
+                    errorMessage.textContent = 'Erro ao fazer login';
                     errorMessage.style.display = 'block';
                 } finally {
-                    // Reabilitar botão
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
                 }

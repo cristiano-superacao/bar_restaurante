@@ -27,5 +27,10 @@
     "type": "git",
     "url": "https://github.com/cristiano-superacao/bar_restaurante.git"
   },
-  "homepage": "https://barestaurante.netlify.app"
+  "homepage": "https://barestaurante.netlify.app",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "bcryptjs": "^3.0.2",
+    "jsonwebtoken": "^9.0.2"
+  }
 }
