@@ -242,6 +242,362 @@
     <!-- Modal de Notificação -->
     <div id="notification" class="notification"></div>
 
+    <!-- Modal de Venda -->
+    <div id="modalVenda" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalVendaTitle">Nova Venda</h3>
+                <button class="modal-close" onclick="fecharModalVenda()">&times;</button>
+            </div>
+            <form id="formVenda" onsubmit="salvarVenda(event)">
+                <div class="form-group">
+                    <label>Mesa *</label>
+                    <select id="vendaMesa" required>
+                        <option value="">Selecione uma mesa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Itens *</label>
+                    <textarea id="vendaItens" required placeholder="Ex: Hambúrguer, Batata Frita, Coca-Cola"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Total (R$) *</label>
+                    <input type="number" id="vendaTotal" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Forma de Pagamento *</label>
+                    <select id="vendaPagamento" required>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão">Cartão</option>
+                        <option value="Pix">Pix</option>
+                        <option value="Débito">Débito</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="vendaStatus" required>
+                        <option value="Pago">Pago</option>
+                        <option value="Pendente">Pendente</option>
+                    </select>
+                </div>
+                <input type="hidden" id="vendaId">
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="fecharModalVenda()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Estoque -->
+    <div id="modalEstoque" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalEstoqueTitle">Novo Item de Estoque</h3>
+                <button class="modal-close" onclick="fecharModalEstoque()">&times;</button>
+            </div>
+            <form id="formEstoque" onsubmit="salvarEstoque(event)">
+                <div class="form-group">
+                    <label>Nome do Item *</label>
+                    <input type="text" id="estoqueNome" required placeholder="Ex: Carne Bovina">
+                </div>
+                <div class="form-group">
+                    <label>Categoria *</label>
+                    <select id="estoqueCategoria" required>
+                        <option value="">Selecione uma categoria</option>
+                        <option value="carnes">Carnes</option>
+                        <option value="laticinios">Laticínios</option>
+                        <option value="hortifruti">Hortifrúti</option>
+                        <option value="bebidas">Bebidas</option>
+                        <option value="temperos">Temperos</option>
+                        <option value="massas">Massas</option>
+                        <option value="outros">Outros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Quantidade *</label>
+                    <input type="number" id="estoqueQuantidade" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Quantidade Mínima *</label>
+                    <input type="number" id="estoqueMinimo" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Unidade *</label>
+                    <select id="estoqueUnidade" required>
+                        <option value="kg">Quilograma (kg)</option>
+                        <option value="un">Unidade (un)</option>
+                        <option value="L">Litro (L)</option>
+                        <option value="g">Grama (g)</option>
+                        <option value="cx">Caixa (cx)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Data de Validade *</label>
+                    <input type="date" id="estoqueValidade" required>
+                </div>
+                <div class="form-group">
+                    <label>Custo Unitário (R$) *</label>
+                    <input type="number" id="estoqueCusto" step="0.01" min="0" required>
+                </div>
+                <input type="hidden" id="estoqueId">
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="fecharModalEstoque()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Transação Financeira -->
+    <div id="modalTransacao" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTransacaoTitle">Nova Transação</h3>
+                <button class="modal-close" onclick="fecharModalTransacao()">&times;</button>
+            </div>
+            <form id="formTransacao" onsubmit="salvarTransacao(event)">
+                <div class="form-group">
+                    <label>Data *</label>
+                    <input type="date" id="transacaoData" required>
+                </div>
+                <div class="form-group">
+                    <label>Tipo *</label>
+                    <select id="transacaoTipo" required onchange="atualizarCategoriasTransacao()">
+                        <option value="receita">Receita</option>
+                        <option value="despesa">Despesa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Categoria *</label>
+                    <select id="transacaoCategoria" required>
+                        <option value="">Selecione uma categoria</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descrição *</label>
+                    <textarea id="transacaoDescricao" required placeholder="Descreva a transação"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Valor (R$) *</label>
+                    <input type="number" id="transacaoValor" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="transacaoStatus" required>
+                        <option value="pago">Pago</option>
+                        <option value="pendente">Pendente</option>
+                    </select>
+                </div>
+                <input type="hidden" id="transacaoId">
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="fecharModalTransacao()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Usuário -->
+    <div id="modalUsuario" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalUsuarioTitle">Novo Usuário</h3>
+                <button class="modal-close" onclick="fecharModalUsuario()">&times;</button>
+            </div>
+            <form id="formUsuario" onsubmit="salvarUsuario(event)">
+                <div class="form-group">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="usuarioNome" required placeholder="Ex: João Silva">
+                </div>
+                <div class="form-group">
+                    <label>E-mail *</label>
+                    <input type="email" id="usuarioEmail" required placeholder="usuario@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Telefone</label>
+                    <input type="tel" id="usuarioTelefone" placeholder="(11) 99999-9999">
+                </div>
+                <div class="form-group">
+                    <label>Função *</label>
+                    <select id="usuarioRole" required>
+                        <option value="">Selecione uma função</option>
+                        <option value="admin">Administrador</option>
+                        <option value="gerente">Gerente</option>
+                        <option value="garcom">Garçom</option>
+                        <option value="cozinha">Cozinha</option>
+                        <option value="caixa">Caixa</option>
+                    </select>
+                </div>
+                <div class="form-group" id="senhaGroup">
+                    <label>Senha *</label>
+                    <input type="password" id="usuarioSenha" placeholder="Mínimo 6 caracteres">
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="usuarioStatus" required>
+                        <option value="ativo">Ativo</option>
+                        <option value="inativo">Inativo</option>
+                    </select>
+                </div>
+                <input type="hidden" id="usuarioId">
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="fecharModalUsuario()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Produto (Cardápio) -->
+    <div id="modalProduto" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalProdutoTitle">Novo Produto</h3>
+                <button class="modal-close" onclick="fecharModalProduto()">&times;</button>
+            </div>
+            <form id="formProduto" onsubmit="salvarProduto(event)">
+                <div class="form-group">
+                    <label>Nome do Produto *</label>
+                    <input type="text" id="produtoNome" required placeholder="Ex: Hambúrguer Artesanal">
+                </div>
+                <div class="form-group">
+                    <label>Categoria *</label>
+                    <select id="produtoCategoria" required>
+                        <option value="">Selecione uma categoria</option>
+                        <option value="lanches">Lanches</option>
+                        <option value="pizzas">Pizzas</option>
+                        <option value="saladas">Saladas</option>
+                        <option value="bebidas">Bebidas</option>
+                        <option value="sobremesas">Sobremesas</option>
+                        <option value="pratos">Pratos Principais</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Descrição *</label>
+                    <textarea id="produtoDescricao" required placeholder="Descreva o produto"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Preço (R$) *</label>
+                    <input type="number" id="produtoPreco" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Tempo de Preparo *</label>
+                    <input type="text" id="produtoTempo" required placeholder="Ex: 20 min">
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="produtoStatus" required>
+                        <option value="ativo">Ativo</option>
+                        <option value="inativo">Inativo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input type="checkbox" id="produtoDestaque">
+                        <span>Produto em Destaque</span>
+                    </label>
+                </div>
+                <input type="hidden" id="produtoId">
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="fecharModalProduto()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Mesa -->
+    <div id="modalMesa" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalMesaTitle">Nova Mesa</h3>
+                <button class="modal-close" onclick="fecharModalMesa()">&times;</button>
+            </div>
+            <form id="formMesa" onsubmit="salvarMesa(event)">
+                <div class="form-group">
+                    <label>Número da Mesa *</label>
+                    <input type="number" id="mesaNumero" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>Capacidade *</label>
+                    <input type="number" id="mesaCapacidade" required min="1" placeholder="Número de pessoas">
+                </div>
+                <div class="form-group">
+                    <label>Localização *</label>
+                    <select id="mesaLocalizacao" required>
+                        <option value="">Selecione a localização</option>
+                        <option value="Salão Principal">Salão Principal</option>
+                        <option value="Varanda">Varanda</option>
+                        <option value="Salão VIP">Salão VIP</option>
+                        <option value="Área Externa">Área Externa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="mesaStatus" required>
+                        <option value="livre">Livre</option>
+                        <option value="ocupada">Ocupada</option>
+                        <option value="reservada">Reservada</option>
+                    </select>
+                </div>
+                <input type="hidden" id="mesaId">
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="fecharModalMesa()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Pedido -->
+    <div id="modalPedido" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalPedidoTitle">Novo Pedido</h3>
+                <button class="modal-close" onclick="fecharModalPedido()">&times;</button>
+            </div>
+            <form id="formPedido" onsubmit="salvarPedido(event)">
+                <div class="form-group">
+                    <label>Mesa *</label>
+                    <select id="pedidoMesa" required>
+                        <option value="">Selecione uma mesa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Itens do Pedido *</label>
+                    <textarea id="pedidoItens" required placeholder="Ex: Hambúrguer, Batata Frita, Coca-Cola"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Total (R$) *</label>
+                    <input type="number" id="pedidoTotal" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label>Prioridade *</label>
+                    <select id="pedidoPrioridade" required>
+                        <option value="normal">Normal</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status *</label>
+                    <select id="pedidoStatus" required>
+                        <option value="pendente">Pendente</option>
+                        <option value="preparando">Em Preparo</option>
+                        <option value="pronto">Pronto</option>
+                        <option value="entregue">Entregue</option>
+                    </select>
+                </div>
+                <input type="hidden" id="pedidoId">
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="fecharModalPedido()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/api-client.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>
