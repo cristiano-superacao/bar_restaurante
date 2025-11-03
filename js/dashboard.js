@@ -62,7 +62,9 @@ let usersData = [
 // Inicialização principal
 document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
-        if (!window.authSystem || !window.authSystem.isLoggedIn()) {
+        // Aguardar o auth-neon.js carregar
+        if (typeof auth === 'undefined' || !auth.isAuthenticated()) {
+            console.warn('⚠️ Usuário não autenticado, redirecionando...');
             window.location.href = '../index.html';
             return;
         }
@@ -91,7 +93,7 @@ function initializeMainSystem() {
         
     } catch (error) {
         console.error('❌ Erro ao inicializar sistema:', error);
-        showAuthError('Erro ao carregar o sistema. Tente recarregar a página.');
+        showNotification('Erro ao carregar o sistema. Tente recarregar a página.', 'error');
     }
 }
 
@@ -274,6 +276,12 @@ function navigateToPage(page) {
 // ===============================
 
 function initializeCharts() {
+    // Verificar se Chart.js está disponível
+    if (typeof Chart === 'undefined') {
+        console.warn('⚠️ Chart.js não carregado, gráficos desabilitados');
+        return;
+    }
+    
     const salesCtx = document.getElementById('salesChart');
     if (salesCtx) {
         new Chart(salesCtx.getContext('2d'), {
