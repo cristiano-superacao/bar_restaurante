@@ -33,12 +33,9 @@
     <div class="container">
         <div class="login-container">
             <div class="login-header">
-                <h1 class="logo">🌸 Maria Flor</h1>
+                <h1 class="logo">Maria Flor</h1>
                 <p class="subtitle">Sistema de Gestão</p>
-                <p class="location">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Salvador, BA - Bairro do Resgate
-                </p>
+                <p class="location">Salvador, BA - Bairro do Resgate</p>
             </div>
             
             <div class="login-form">
@@ -70,39 +67,23 @@
                 <!-- Container para mensagens (será preenchido pelo JavaScript) -->
                 <div id="errorMessage" class="error-message" style="display: none;"></div>
                 
-                <!-- Credenciais para Teste -->
-                <div class="credentials-section">
-                    <div class="credentials-header">
-                        <i class="fas fa-info-circle"></i>
-                        <span>Credenciais de Teste</span>
-                    </div>
-                    <div class="credentials-grid">
-                        <div class="credential-card" onclick="document.getElementById('username').value='admin';document.getElementById('password').value='admin123';">
-                            <div class="credential-icon">
-                                <i class="fas fa-user-shield"></i>
-                            </div>
-                            <div class="credential-info">
-                                <strong>Admin</strong>
-                                <span>admin / admin123</span>
-                            </div>
+                <!-- Dica de Credenciais para Teste -->
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.1); border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);">
+                    <p style="margin: 0 0 10px 0; color: rgba(255,255,255,0.8); font-size: 13px; text-align: center;">
+                        <i class="fas fa-info-circle"></i> Credenciais de Teste
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; font-size: 12px;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; cursor: pointer;" onclick="document.getElementById('username').value='admin';document.getElementById('password').value='admin123';">
+                            <strong style="color: #fff;">Admin</strong><br>
+                            <span style="color: rgba(255,255,255,0.7);">admin / admin123</span>
                         </div>
-                        <div class="credential-card" onclick="document.getElementById('username').value='gerente';document.getElementById('password').value='gerente123';">
-                            <div class="credential-icon">
-                                <i class="fas fa-user-tie"></i>
-                            </div>
-                            <div class="credential-info">
-                                <strong>Gerente</strong>
-                                <span>gerente / gerente123</span>
-                            </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; cursor: pointer;" onclick="document.getElementById('username').value='gerente';document.getElementById('password').value='gerente123';">
+                            <strong style="color: #fff;">Gerente</strong><br>
+                            <span style="color: rgba(255,255,255,0.7);">gerente / gerente123</span>
                         </div>
-                        <div class="credential-card" onclick="document.getElementById('username').value='garcom';document.getElementById('password').value='garcom123';">
-                            <div class="credential-icon">
-                                <i class="fas fa-concierge-bell"></i>
-                            </div>
-                            <div class="credential-info">
-                                <strong>Garçom</strong>
-                                <span>garcom / garcom123</span>
-                            </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 8px; border-radius: 5px; cursor: pointer;" onclick="document.getElementById('username').value='garcom';document.getElementById('password').value='garcom123';">
+                            <strong style="color: #fff;">Garçom</strong><br>
+                            <span style="color: rgba(255,255,255,0.7);">garcom / garcom123</span>
                         </div>
                     </div>
                 </div>
@@ -144,7 +125,10 @@
             }
         }
 
-        // NÃO verificar se está logado - sempre mostrar login primeiro
+        // Verificar se já está logado (antes do DOM)
+        if (localStorage.getItem('authToken')) {
+            window.location.href = 'pages/dashboard.html';
+        }
 
         // Sistema de login
         document.addEventListener('DOMContentLoaded', function() {
