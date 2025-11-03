@@ -24,119 +24,116 @@
     <link rel="apple-touch-icon" sizes="180x180" href="https://via.placeholder.com/180x180?text=MF">
     
     <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/base.css">
     <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="css/fixes.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="login-wrapper">
+    <div class="container">
         <div class="login-container">
-            <div class="login-box">
-                <div class="logo-section">
-                    <div class="logo-icon">
-                        <i class="fas fa-utensils"></i>
+            <div class="login-header">
+                <h1 class="logo">🌸 Maria Flor</h1>
+                <p class="subtitle">Sistema de Gestão</p>
+                <p class="location">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Salvador, BA - Bairro do Resgate
+                </p>
+            </div>
+            
+            <div class="login-form">
+                <h2>Entrar no Sistema</h2>
+                <p class="form-description">Digite suas credenciais para acessar o sistema</p>
+                
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="username">Usuário</label>
+                        <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
+                        <i class="fas fa-user input-icon"></i>
                     </div>
-                    <h1 class="logo-title">Maria Flor</h1>
-                    <p class="logo-subtitle">Sistema de Gestão</p>
-                    <p class="logo-location">
-                        <i class="fas fa-map-marker-alt"></i>
-                        Salvador, BA - Bairro do Resgate
-                    </p>
-                </div>
-
-                <div class="login-form-section">
-                    <h2 class="form-title">Entrar no Sistema</h2>
-                    <p class="form-description">Digite suas credenciais para acessar o sistema</p>
-
-                    <form id="loginForm" class="login-form">
-                        <div class="form-group">
-                            <label for="username">
-                                <i class="fas fa-user"></i>
-                                Usuário
-                            </label>
-                            <input 
-                                type="text" 
-                                id="username" 
-                                name="username"
-                                placeholder="Digite seu usuário"
-                                required
-                                autocomplete="username"
-                            >
-                        </div>
-
-                        <div class="form-group">
-                            <label for="password">
-                                <i class="fas fa-lock"></i>
-                                Senha
-                            </label>
-                            <div class="password-input-wrapper">
-                                <input 
-                                    type="password" 
-                                    id="password" 
-                                    name="password"
-                                    placeholder="Digite sua senha"
-                                    required
-                                    autocomplete="current-password"
-                                >
-                                <button type="button" class="toggle-password" onclick="togglePassword()">
-                                    <i class="fas fa-eye" id="toggleIcon"></i>
-                                </button>
+                    
+                    <div class="input-group">
+                        <label for="password">Senha</label>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <span class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary login-btn">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Entrar
+                    </button>
+                </form>
+                
+                <!-- Container para mensagens (será preenchido pelo JavaScript) -->
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+                
+                <!-- Credenciais para Teste -->
+                <div class="credentials-section">
+                    <div class="credentials-header">
+                        <i class="fas fa-info-circle"></i>
+                        <span>Credenciais de Teste</span>
+                    </div>
+                    <div class="credentials-grid">
+                        <div class="credential-card" onclick="document.getElementById('username').value='admin';document.getElementById('password').value='admin123';">
+                            <div class="credential-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="credential-info">
+                                <strong>Admin</strong>
+                                <span>admin / admin123</span>
                             </div>
                         </div>
-
-                        <div id="errorMessage" class="error-message" style="display: none;"></div>
-
-                        <button type="submit" class="btn-login">
-                            <i class="fas fa-sign-in-alt"></i>
-                            Entrar
-                        </button>
-
-                        <div class="demo-info">
-                            <i class="fas fa-info-circle"></i>
-                            Credenciais de Teste
-                        </div>
-
-                        <div class="credentials-grid">
-                            <button type="button" class="credential-card" onclick="document.getElementById('username').value='admin';document.getElementById('password').value='123456';">
-                                <strong>Admin</strong>
-                                <span>admin / 123456</span>
-                            </button>
-                            <button type="button" class="credential-card" onclick="document.getElementById('username').value='gerente';document.getElementById('password').value='gerente123';">
+                        <div class="credential-card" onclick="document.getElementById('username').value='gerente';document.getElementById('password').value='gerente123';">
+                            <div class="credential-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="credential-info">
                                 <strong>Gerente</strong>
                                 <span>gerente / gerente123</span>
-                            </button>
-                            <button type="button" class="credential-card" onclick="document.getElementById('username').value='garcom';document.getElementById('password').value='garcom123';">
+                            </div>
+                        </div>
+                        <div class="credential-card" onclick="document.getElementById('username').value='garcom';document.getElementById('password').value='garcom123';">
+                            <div class="credential-icon">
+                                <i class="fas fa-concierge-bell"></i>
+                            </div>
+                            <div class="credential-info">
                                 <strong>Garçom</strong>
                                 <span>garcom / garcom123</span>
-                            </button>
+                            </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
-
-            <div class="login-footer">
-                <p>Criado e Idealizado por <i class="fas fa-heart"></i> Cristiano Santos</p>
-            </div>
         </div>
-
+        
         <div class="hero-section">
-            <div class="hero-icon">
-                <i class="fas fa-utensils"></i>
+            <div class="hero-content">
+                <div class="hero-image">
+                    <i class="fas fa-utensils hero-icon"></i>
+                </div>
+                <h3>Gestão Completa para seu Restaurante</h3>
+                <p>Sistema profissional para controle de vendas, estoque, cardápio e muito mais.</p>
             </div>
-            <h2>Gestão Completa para seu Restaurante</h2>
-            <p>Sistema profissional para controle de vendas, estoque, cardápio e muito mais.</p>
         </div>
     </div>
+    
+    <footer>
+        <p>Criado e Idealizado por <span style="color: #e74c3c;">♥</span> Cristiano Santos</p>
+    </footer>
 
-    <div class="background-decoration">
-        <div class="circle circle-1"></div>
-        <div class="circle circle-2"></div>
-        <div class="circle circle-3"></div>
-    </div>
-
+    <!-- Scripts Organizados -->
+    <script src="js/config.js"></script>
+    <script src="js/auth-neon.js"></script>
+    
+    <!-- Script de Login Otimizado -->
     <script>
+        // Função para mostrar/esconder senha
         function togglePassword() {
             const passwordInput = document.getElementById('password');
-            const toggleIcon = document.getElementById('toggleIcon');
+            const toggleIcon = document.querySelector('.toggle-password i');
             
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
@@ -147,42 +144,50 @@
             }
         }
 
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value;
-            const errorMessage = document.getElementById('errorMessage');
-            const submitBtn = this.querySelector('button[type="submit"]');
-            
-            errorMessage.style.display = 'none';
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
-            
-            // Simular autenticação
-            setTimeout(() => {
-                if (username === 'admin' && password === '123456') {
-                    // Salvar dados do usuário
-                    localStorage.setItem('authToken', 'logged_in');
-                    localStorage.setItem('username', username);
-                    localStorage.setItem('userRole', 'admin');
-                    localStorage.setItem('loginTime', new Date().toISOString());
-                    
-                    // Redirecionar
-                    window.location.href = 'dashboard.html';
-                } else {
-                    errorMessage.textContent = 'Usuário ou senha inválidos';
-                    errorMessage.style.display = 'block';
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar';
-                }
-            }, 800);
-        });
+        // NÃO verificar se está logado - sempre mostrar login primeiro
 
-        // Verificar se já está logado
-        if (localStorage.getItem('authToken')) {
-            window.location.href = 'dashboard.html';
-        }
+        // Sistema de login
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.getElementById('loginForm');
+            const errorMessage = document.getElementById('errorMessage');
+            const submitBtn = loginForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            loginForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                
+                if (!username || !password) {
+                    errorMessage.textContent = 'Preencha todos os campos';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                
+                errorMessage.style.display = 'none';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+                submitBtn.disabled = true;
+                
+                try {
+                    const auth = new AuthSystemNeon();
+                    const result = await auth.login(username, password);
+                    
+                    if (result.success) {
+                        window.location.href = 'pages/dashboard.html';
+                    } else {
+                        errorMessage.textContent = result.message || 'Usuário ou senha inválidos';
+                        errorMessage.style.display = 'block';
+                    }
+                } catch (error) {
+                    errorMessage.textContent = 'Erro ao fazer login';
+                    errorMessage.style.display = 'block';
+                } finally {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            });
+        });
     </script>
 </body>
 </html>
