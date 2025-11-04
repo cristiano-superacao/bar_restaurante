@@ -1720,7 +1720,7 @@ function addNewTable() {
 
 function refreshTables() {
     console.log('🔄 Atualizando mesas...');
-    loadTablesData();
+    showNotification('Mesas atualizadas!', 'success');
 }
 
 function openTableModal() {
