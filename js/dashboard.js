@@ -84,7 +84,7 @@ function initializeMainSystem() {
         try {
             initializeCharts();
         } catch (e) {
-            console.warn('⚠️ Charts não inicializados:', e.message);
+            console.warn('⚠️ Charts not initialized:', e.message);
         }
         
         loadSalesData();
@@ -98,7 +98,7 @@ function initializeMainSystem() {
         
     } catch (error) {
         console.error('❌ Erro ao inicializar sistema:', error);
-        alert('Erro ao carregar o sistema. Tente recarregar a página.');
+        showNotification('Erro ao carregar o sistema. Tente recarregar a página.', 'error');
     }
 }
 
