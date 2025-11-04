@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.removeItem('username');
             localStorage.removeItem('userRole');
             alert('Todos os dados foram limpos. A aplicação será recarregada.');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     }
 

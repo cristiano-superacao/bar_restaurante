@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Se não houver token, redireciona para a página de login
     if (!authToken) {
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
         return;
     }
 
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.removeItem('userRole');
 
             // Redireciona para a página de login
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         });
     }
 });
