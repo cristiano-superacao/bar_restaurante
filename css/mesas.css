@@ -1,0 +1,81 @@
+/* Estilos para a página de Mesas */
+
+.tables-filters {
+    margin-bottom: 2rem;
+}
+
+#table-status-filter {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fff;
+}
+
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.table-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 5px solid;
+}
+
+.table-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.table-card.Livre {
+    border-left-color: #2ecc71;
+}
+
+.table-card.Ocupada {
+    border-left-color: #e74c3c;
+}
+
+.table-card .table-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.table-card.Livre .table-icon {
+    color: #2ecc71;
+}
+
+.table-card.Ocupada .table-icon {
+    color: #e74c3c;
+}
+
+.table-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+}
+
+.table-card p {
+    margin: 0;
+    color: #777;
+    font-size: 0.9rem;
+}
+
+.table-card .table-status-text {
+    font-weight: 600;
+    margin-top: 1rem;
+    display: block;
+}
+
+.table-card.Livre .table-status-text {
+    color: #2ecc71;
+}
+
+.table-card.Ocupada .table-status-text {
+    color: #e74c3c;
+}

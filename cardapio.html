@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cardápio - Bar e Restaurante</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/cardapio.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-utensils logo-icon"></i>
+                <h2>Sistema</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li class="active"><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
+                    <li><a href="#"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
+                    <li><a href="#"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
+                    <li><a href="#"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
+                    <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <span id="username-display">Usuário</span>
+                        <small id="user-role-display">Cargo</small>
+                    </div>
+                </div>
+                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Cardápio</h1>
+                <button class="btn btn-primary" id="add-item-btn"><i class="fas fa-plus"></i> Adicionar Item</button>
+            </header>
+            <section class="content-body">
+                <div class="menu-filters">
+                    <input type="text" id="search-input" placeholder="Buscar item..." aria-label="Buscar item">
+                    <select id="category-filter" aria-label="Filtrar por categoria">
+                        <option value="all">Todas as Categorias</option>
+                        <option value="Lanches">Lanches</option>
+                        <option value="Pizzas">Pizzas</option>
+                        <option value="Bebidas">Bebidas</option>
+                        <option value="Sobremesas">Sobremesas</option>
+                    </select>
+                </div>
+                <div class="menu-grid" id="menu-grid">
+                    <!-- Itens do cardápio serão inseridos aqui pelo JavaScript -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal para Adicionar/Editar Item -->
+    <div id="item-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modal-title">Adicionar Novo Item</h2>
+            <form id="item-form">
+                <input type="hidden" id="item-id">
+                <div class="form-group">
+                    <label for="item-name">Nome do Item</label>
+                    <input type="text" id="item-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-category">Categoria</label>
+                    <select id="item-category" required>
+                        <option value="Lanches">Lanches</option>
+                        <option value="Pizzas">Pizzas</option>
+                        <option value="Bebidas">Bebidas</option>
+                        <option value="Sobremesas">Sobremesas</option>
+                        <option value="Porções">Porções</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="item-price">Preço (R$)</label>
+                    <input type="number" id="item-price" step="0.01" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-description">Descrição</label>
+                    <textarea id="item-description" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="item-image">URL da Imagem</label>
+                    <input type="text" id="item-image">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+    <script src="js/cardapio.js"></script>
+</body>
+</html>
