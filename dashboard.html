@@ -16,12 +16,15 @@
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-                    <li><a href="#"><i class="fas fa-receipt"></i> Pedidos</a></li>
-                    <li><a href="#"><i class="fas fa-chair"></i> Mesas</a></li>
-                    <li><a href="#"><i class="fas fa-book-open"></i> Cardápio</a></li>
-                    <li><a href="#"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i> Configurações</a></li>
+                    <li><a href="dashboard.html" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="cardapio.html"><i class="fas fa-book-open"></i> Cardápio</a></li>
+                    <li><a href="pedidos.html"><i class="fas fa-receipt"></i> Pedidos</a></li>
+                    <li><a href="mesas.html"><i class="fas fa-chair"></i> Mesas</a></li>
+                    <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> Reservas</a></li>
+                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> Estoque</a></li>
+                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                    <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                    <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -30,6 +33,9 @@
         </aside>
         <main class="main-content">
             <header class="main-header">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="header-title">
                     <h1>Dashboard</h1>
                     <p>Visão geral do seu estabelecimento</p>
@@ -43,6 +49,44 @@
                 </div>
             </header>
             <section class="content-area">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <div class="card-icon mesas">
+                            <i class="fas fa-chair"></i>
+                        </div>
+                        <div class="card-info">
+                            <span class="card-title">Ocupação de Mesas</span>
+                            <span class="card-value" id="mesas-ocupadas-valor">0 / 0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon vendas">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="card-info">
+                            <span class="card-title">Vendas Hoje</span>
+                            <span class="card-value" id="vendas-hoje-valor">R$ 0,00</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon pedidos">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="card-info">
+                            <span class="card-title">Pedidos Pendentes</span>
+                            <span class="card-value" id="pedidos-pendentes-valor">0</span>
+                        </div>
+                    </div>
+                    <div class="summary-card">
+                        <div class="card-icon estoque">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="card-info">
+                            <span class="card-title">Itens em Baixa</span>
+                            <span class="card-value" id="estoque-baixo-valor">0</span>
+                        </div>
+                    </div>
+                </div>
                 <!-- O conteúdo dinâmico será carregado aqui -->
                 <div class="welcome-message">
                     <h2>Bem-vindo de volta!</h2>
@@ -50,6 +94,7 @@
                 </div>
             </section>
         </main>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
     </div>
     <script src="js/dashboard.js"></script>
 </body>

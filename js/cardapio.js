@@ -48,6 +48,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Funções ---
 
+    // Popula o filtro de categorias dinamicamente
+    function populateCategoryFilter() {
+        const categories = [...new Set(menuItems.map(item => item.category))];
+        categoryFilter.innerHTML = '<option value="all">Todas as Categorias</option>';
+        categories.sort().forEach(category => {
+            const option = document.createElement('option');
+            option.value = category;
+            option.textContent = category;
+            categoryFilter.appendChild(option);
+        });
+    }
+
     // Salva os itens no localStorage
     function saveItems() {
         localStorage.setItem('menuItems', JSON.stringify(menuItems));
@@ -57,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderMenuItems(items) {
         menuGrid.innerHTML = '';
         if (items.length === 0) {
-            menuGrid.innerHTML = '<p>Nenhum item encontrado.</p>';
+            menuGrid.innerHTML = '<p>Nenhum item encontrado com os filtros atuais.</p>';
             return;
         }
         items.forEach(item => {
@@ -66,14 +78,14 @@ document.addEventListener('DOMContentLoaded', function () {
             card.innerHTML = `
                 <img src="${item.image || 'https://via.placeholder.com/300x180.png?text=Sem+Imagem'}" alt="${item.name}" class="card-image">
                 <div class="card-content">
-                    <h3 class="card-title">${item.name}</h3>
                     <span class="card-category">${item.category}</span>
+                    <h3 class="card-title">${item.name}</h3>
                     <p class="card-description">${item.description}</p>
                     <div class="card-footer">
                         <span class="card-price">R$ ${item.price.toFixed(2).replace('.', ',')}</span>
                         <div class="card-actions">
-                            <button class="btn btn-edit" data-id="${item.id}"><i class="fas fa-edit"></i></button>
-                            <button class="btn btn-delete" data-id="${item.id}"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-edit" data-id="${item.id}" title="Editar"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-delete" data-id="${item.id}" title="Excluir"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 </div>
@@ -111,22 +123,25 @@ document.addEventListener('DOMContentLoaded', function () {
             modalTitle.textContent = 'Adicionar Novo Item';
             itemIdInput.value = '';
         }
-        modal.style.display = 'flex';
+        modal.classList.add('show');
     }
 
     // Fecha o modal
     function closeModal() {
-        modal.style.display = 'none';
+        modal.classList.remove('show');
     }
 
     // Manipula o envio do formulário (Adicionar/Editar)
     function handleFormSubmit(e) {
         e.preventDefault();
         const id = itemIdInput.value;
+        const categoryInput = document.getElementById('item-category');
+        const category = categoryInput.value.trim();
+
         const newItem = {
             id: id ? parseInt(id) : Date.now(), // Cria um novo ID se não existir
             name: document.getElementById('item-name').value,
-            category: document.getElementById('item-category').value,
+            category: category,
             price: parseFloat(document.getElementById('item-price').value),
             description: document.getElementById('item-description').value,
             image: document.getElementById('item-image').value
@@ -141,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         saveItems();
+        populateCategoryFilter(); // Atualiza as categorias no filtro
         filterAndRender();
         closeModal();
     }
@@ -161,6 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (confirm('Tem certeza que deseja excluir este item?')) {
                 menuItems = menuItems.filter(item => item.id !== id);
                 saveItems();
+                populateCategoryFilter(); // Atualiza as categorias caso a última de um tipo seja removida
                 filterAndRender();
             }
         }
@@ -180,5 +197,6 @@ document.addEventListener('DOMContentLoaded', function () {
     menuGrid.addEventListener('click', handleGridClick);
 
     // --- Inicialização ---
+    populateCategoryFilter();
     filterAndRender();
 });

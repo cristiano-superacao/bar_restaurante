@@ -12,58 +12,72 @@
     <div class="dashboard-container">
         <aside class="sidebar">
             <div class="sidebar-header">
-                <i class="fas fa-utensils logo-icon"></i>
-                <h2>Sistema</h2>
+                <i class="fas fa-utensils"></i>
+                <h3>Restaurante</h3>
             </div>
             <nav class="sidebar-nav">
                 <ul>
-                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-                    <li class="active"><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
-                    <li><a href="#"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
-                    <li><a href="#"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
-                    <li><a href="#"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
-                    <li><a href="#"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                    <li><a href="cardapio.html" class="active"><i class="fas fa-book-open"></i> Cardápio</a></li>
+                    <li><a href="pedidos.html"><i class="fas fa-receipt"></i> Pedidos</a></li>
+                    <li><a href="mesas.html"><i class="fas fa-chair"></i> Mesas</a></li>
+                    <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> Reservas</a></li>
+                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> Estoque</a></li>
+                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+                    <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                    <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <div>
-                        <span id="username-display">Usuário</span>
-                        <small id="user-role-display">Cargo</small>
-                    </div>
-                </div>
-                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
+                <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
             </div>
         </aside>
         <main class="main-content">
             <header class="main-header">
-                <h1>Cardápio</h1>
-                <button class="btn btn-primary" id="add-item-btn"><i class="fas fa-plus"></i> Adicionar Item</button>
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Cardápio</h1>
+                    <p>Gerencie os pratos e bebidas do seu estabelecimento</p>
+                </div>
+                <div class="header-user">
+                    <div class="user-info">
+                        <span id="username-display"></span>
+                        <small id="user-role-display"></small>
+                    </div>
+                    <img src="https://i.pravatar.cc/150?u=admin" alt="Avatar do Usuário" class="user-avatar">
+                </div>
             </header>
-            <section class="content-body">
-                <div class="menu-filters">
-                    <input type="text" id="search-input" placeholder="Buscar item..." aria-label="Buscar item">
-                    <select id="category-filter" aria-label="Filtrar por categoria">
-                        <option value="all">Todas as Categorias</option>
-                        <option value="Lanches">Lanches</option>
-                        <option value="Pizzas">Pizzas</option>
-                        <option value="Bebidas">Bebidas</option>
-                        <option value="Sobremesas">Sobremesas</option>
-                    </select>
+            <section class="content-area">
+                <div class="controls-container">
+                    <div class="search-filter-container">
+                        <div class="search-wrapper">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="search-input" placeholder="Buscar por nome ou descrição..." aria-label="Buscar item">
+                        </div>
+                        <select id="category-filter" aria-label="Filtrar por categoria">
+                            <option value="all">Todas as Categorias</option>
+                            <!-- Categorias serão populadas pelo JS -->
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" id="add-item-btn"><i class="fas fa-plus"></i> Adicionar Item</button>
                 </div>
                 <div class="menu-grid" id="menu-grid">
                     <!-- Itens do cardápio serão inseridos aqui pelo JavaScript -->
                 </div>
             </section>
         </main>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
     </div>
 
     <!-- Modal para Adicionar/Editar Item -->
     <div id="item-modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="modal-title">Adicionar Novo Item</h2>
+            <div class="modal-header">
+                <h2 id="modal-title">Adicionar Novo Item</h2>
+                <span class="close-btn">&times;</span>
+            </div>
             <form id="item-form">
                 <input type="hidden" id="item-id">
                 <div class="form-group">
@@ -72,13 +86,7 @@
                 </div>
                 <div class="form-group">
                     <label for="item-category">Categoria</label>
-                    <select id="item-category" required>
-                        <option value="Lanches">Lanches</option>
-                        <option value="Pizzas">Pizzas</option>
-                        <option value="Bebidas">Bebidas</option>
-                        <option value="Sobremesas">Sobremesas</option>
-                        <option value="Porções">Porções</option>
-                    </select>
+                    <input type="text" id="item-category" placeholder="Ex: Lanches, Bebidas" required>
                 </div>
                 <div class="form-group">
                     <label for="item-price">Preço (R$)</label>
@@ -90,7 +98,7 @@
                 </div>
                 <div class="form-group">
                     <label for="item-image">URL da Imagem</label>
-                    <input type="text" id="item-image">
+                    <input type="text" id="item-image" placeholder="https://exemplo.com/imagem.jpg">
                 </div>
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Salvar</button>

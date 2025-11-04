@@ -65,11 +65,11 @@ document.addEventListener('DOMContentLoaded', function () {
             modalTitle.textContent = 'Adicionar Nova Mesa';
             tableIdInput.value = '';
         }
-        modal.style.display = 'flex';
+        modal.classList.add('show');
     }
 
     function closeModal() {
-        modal.style.display = 'none';
+        modal.classList.remove('show');
     }
 
     function handleFormSubmit(e) {

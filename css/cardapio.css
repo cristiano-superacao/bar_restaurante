@@ -1,223 +1,273 @@
 /* Estilos para a página de Cardápio */
 
-.main-header {
+.controls-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-.menu-filters {
+.search-filter-container {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+    flex-grow: 1;
 }
 
-#search-input,
-#category-filter {
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
+.search-wrapper {
+    position: relative;
+    flex-grow: 1;
+    min-width: 250px;
+}
+
+.search-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
 }
 
 #search-input {
-    flex-grow: 1;
-    max-width: 400px;
+    width: 100%;
+    padding: 10px 15px 10px 40px; /* Espaço para o ícone */
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
 }
 
 #category-filter {
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
     background-color: #fff;
+    min-width: 180px;
+}
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #3a7ac8;
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.4);
 }
 
 .menu-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    gap: 25px;
 }
 
 .menu-item-card {
     background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--shadow-color);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .menu-item-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .card-image {
     width: 100%;
     height: 180px;
     object-fit: cover;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .card-content {
-    padding: 1.5rem;
+    padding: 20px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 
 .card-title {
-    font-size: 1.25rem;
+    font-size: 18px;
     font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #333;
+    margin-bottom: 8px;
+    color: var(--text-color-dark);
 }
 
 .card-category {
-    background-color: #e8eaf6;
-    color: #3f51b5;
-    font-size: 0.8rem;
+    background-color: var(--primary-color-light, #e8f0fe);
+    color: var(--primary-color, #4a90e2);
+    font-size: 12px;
     font-weight: 500;
-    padding: 0.25rem 0.75rem;
-    border-radius: 12px;
-    margin-bottom: 1rem;
+    padding: 4px 10px;
+    border-radius: 15px;
+    margin-bottom: 12px;
     align-self: flex-start;
 }
 
 .card-description {
-    font-size: 0.95rem;
-    color: #666;
+    font-size: 14px;
+    color: #777;
     flex-grow: 1;
-    margin-bottom: 1rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
 }
 
 .card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #f0f0f0;
-    padding-top: 1rem;
-    margin-top: 1rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 15px;
+    margin-top: auto;
 }
 
 .card-price {
-    font-size: 1.3rem;
+    font-size: 20px;
     font-weight: 700;
-    color: #27ae60;
+    color: #34a853;
 }
 
 .card-actions .btn {
     background: none;
     border: none;
-    color: #777;
-    font-size: 1.1rem;
+    color: #999;
+    font-size: 16px;
     cursor: pointer;
-    padding: 0.5rem;
+    padding: 8px;
     border-radius: 50%;
     transition: background-color 0.2s, color 0.2s;
 }
 
 .card-actions .btn:hover {
-    background-color: #f0f0f0;
+    background-color: #f0f2f5;
 }
 
 .card-actions .btn-edit:hover {
-    color: #3498db;
+    color: var(--primary-color);
 }
 
 .card-actions .btn-delete:hover {
-    color: #e74c3c;
+    color: #ea4335;
 }
 
 
-/* Modal */
+/* Modal Styles (Reutilizáveis) */
 .modal {
     display: none;
     position: fixed;
-    z-index: 1000;
+    z-index: 1001;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0,0,0,0.6);
+    display: flex;
     align-items: center;
     justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.modal.show {
+    opacity: 1;
+    visibility: visible;
 }
 
 .modal-content {
     background-color: #fefefe;
     margin: auto;
-    padding: 2.5rem;
-    border: 1px solid #888;
+    padding: 30px;
+    border: none;
     width: 90%;
     max-width: 500px;
-    border-radius: 12px;
+    border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    position: relative;
-    animation: slide-down 0.4s ease-out;
+    transform: translateY(-50px);
+    transition: transform 0.3s ease;
 }
 
-@keyframes slide-down {
-    from {
-        transform: translateY(-50px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+.modal.show .modal-content {
+    transform: translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: 22px;
 }
 
 .close-btn {
     color: #aaa;
-    position: absolute;
-    top: 1rem;
-    right: 1.5rem;
-    font-size: 2rem;
+    font-size: 28px;
     font-weight: bold;
     cursor: pointer;
+    transition: color 0.2s;
 }
 
 .close-btn:hover,
 .close-btn:focus {
-    color: black;
-    text-decoration: none;
-}
-
-#modal-title {
-    margin-top: 0;
-    margin-bottom: 2rem;
-    font-size: 1.8rem;
     color: #333;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 20px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #555;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 14px;
 }
 
 .form-group input,
 .form-group select,
 .form-group textarea {
     width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1rem;
-    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 16px;
 }
 
 .form-group textarea {
     resize: vertical;
+    min-height: 80px;
 }
 
 .form-actions {
-    text-align: right;
-    margin-top: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 30px;
 }

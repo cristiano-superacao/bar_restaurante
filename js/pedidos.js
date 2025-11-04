@@ -1,31 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- Dados (Simulação de Banco de Dados) ---
-    // Carrega itens do cardápio do localStorage (criado por cardapio.js)
     const menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
-    
-    // Carrega pedidos do localStorage ou usa dados de exemplo
-    let orders = JSON.parse(localStorage.getItem('orders')) || [
-        {
-            id: 1,
-            table: 'Mesa 03',
-            items: [
-                { id: 1, name: 'Hambúrguer Clássico', price: 25.50, quantity: 2 },
-                { id: 3, name: 'Coca-Cola Lata', price: 5.00, quantity: 2 }
-            ],
-            total: 61.00,
-            status: 'Em Preparo'
-        },
-        {
-            id: 2,
-            table: 'Balcão',
-            items: [
-                { id: 2, name: 'Pizza Margherita', price: 45.00, quantity: 1 }
-            ],
-            total: 45.00,
-            status: 'Entregue'
-        }
-    ];
+    const mesas = JSON.parse(localStorage.getItem('mesas')) || [];
+    let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
 
     // --- Elementos do DOM ---
     const ordersGrid = document.getElementById('orders-grid');
@@ -37,6 +15,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const orderForm = document.getElementById('order-form');
     const modalTitle = document.getElementById('order-modal-title');
     const orderIdInput = document.getElementById('order-id');
+    const orderTableSelect = document.getElementById('order-table');
     const menuItemSelect = document.getElementById('menu-item-select');
     const itemQuantityInput = document.getElementById('item-quantity');
     const addItemToOrderBtn = document.getElementById('add-item-to-order-btn');
@@ -48,17 +27,17 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Funções ---
 
     function saveOrders() {
-        localStorage.setItem('orders', JSON.stringify(orders));
+        localStorage.setItem('pedidos', JSON.stringify(pedidos));
     }
 
     function renderOrders(filteredOrders) {
         ordersGrid.innerHTML = '';
         if (filteredOrders.length === 0) {
-            ordersGrid.innerHTML = '<p>Nenhum pedido encontrado.</p>';
+            ordersGrid.innerHTML = '<p class="empty-message">Nenhum pedido encontrado com os filtros atuais.</p>';
             return;
         }
 
-        filteredOrders.forEach(order => {
+        filteredOrders.sort((a, b) => b.id - a.id).forEach(order => {
             const card = document.createElement('div');
             card.className = 'order-card';
             card.dataset.id = order.id;
@@ -91,12 +70,22 @@ document.addEventListener('DOMContentLoaded', function () {
         const searchTerm = searchInput.value.toLowerCase();
         const status = statusFilter.value;
 
-        const filtered = orders.filter(order => {
+        const filtered = pedidos.filter(order => {
             const matchesSearch = order.table.toLowerCase().includes(searchTerm) || String(order.id).includes(searchTerm);
             const matchesStatus = status === 'all' || order.status === status;
             return matchesSearch && matchesStatus;
         });
         renderOrders(filtered);
+    }
+
+    function populateTableSelect() {
+        orderTableSelect.innerHTML = '<option value="">Selecione uma mesa...</option>';
+        mesas.forEach(mesa => {
+            const option = document.createElement('option');
+            option.value = mesa.name;
+            option.textContent = `${mesa.name} (${mesa.status})`;
+            orderTableSelect.appendChild(option);
+        });
     }
 
     function populateMenuItemSelect() {
@@ -114,15 +103,15 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderCurrentOrderItems() {
         orderItemsContainer.innerHTML = '';
         if (currentOrderItems.length === 0) {
-            orderItemsContainer.innerHTML = '<p>Nenhum item adicionado.</p>';
+            orderItemsContainer.innerHTML = '<p class="empty-message">Nenhum item adicionado.</p>';
         } else {
             currentOrderItems.forEach((item, index) => {
                 const itemRow = document.createElement('div');
                 itemRow.className = 'order-item-row';
                 itemRow.innerHTML = `
                     <span>${item.quantity}x ${item.name}</span>
-                    <span>R$ ${(item.price * item.quantity).toFixed(2)}</span>
-                    <button type="button" class="btn-remove-item" data-index="${index}">&times;</button>
+                    <span>R$ ${(item.price * item.quantity).toFixed(2).replace('.',',')}</span>
+                    <button type="button" class="btn-remove-item" data-index="${index}" title="Remover item">&times;</button>
                 `;
                 orderItemsContainer.appendChild(itemRow);
             });
@@ -143,6 +132,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const itemName = selectedOption.dataset.name;
         const itemPrice = parseFloat(selectedOption.dataset.price);
         const quantity = parseInt(itemQuantityInput.value);
+
+        if (quantity <= 0) return;
 
         const existingItem = currentOrderItems.find(item => item.id === itemId);
 
@@ -167,23 +158,24 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function openModal(order = null) {
         orderForm.reset();
+        populateTableSelect();
         if (order) {
             modalTitle.textContent = 'Editar Pedido';
             orderIdInput.value = order.id;
             document.getElementById('order-table').value = order.table;
             document.getElementById('order-status').value = order.status;
-            currentOrderItems = [...order.items];
+            currentOrderItems = JSON.parse(JSON.stringify(order.items)); // Deep copy
         } else {
             modalTitle.textContent = 'Novo Pedido';
             orderIdInput.value = '';
             currentOrderItems = [];
         }
         renderCurrentOrderItems();
-        modal.style.display = 'flex';
+        modal.classList.add('show');
     }
 
     function closeModal() {
-        modal.style.display = 'none';
+        modal.classList.remove('show');
     }
 
     function handleFormSubmit(e) {
@@ -191,18 +183,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const id = orderIdInput.value;
         const total = currentOrderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+        if (currentOrderItems.length === 0) {
+            alert('Adicione pelo menos um item ao pedido.');
+            return;
+        }
+
         const newOrder = {
             id: id ? parseInt(id) : Date.now(),
             table: document.getElementById('order-table').value,
             items: currentOrderItems,
             total: total,
-            status: document.getElementById('order-status').value
+            status: document.getElementById('order-status').value,
+            data: new Date().toISOString()
         };
 
         if (id) {
-            orders = orders.map(order => order.id === parseInt(id) ? newOrder : order);
+            pedidos = pedidos.map(order => order.id === parseInt(id) ? newOrder : order);
         } else {
-            orders.push(newOrder);
+            pedidos.push(newOrder);
         }
 
         saveOrders();
@@ -214,7 +212,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const card = e.target.closest('.order-card');
         if (card) {
             const orderId = parseInt(card.dataset.id);
-            const order = orders.find(o => o.id === orderId);
+            const order = pedidos.find(o => o.id === orderId);
             if (order) {
                 openModal(order);
             }

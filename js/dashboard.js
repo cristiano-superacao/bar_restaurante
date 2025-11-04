@@ -81,6 +81,23 @@ document.addEventListener('DOMContentLoaded', function () {
         userRoleDisplay.textContent = userRole;
     }
 
+    // Menu responsivo
+    const menuToggle = document.getElementById('menu-toggle');
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+    if (menuToggle && sidebar && sidebarOverlay) {
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('active');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('active');
+        });
+    }
+
 
     // Adiciona funcionalidade de logout
     const logoutBtn = document.getElementById('logout-btn');
@@ -97,4 +114,36 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = 'index.html';
         });
     }
+
+    // Carrega os dados do dashboard
+    loadDashboardData();
 });
+
+function loadDashboardData() {
+    // Ocupação de Mesas
+    const mesas = JSON.parse(localStorage.getItem('mesas')) || [];
+    const mesasOcupadas = mesas.filter(m => m.status === 'Ocupada').length;
+    const totalMesas = mesas.length;
+    const mesasEl = document.getElementById('mesas-ocupadas-valor');
+    if (mesasEl) mesasEl.textContent = `${mesasOcupadas} / ${totalMesas}`;
+
+    // Vendas Hoje
+    const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+    const hoje = new Date().toISOString().split('T')[0];
+    const vendasHoje = pedidos
+        .filter(p => p.data && p.data.startsWith(hoje) && p.status === 'Entregue')
+        .reduce((acc, p) => acc + (p.total || 0), 0);
+    const vendasEl = document.getElementById('vendas-hoje-valor');
+    if(vendasEl) vendasEl.textContent = `R$ ${vendasHoje.toFixed(2).replace('.', ',')}`;
+
+    // Pedidos Pendentes
+    const pedidosPendentes = pedidos.filter(p => p.status === 'Pendente').length;
+    const pendentesEl = document.getElementById('pedidos-pendentes-valor');
+    if(pendentesEl) pendentesEl.textContent = pedidosPendentes;
+
+    // Itens em Baixa no Estoque
+    const estoque = JSON.parse(localStorage.getItem('estoque')) || [];
+    const itensEmBaixa = estoque.filter(item => item.quantidade < item.quantidadeMinima).length;
+    const estoqueEl = document.getElementById('estoque-baixo-valor');
+    if(estoqueEl) estoqueEl.textContent = itensEmBaixa;
+}

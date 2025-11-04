@@ -1,88 +1,121 @@
-/* Estilos para a página de Pedidos */
+/* Estilos para a página de Pedidos, alinhados com o novo design */
 
-.orders-filters {
+.controls-container {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    justify-content: space-between;
     align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
-#search-order-input,
-#status-filter {
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 1rem;
+.search-filter-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    flex-grow: 1;
+}
+
+.search-wrapper {
+    position: relative;
+    flex-grow: 1;
+    min-width: 250px;
+}
+
+.search-wrapper i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
 }
 
 #search-order-input {
-    flex-grow: 1;
-    max-width: 400px;
+    width: 100%;
+    padding: 10px 15px 10px 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
 }
 
 #status-filter {
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
     background-color: #fff;
+    min-width: 180px;
 }
 
 .orders-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 25px;
 }
 
 .order-card {
     background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--shadow-color);
     display: flex;
     flex-direction: column;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
 }
 
 .order-card:hover {
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
 .order-card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem;
-    border-bottom: 1px solid #f0f0f0;
-    padding-bottom: 1rem;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .order-card-header h3 {
     margin: 0;
-    font-size: 1.2rem;
+    font-size: 18px;
+    font-weight: 600;
 }
 
-.order-card-header .order-id {
-    font-size: 0.9rem;
-    color: #888;
+.order-id {
+    font-size: 13px;
+    color: #777;
+    font-weight: 500;
+}
+
+.order-card-body {
+    padding: 20px;
+    flex-grow: 1;
 }
 
 .order-card-body ul {
     list-style: none;
     padding: 0;
-    margin: 0 0 1rem 0;
-    flex-grow: 1;
+    margin: 0;
 }
 
 .order-card-body li {
     display: flex;
     justify-content: space-between;
-    padding: 0.5rem 0;
-    font-size: 0.95rem;
+    padding: 8px 0;
+    font-size: 14px;
+}
+.order-card-body li:not(:last-child) {
+    border-bottom: 1px dashed #eee;
 }
 
-.order-card-body li .item-name {
+.item-name {
     color: #555;
 }
 
-.order-card-body li .item-price {
-    color: #333;
+.item-price {
+    color: var(--text-color-dark);
     font-weight: 500;
 }
 
@@ -90,78 +123,109 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid #f0f0f0;
+    padding: 15px 20px;
+    background-color: #f9fafb;
+    border-top: 1px solid var(--border-color);
+    border-radius: 0 0 8px 8px;
 }
 
 .order-total-price {
-    font-size: 1.2rem;
+    font-size: 18px;
     font-weight: 700;
-    color: #27ae60;
+    color: #34a853;
 }
 
 .order-status {
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.85rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 12px;
     font-weight: 600;
     color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.order-status.Pendente { background-color: #f39c12; }
-.order-status.Em-Preparo { background-color: #3498db; }
-.order-status.Entregue { background-color: #2ecc71; }
-.order-status.Cancelado { background-color: #e74c3c; }
+.order-status.Pendente { background-color: #fbbc05; }
+.order-status.Em-Preparo { background-color: #4a90e2; }
+.order-status.Entregue { background-color: #34a853; }
+.order-status.Cancelado { background-color: #ea4335; }
 
 
 /* Estilos do Modal de Pedido */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+.form-row .form-group {
+    flex: 1;
+}
+
 #order-items-container {
-    border: 1px solid #ddd;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    max-height: 200px;
+    padding: 10px;
+    margin-top: 10px;
+    max-height: 180px;
     overflow-y: auto;
+    background-color: #f9fafb;
 }
 
 .order-item-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.5rem;
-    border-bottom: 1px solid #eee;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 .order-item-row:last-child {
-    border-bottom: none;
+    margin-bottom: 0;
 }
 
 .order-item-row span {
     flex: 1;
 }
 
+.btn-remove-item {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+}
+.btn-remove-item:hover {
+    color: #ea4335;
+}
+
 .add-item-form {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    gap: 10px;
 }
 
 #menu-item-select {
     flex-grow: 1;
-    padding: 0.5rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
 }
 
 #item-quantity {
-    width: 70px;
-    padding: 0.5rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    width: 80px;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-secondary:hover {
+    background-color: #5a6268;
 }
 
 .order-total {
     text-align: right;
-    font-size: 1.2rem;
-    margin-top: 1.5rem;
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
 }
