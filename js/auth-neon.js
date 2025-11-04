@@ -120,6 +120,11 @@ class AuthSystemNeon {
         return this.token !== null && this.currentUser !== null;
     }
 
+    // Alias para compatibilidade
+    isLoggedIn() {
+        return this.isAuthenticated();
+    }
+
     // Obter usuário atual
     getCurrentUser() {
         return this.currentUser;
@@ -169,6 +174,7 @@ class AuthSystemNeon {
 
 // Instância global do sistema de autenticação
 const auth = new AuthSystemNeon();
+window.authSystem = auth;
 
 // Middleware para proteger páginas
 function requireAuth() {
