@@ -21,11 +21,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Exporta todos os dados do localStorage para um arquivo JSON
     function exportData() {
+        // Normaliza chaves usadas em diferentes módulos
+        const pedidos = JSON.parse(localStorage.getItem('pedidos')) || JSON.parse(localStorage.getItem('orders')) || [];
+        const mesas = JSON.parse(localStorage.getItem('mesas')) || JSON.parse(localStorage.getItem('tables')) || [];
+        const estoque = JSON.parse(localStorage.getItem('estoque')) || [];
+        const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+
         const data = {
             users: JSON.parse(localStorage.getItem('users')) || [],
             menuItems: JSON.parse(localStorage.getItem('menuItems')) || [],
-            orders: JSON.parse(localStorage.getItem('orders')) || [],
-            tables: JSON.parse(localStorage.getItem('tables')) || [],
+            pedidos,
+            mesas,
+            estoque,
+            transacoes,
             exportedAt: new Date().toISOString()
         };
 
@@ -45,10 +53,16 @@ document.addEventListener('DOMContentLoaded', function () {
     // Limpa todos os dados do localStorage
     function clearAllData() {
         if (confirm('ATENÇÃO: Esta ação é irreversível e apagará TODOS os dados (cardápio, pedidos, mesas, etc.). Deseja continuar?')) {
+            // Dados do app
             localStorage.removeItem('users');
             localStorage.removeItem('menuItems');
             localStorage.removeItem('orders');
+            localStorage.removeItem('pedidos');
             localStorage.removeItem('tables');
+            localStorage.removeItem('mesas');
+            localStorage.removeItem('estoque');
+            localStorage.removeItem('transacoes');
+            // Sessão
             localStorage.removeItem('authToken');
             localStorage.removeItem('username');
             localStorage.removeItem('userRole');

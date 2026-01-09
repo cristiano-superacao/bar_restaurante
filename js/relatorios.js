@@ -1,8 +1,28 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
 
     // --- Carregar Dados ---
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    const menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
+    let orders = [];
+    let menuItems = [];
+    async function loadData() {
+        if (apiEnabled && window.API) {
+            try {
+                const [o, m] = await Promise.all([
+                    window.API.orders.listWithItems(),
+                    window.API.menu.list()
+                ]);
+                orders = o || [];
+                menuItems = m || [];
+            } catch (e) {
+                console.warn('Falha ao carregar dados da API, usando LocalStorage.', e);
+                orders = JSON.parse(localStorage.getItem('pedidos')) || JSON.parse(localStorage.getItem('orders')) || [];
+                menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
+            }
+        } else {
+            orders = JSON.parse(localStorage.getItem('pedidos')) || JSON.parse(localStorage.getItem('orders')) || [];
+            menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
+        }
+    }
 
     // --- Elementos do DOM ---
     const totalSalesValueEl = document.getElementById('total-sales-value');
@@ -130,8 +150,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Inicialização ---
     if (totalSalesValueEl && totalOrdersCountEl && topItemsChartCanvas && salesByCategoryChartCanvas) {
-        renderSummaryCards();
-        renderTopItemsChart();
-        renderSalesByCategoryChart();
+        (async () => {
+            await loadData();
+            renderSummaryCards();
+            renderTopItemsChart();
+            renderSalesByCategoryChart();
+        })();
     }
 });
