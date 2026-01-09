@@ -2,7 +2,21 @@
 
 ## Visão Geral
 
-Este é um sistema de gestão completo para bares e restaurantes, desenvolvido como uma aplicação web moderna, responsiva e totalmente funcional no lado do cliente. Ele permite o gerenciamento de cardápio, pedidos, mesas, reservas, estoque e finanças, tudo de forma intuitiva e com os dados armazenados localmente no navegador do usuário.
+Este é um sistema de gestão completo para bares e restaurantes, desenvolvido com **arquitetura híbrida progressiva**. Funciona 100% offline (LocalStorage) ou com backend completo (Express + Postgres), mantendo a mesma interface responsiva e profissional em ambos os modos.
+
+## 🚀 Novidades (Janeiro 2026)
+
+- ✅ **Backend Express + PostgreSQL** compatível com Railway
+- ✅ **Autenticação JWT** com guards de página
+- ✅ **API REST completa** para todas as funcionalidades
+- ✅ **Modo híbrido**: funciona com ou sem backend
+- ✅ **Zero breaking changes** na interface
+- ✅ **Deploy pronto** para produção
+
+## 📚 Documentação
+
+- **[Guia de Deploy Railway](DEPLOY_RAILWAY.md)** - Como fazer deploy do backend
+- **[Guia de Migração API](MIGRACAO_API.md)** - Como ativar/desativar a API
 
 ## Funcionalidades Principais
 
@@ -20,13 +34,20 @@ Este é um sistema de gestão completo para bares e restaurantes, desenvolvido c
 
 ## Tecnologias Utilizadas
 
-- **HTML5:** Para a estrutura semântica das páginas.
-- **CSS3:** Para estilização moderna, utilizando Flexbox, Grid e Variáveis CSS para um design coeso e responsivo.
-- **JavaScript (ES6+):** Para toda a lógica da aplicação, manipulação do DOM e interatividade.
-- **Chart.js:** Para a criação de gráficos dinâmicos na página de relatórios.
-- **Font Awesome:** Para a utilização de ícones em toda a interface.
-- **Google Fonts:** Para a tipografia do projeto.
-- **LocalStorage:** Para a persistência de todos os dados diretamente no navegador, permitindo que a aplicação funcione offline e sem a necessidade de um banco de dados externo.
+### Frontend
+- **HTML5:** Estrutura semântica das páginas
+- **CSS3:** Design responsivo com Flexbox, Grid e variáveis CSS
+- **JavaScript (ES6+):** Lógica da aplicação e manipulação do DOM
+- **Chart.js:** Gráficos dinâmicos na página de relatórios
+- **Font Awesome:** Ícones em toda a interface
+- **LocalStorage:** Persistência de dados no navegador (modo offline)
+
+### Backend (Opcional)
+- **Node.js + Express:** API REST
+- **PostgreSQL:** Banco de dados relacional
+- **JWT (jsonwebtoken):** Autenticação segura
+- **bcryptjs:** Criptografia de senhas
+- **Railway:** Plataforma de deploy
 
 ---
 
@@ -34,10 +55,13 @@ Este é um sistema de gestão completo para bares e restaurantes, desenvolvido c
 
 ### 1. Acesso e Login
 
-Para começar, acesse o sistema através do link fornecido. Você será direcionado para a página de login.
+Para começar, acesse o sistema. Você será direcionado para a página de login.
 
+**Credenciais padrão:**
 - **Usuário:** `admin`
-- **Senha:** `123456`
+- **Senha:** `admin123` (modo API) ou `123456` (modo LocalStorage)
+
+> ⚠️ **Produção:** Altere a senha padrão no banco de dados antes de usar em produção!
 
 Após inserir as credenciais, você será levado ao Dashboard principal.
 
@@ -67,8 +91,25 @@ Todas as seções de gerenciamento (Cardápio, Pedidos, Mesas, etc.) seguem um p
 
 ### 4. Persistência de Dados
 
-Todos os dados que você insere no sistema (itens do cardápio, pedidos, etc.) são salvos no **LocalStorage do seu navegador**. Isso significa que:
-- Os dados estarão disponíveis mesmo que você feche e abra o navegador novamente.
-- Os dados são locais para cada computador/navegador. Se você acessar de um dispositivo diferente, os dados não estarão lá.
-- Para limpar todos os dados e começar do zero, vá até **Configurações** e clique em **"Limpar Todos os Dados"**.
-- Para fazer um backup, vá até **Configurações** e clique em **"Exportar Dados (JSON)"**. Um arquivo será baixado com todas as informações do sistema.
+O sistema suporta dois modos de operação:
+
+#### Modo LocalStorage (Padrão)
+Todos os dados são salvos no **LocalStorage do seu navegador**:
+- ✅ Dados disponíveis mesmo após fechar o navegador
+- ✅ Funciona 100% offline
+- ⚠️ Dados locais (não compartilhados entre dispositivos)
+- ⚠️ Sem backup automático
+
+Para gerenciar dados:
+- **Backup:** Vá em **Configurações** → **"Exportar Dados (JSON)"**
+- **Limpar:** Vá em **Configurações** → **"Limpar Todos os Dados"**
+
+#### Modo API + PostgreSQL
+Com o backend ativado, os dados são salvos no servidor:
+- ✅ Dados centralizados e compartilhados
+- ✅ Multi-usuário simultâneo
+- ✅ Backup automático no banco
+- ✅ Segurança com JWT
+- ⚠️ Requer conexão com internet
+
+Para ativar, veja [MIGRACAO_API.md](MIGRACAO_API.md)
