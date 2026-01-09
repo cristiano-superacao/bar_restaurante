@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- Dados (Simulação de Banco de Dados) ---
+    const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
     let tables = JSON.parse(localStorage.getItem('tables')) || [
         { id: 1, name: 'Mesa 01', capacity: 4, status: 'Livre' },
         { id: 2, name: 'Mesa 02', capacity: 2, status: 'Ocupada' },
@@ -22,7 +23,22 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Funções ---
 
     function saveTables() {
-        localStorage.setItem('tables', JSON.stringify(tables));
+        if (!apiEnabled) {
+            localStorage.setItem('tables', JSON.stringify(tables));
+        }
+    }
+
+    async function loadTables() {
+        if (apiEnabled && window.API) {
+            try {
+                tables = await window.API.tables.list();
+            } catch (e) {
+                console.warn('Falha ao carregar mesas da API, usando LocalStorage.', e);
+                tables = JSON.parse(localStorage.getItem('tables')) || tables;
+            }
+        } else {
+            tables = JSON.parse(localStorage.getItem('tables')) || tables;
+        }
     }
 
     function renderTables(filteredTables) {
@@ -72,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.classList.remove('show');
     }
 
-    function handleFormSubmit(e) {
+    async function handleFormSubmit(e) {
         e.preventDefault();
         const id = tableIdInput.value;
         const newTable = {
@@ -82,15 +98,29 @@ document.addEventListener('DOMContentLoaded', function () {
             status: document.getElementById('table-status').value
         };
 
-        if (id) {
-            tables = tables.map(table => table.id === parseInt(id) ? newTable : table);
+        if (apiEnabled && window.API) {
+            try {
+                if (id) {
+                    await window.API.tables.update(parseInt(id), { name: newTable.name, capacity: newTable.capacity, status: newTable.status });
+                } else {
+                    await window.API.tables.create({ name: newTable.name, capacity: newTable.capacity, status: newTable.status });
+                }
+                await loadTables();
+                filterAndRenderTables();
+                closeModal();
+            } catch (err) {
+                alert('Erro ao salvar a mesa via API.');
+            }
         } else {
-            tables.push(newTable);
+            if (id) {
+                tables = tables.map(table => table.id === parseInt(id) ? newTable : table);
+            } else {
+                tables.push(newTable);
+            }
+            saveTables();
+            filterAndRenderTables();
+            closeModal();
         }
-
-        saveTables();
-        filterAndRenderTables();
-        closeModal();
     }
 
     function handleGridClick(e) {
@@ -115,5 +145,8 @@ document.addEventListener('DOMContentLoaded', function () {
     tablesGrid.addEventListener('click', handleGridClick);
 
     // --- Inicialização ---
-    filterAndRenderTables();
+    (async () => {
+        await loadTables();
+        filterAndRenderTables();
+    })();
 });

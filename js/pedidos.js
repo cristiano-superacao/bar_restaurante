@@ -1,8 +1,9 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     // --- Dados (Simulação de Banco de Dados) ---
-    const menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
-    const mesas = JSON.parse(localStorage.getItem('mesas')) || [];
+    const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
+    let menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
+    let mesas = JSON.parse(localStorage.getItem('tables')) || [];
     let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
 
     // --- Elementos do DOM ---
@@ -27,7 +28,31 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Funções ---
 
     function saveOrders() {
-        localStorage.setItem('pedidos', JSON.stringify(pedidos));
+        if (!apiEnabled) {
+            localStorage.setItem('pedidos', JSON.stringify(pedidos));
+        }
+    }
+
+    async function loadData() {
+        // Carrega dados de acordo com a fonte
+        if (apiEnabled && window.API) {
+            try {
+                [menuItems, mesas, pedidos] = await Promise.all([
+                    window.API.menu.list(),
+                    window.API.tables.list(),
+                    window.API.orders.listWithItems()
+                ]);
+            } catch (e) {
+                console.warn('Falha ao carregar via API, usando LocalStorage.', e);
+                menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
+                mesas = JSON.parse(localStorage.getItem('tables')) || mesas;
+                pedidos = JSON.parse(localStorage.getItem('pedidos')) || pedidos;
+            }
+        } else {
+            menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
+            mesas = JSON.parse(localStorage.getItem('tables')) || mesas;
+            pedidos = JSON.parse(localStorage.getItem('pedidos')) || pedidos;
+        }
     }
 
     function renderOrders(filteredOrders) {
@@ -82,8 +107,9 @@ document.addEventListener('DOMContentLoaded', function () {
         orderTableSelect.innerHTML = '<option value="">Selecione uma mesa...</option>';
         mesas.forEach(mesa => {
             const option = document.createElement('option');
-            option.value = mesa.name;
+            option.value = apiEnabled ? String(mesa.id) : mesa.name;
             option.textContent = `${mesa.name} (${mesa.status})`;
+            option.dataset.name = mesa.name;
             orderTableSelect.appendChild(option);
         });
     }
@@ -162,7 +188,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (order) {
             modalTitle.textContent = 'Editar Pedido';
             orderIdInput.value = order.id;
-            document.getElementById('order-table').value = order.table;
+            if (apiEnabled) {
+                // tentar selecionar mesa pelo nome
+                const opts = Array.from(orderTableSelect.options);
+                const found = opts.find(o => o.dataset.name === order.table);
+                if (found) orderTableSelect.value = found.value;
+            } else {
+                document.getElementById('order-table').value = order.table;
+            }
             document.getElementById('order-status').value = order.status;
             currentOrderItems = JSON.parse(JSON.stringify(order.items)); // Deep copy
         } else {
@@ -178,7 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
         modal.classList.remove('show');
     }
 
-    function handleFormSubmit(e) {
+    async function handleFormSubmit(e) {
         e.preventDefault();
         const id = orderIdInput.value;
         const total = currentOrderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -188,24 +221,41 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        const newOrder = {
-            id: id ? parseInt(id) : Date.now(),
-            table: document.getElementById('order-table').value,
-            items: currentOrderItems,
-            total: total,
-            status: document.getElementById('order-status').value,
-            data: new Date().toISOString()
-        };
-
-        if (id) {
-            pedidos = pedidos.map(order => order.id === parseInt(id) ? newOrder : order);
+        if (apiEnabled && window.API) {
+            try {
+                const status = document.getElementById('order-status').value;
+                if (id) {
+                    // Atualiza apenas o status pelo endpoint
+                    await window.API.orders.update(parseInt(id), { status });
+                } else {
+                    const tableId = parseInt(document.getElementById('order-table').value);
+                    const items = currentOrderItems.map(it => ({ menuItemId: it.id, quantity: it.quantity, price: it.price }));
+                    await window.API.orders.create({ tableId, status, items });
+                }
+                pedidos = await window.API.orders.listWithItems();
+                filterAndRenderOrders();
+                closeModal();
+            } catch (err) {
+                alert('Erro ao salvar pedido via API.');
+            }
         } else {
-            pedidos.push(newOrder);
+            const newOrder = {
+                id: id ? parseInt(id) : Date.now(),
+                table: document.getElementById('order-table').value,
+                items: currentOrderItems,
+                total: total,
+                status: document.getElementById('order-status').value,
+                data: new Date().toISOString()
+            };
+            if (id) {
+                pedidos = pedidos.map(order => order.id === parseInt(id) ? newOrder : order);
+            } else {
+                pedidos.push(newOrder);
+            }
+            saveOrders();
+            filterAndRenderOrders();
+            closeModal();
         }
-
-        saveOrders();
-        filterAndRenderOrders();
-        closeModal();
     }
     
     function handleGridClick(e) {
@@ -234,6 +284,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     // --- Inicialização ---
-    populateMenuItemSelect();
-    filterAndRenderOrders();
+    (async () => {
+        await loadData();
+        populateMenuItemSelect();
+        filterAndRenderOrders();
+    })();
 });
