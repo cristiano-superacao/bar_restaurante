@@ -64,9 +64,19 @@ document.addEventListener('DOMContentLoaded', function () {
     const authToken = localStorage.getItem('authToken');
     const username = localStorage.getItem('username');
     const userRole = localStorage.getItem('userRole');
+    const apiEnabled = typeof window !== 'undefined' && window.CONFIG && window.CONFIG.API && window.CONFIG.API.enabled;
 
     // Se não houver token, redireciona para a página de login
     if (!authToken) {
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Se API estiver habilitada, valida expiração do token
+    if (apiEnabled && window.API && window.API.auth && !window.API.auth.isTokenValid()) {
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('username');
+        localStorage.removeItem('userRole');
         window.location.href = 'index.html';
         return;
     }
@@ -120,8 +130,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function loadDashboardData() {
-    // Ocupação de Mesas
-    const mesas = JSON.parse(localStorage.getItem('mesas')) || [];
+    // Ocupação de Mesas (usar chave 'tables' do módulo de Mesas)
+    const mesas = JSON.parse(localStorage.getItem('tables')) || [];
     const mesasOcupadas = mesas.filter(m => m.status === 'Ocupada').length;
     const totalMesas = mesas.length;
     const mesasEl = document.getElementById('mesas-ocupadas-valor');
