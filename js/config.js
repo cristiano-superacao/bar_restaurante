@@ -16,8 +16,15 @@ const CONFIG = {
     // URLs e Endpoints
     URLS: {
         local: 'http://localhost:8000',
-        production: 'https://barestaurente.netlify.app',
+        production: 'https://barestaurante.netlify.app',
         github: 'https://github.com/cristiano-superacao/bar_restaurante'
+    },
+
+    // API (opcional). Quando enabled=false, usa apenas LocalStorage
+    API: {
+        enabled: false,
+        baseUrl: 'http://localhost:3000',
+        timeoutMs: 8000
     },
 
     // Credenciais de Teste
