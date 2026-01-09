@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
     const addTransacaoBtn = document.getElementById('add-transacao-btn');
     const modal = document.getElementById('transacao-modal');
     const closeModalBtn = modal.querySelector('.close-btn');
@@ -9,7 +10,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let editingTransacaoId = null;
 
     const saveTransacoes = () => {
-        localStorage.setItem('transacoes', JSON.stringify(transacoes));
+        if (!apiEnabled) {
+            localStorage.setItem('transacoes', JSON.stringify(transacoes));
+        }
+    };
+
+    const loadTransacoes = async () => {
+        if (apiEnabled && window.API) {
+            try {
+                transacoes = await window.API.transactions.list();
+            } catch (e) {
+                console.warn('Falha ao carregar transações da API, usando LocalStorage.', e);
+                transacoes = JSON.parse(localStorage.getItem('transacoes')) || transacoes;
+            }
+        } else {
+            transacoes = JSON.parse(localStorage.getItem('transacoes')) || transacoes;
+        }
     };
 
     const formatCurrency = (value) => {
@@ -86,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    transacaoForm.addEventListener('submit', (e) => {
+    transacaoForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const transacaoData = {
             id: editingTransacaoId || Date.now().toString(),
@@ -96,17 +112,32 @@ document.addEventListener('DOMContentLoaded', () => {
             data: document.getElementById('transacao-data').value,
         };
 
-        if (editingTransacaoId) {
-            transacoes = transacoes.map(t => t.id === editingTransacaoId ? transacaoData : t);
+        if (apiEnabled && window.API) {
+            try {
+                if (editingTransacaoId) {
+                    await window.API.transactions.update(Number(editingTransacaoId), transacaoData);
+                } else {
+                    await window.API.transactions.create(transacaoData);
+                }
+                await loadTransacoes();
+                renderFinanceiro();
+                closeModal();
+            } catch (err) {
+                alert('Erro ao salvar transação via API.');
+            }
         } else {
-            transacoes.push(transacaoData);
+            if (editingTransacaoId) {
+                transacoes = transacoes.map(t => t.id === editingTransacaoId ? transacaoData : t);
+            } else {
+                transacoes.push(transacaoData);
+            }
+            saveTransacoes();
+            renderFinanceiro();
+            closeModal();
         }
-        saveTransacoes();
-        renderFinanceiro();
-        closeModal();
     });
 
-    transacoesList.addEventListener('click', (e) => {
+    transacoesList.addEventListener('click', async (e) => {
         if (e.target.closest('.edit-btn')) {
             const id = e.target.closest('.edit-btn').dataset.id;
             const transacao = transacoes.find(t => t.id === id);
@@ -114,11 +145,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (e.target.closest('.delete-btn')) {
             const id = e.target.closest('.delete-btn').dataset.id;
-            transacoes = transacoes.filter(t => t.id !== id);
-            saveTransacoes();
+            if (apiEnabled && window.API) {
+                try {
+                    await window.API.transactions.remove(Number(id));
+                    await loadTransacoes();
+                } catch (err) {
+                    alert('Erro ao excluir transação via API.');
+                }
+            } else {
+                transacoes = transacoes.filter(t => t.id !== id);
+                saveTransacoes();
+            }
             renderFinanceiro();
         }
     });
 
-    renderFinanceiro();
+    (async () => {
+        await loadTransacoes();
+        renderFinanceiro();
+    })();
 });

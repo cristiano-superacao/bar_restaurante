@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
     const addProdutoBtn = document.getElementById('add-produto-btn');
     const modal = document.getElementById('produto-modal');
     const closeModalBtn = modal.querySelector('.close-btn');
@@ -11,7 +12,22 @@ document.addEventListener('DOMContentLoaded', () => {
     let editingProdutoId = null;
 
     const saveEstoque = () => {
-        localStorage.setItem('estoque', JSON.stringify(estoque));
+        if (!apiEnabled) {
+            localStorage.setItem('estoque', JSON.stringify(estoque));
+        }
+    };
+
+    const loadEstoque = async () => {
+        if (apiEnabled && window.API) {
+            try {
+                estoque = await window.API.stock.list();
+            } catch (e) {
+                console.warn('Falha ao carregar estoque da API, usando LocalStorage.', e);
+                estoque = JSON.parse(localStorage.getItem('estoque')) || estoque;
+            }
+        } else {
+            estoque = JSON.parse(localStorage.getItem('estoque')) || estoque;
+        }
     };
 
     const renderEstoque = () => {
@@ -91,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    produtoForm.addEventListener('submit', (e) => {
+    produtoForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const produtoData = {
             id: editingProdutoId || Date.now().toString(),
@@ -102,17 +118,32 @@ document.addEventListener('DOMContentLoaded', () => {
             minQuantity: parseInt(document.getElementById('produto-min-quantity').value),
         };
 
-        if (editingProdutoId) {
-            estoque = estoque.map(p => p.id === editingProdutoId ? produtoData : p);
+        if (apiEnabled && window.API) {
+            try {
+                if (editingProdutoId) {
+                    await window.API.stock.update(Number(editingProdutoId), produtoData);
+                } else {
+                    await window.API.stock.create(produtoData);
+                }
+                await loadEstoque();
+                renderEstoque();
+                closeModal();
+            } catch (err) {
+                alert('Erro ao salvar item de estoque via API.');
+            }
         } else {
-            estoque.push(produtoData);
+            if (editingProdutoId) {
+                estoque = estoque.map(p => p.id === editingProdutoId ? produtoData : p);
+            } else {
+                estoque.push(produtoData);
+            }
+            saveEstoque();
+            renderEstoque();
+            closeModal();
         }
-        saveEstoque();
-        renderEstoque();
-        closeModal();
     });
 
-    estoqueList.addEventListener('click', (e) => {
+    estoqueList.addEventListener('click', async (e) => {
         if (e.target.closest('.edit-btn')) {
             const id = e.target.closest('.edit-btn').dataset.id;
             const produto = estoque.find(p => p.id === id);
@@ -120,8 +151,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (e.target.closest('.delete-btn')) {
             const id = e.target.closest('.delete-btn').dataset.id;
-            estoque = estoque.filter(p => p.id !== id);
-            saveEstoque();
+            if (apiEnabled && window.API) {
+                try {
+                    await window.API.stock.remove(Number(id));
+                    await loadEstoque();
+                } catch (err) {
+                    alert('Erro ao excluir item de estoque via API.');
+                }
+            } else {
+                estoque = estoque.filter(p => p.id !== id);
+                saveEstoque();
+            }
             renderEstoque();
         }
     });
@@ -129,5 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
     searchInput.addEventListener('input', renderEstoque);
     categoryFilter.addEventListener('change', renderEstoque);
 
-    renderEstoque();
+    (async () => {
+        await loadEstoque();
+        renderEstoque();
+    })();
 });

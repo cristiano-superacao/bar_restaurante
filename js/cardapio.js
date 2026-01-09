@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const itemIdInput = document.getElementById('item-id');
 
     // --- Dados Iniciais (Simulação de um banco de dados) ---
+    const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
     let menuItems = JSON.parse(localStorage.getItem('menuItems')) || [
         {
             id: 1,
@@ -62,7 +63,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Salva os itens no localStorage
     function saveItems() {
-        localStorage.setItem('menuItems', JSON.stringify(menuItems));
+        if (!apiEnabled) {
+            localStorage.setItem('menuItems', JSON.stringify(menuItems));
+        }
+    }
+
+    async function loadItems() {
+        if (apiEnabled && window.API) {
+            try {
+                menuItems = await window.API.menu.list();
+            } catch (e) {
+                console.warn('Falha ao carregar cardápio da API, usando LocalStorage.', e);
+                menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
+            }
+        } else {
+            menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
+        }
     }
 
     // Renderiza os itens do cardápio no grid
@@ -132,7 +148,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Manipula o envio do formulário (Adicionar/Editar)
-    function handleFormSubmit(e) {
+    async function handleFormSubmit(e) {
         e.preventDefault();
         const id = itemIdInput.value;
         const categoryInput = document.getElementById('item-category');
@@ -147,22 +163,35 @@ document.addEventListener('DOMContentLoaded', function () {
             image: document.getElementById('item-image').value
         };
 
-        if (id) {
-            // Editar item existente
-            menuItems = menuItems.map(item => item.id === parseInt(id) ? newItem : item);
+        if (apiEnabled && window.API) {
+            try {
+                if (id) {
+                    await window.API.menu.update(parseInt(id), newItem);
+                } else {
+                    await window.API.menu.create(newItem);
+                }
+                await loadItems();
+                populateCategoryFilter();
+                filterAndRender();
+                closeModal();
+            } catch (err) {
+                alert('Erro ao salvar item via API.');
+            }
         } else {
-            // Adicionar novo item
-            menuItems.push(newItem);
+            if (id) {
+                menuItems = menuItems.map(item => item.id === parseInt(id) ? newItem : item);
+            } else {
+                menuItems.push(newItem);
+            }
+            saveItems();
+            populateCategoryFilter(); // Atualiza as categorias no filtro
+            filterAndRender();
+            closeModal();
         }
-
-        saveItems();
-        populateCategoryFilter(); // Atualiza as categorias no filtro
-        filterAndRender();
-        closeModal();
     }
 
     // Manipula cliques no grid (para editar ou deletar)
-    function handleGridClick(e) {
+    async function handleGridClick(e) {
         const target = e.target.closest('button');
         if (!target) return;
 
@@ -175,9 +204,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (target.classList.contains('btn-delete')) {
             if (confirm('Tem certeza que deseja excluir este item?')) {
-                menuItems = menuItems.filter(item => item.id !== id);
-                saveItems();
-                populateCategoryFilter(); // Atualiza as categorias caso a última de um tipo seja removida
+                if (apiEnabled && window.API) {
+                    try {
+                        await window.API.menu.remove(id);
+                        await loadItems();
+                    } catch (err) {
+                        alert('Erro ao excluir item via API.');
+                    }
+                } else {
+                    menuItems = menuItems.filter(item => item.id !== id);
+                    saveItems();
+                }
+                populateCategoryFilter();
                 filterAndRender();
             }
         }
@@ -197,6 +235,9 @@ document.addEventListener('DOMContentLoaded', function () {
     menuGrid.addEventListener('click', handleGridClick);
 
     // --- Inicialização ---
-    populateCategoryFilter();
-    filterAndRender();
+    (async () => {
+        await loadItems();
+        populateCategoryFilter();
+        filterAndRender();
+    })();
 });
