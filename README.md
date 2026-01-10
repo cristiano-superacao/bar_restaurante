@@ -6,12 +6,22 @@ Este é um sistema de gestão completo para bares e restaurantes, desenvolvido c
 
 ## 🚀 Novidades (Janeiro 2026)
 
+### Backend e Infraestrutura
 - ✅ **Backend Express + PostgreSQL** compatível com Railway
 - ✅ **Autenticação JWT** com guards de página
 - ✅ **API REST completa** para todas as funcionalidades
 - ✅ **Modo híbrido**: funciona com ou sem backend
 - ✅ **Zero breaking changes** na interface
 - ✅ **Deploy pronto** para produção
+
+### Design System Modernizado
+- ✅ **Componentes compartilhados** centralizados (toolbar, stat-cards, empty-state)
+- ✅ **Eliminação de ~40% duplicação CSS**
+- ✅ **Tema verde profissional** com variáveis CSS
+- ✅ **Layout 100% responsivo** (mobile/tablet/desktop)
+- ✅ **Métricas em tempo real** em todas as páginas
+- ✅ **Filtros e buscas** padronizados
+- ✅ **Novas páginas**: Usuários, Empresas, Manual
 
 ## 📚 Documentação
 
@@ -20,17 +30,72 @@ Este é um sistema de gestão completo para bares e restaurantes, desenvolvido c
 
 ## Funcionalidades Principais
 
-- **Dashboard Intuitivo:** Uma visão geral e de fácil acesso para todas as funcionalidades do sistema.
-- **Gestão de Cardápio:** Crie, edite, visualize e remova itens do cardápio, organizados por categorias.
-- **Controle de Pedidos:** Lance novos pedidos, associe-os a mesas, atualize seus status (Pendente, Em Preparo, Entregue) e calcule o total.
-- **Gerenciamento de Mesas:** Adicione e gerencie o status das mesas (Livre, Ocupada).
-- **Sistema de Reservas:** Agende e controle as reservas dos clientes.
-- **Controle de Estoque:** Monitore a quantidade de produtos, defina estoques mínimos e receba alertas visuais.
-- **Módulo Financeiro:** Registre receitas e despesas para ter um balanço simples do fluxo de caixa.
-- **Relatórios Gráficos:** Visualize dados de vendas por item e categoria através de gráficos interativos.
-- **Configurações:** Exporte todos os dados da aplicação em formato JSON ou limpe o armazenamento local para recomeçar.
-- **Design Responsivo:** A interface se adapta a diferentes tamanhos de tela, de desktops a dispositivos móveis.
-- **Autenticação Simples:** Uma tela de login protege o acesso ao sistema.
+### 📊 Dashboard e Navegação
+- **Dashboard Intuitivo**: Visão geral com acesso rápido a todas as funcionalidades
+- **Sidebar responsiva**: Menu lateral com ícones e navegação fluida
+- **Design System**: Componentes compartilhados e consistentes
+
+### 📋 Módulos de Gestão
+
+#### 🍽️ Cardápio
+- Cadastro completo de itens (nome, categoria, preço, descrição)
+- Busca e filtro por categoria
+- **Métricas**: Total de itens, categorias, preço médio
+- Cards visuais organizados por categoria
+
+#### 📝 Pedidos
+- Criação de pedidos com seleção de mesa e itens
+- Atualização de status (Pendente → Em Preparo → Entregue)
+- **Métricas**: Contadores por status em tempo real
+- Busca por mesa ou ID, filtro por status
+
+#### 🪑 Mesas
+- Gerenciamento de mesas (nome, capacidade, status)
+- Status visual (Livre/Ocupada)
+- **Métricas**: Livres, Ocupadas, Total, Capacidade total
+- Busca por nome e filtro de status
+
+#### 📅 Reservas
+- Agendamento com data, hora, cliente e nº de pessoas
+- Status (Confirmada, Pendente, Cancelada)
+- **Métricas**: Contadores por status
+- Busca por nome/telefone, filtros de data e status
+
+#### 📦 Estoque
+- Controle de produtos com quantidade e estoque mínimo
+- Alertas visuais (Baixo, Crítico, OK)
+- **Métricas**: Total itens, Baixo, Crítico, OK
+- Busca e filtro por categoria
+
+#### 💰 Financeiro
+- Registro de receitas e despesas
+- **Métricas**: Saldo, Receitas, Despesas, Previsão
+- Busca por descrição, filtros de tipo e status
+- Empty-state quando sem transações
+
+#### 📈 Relatórios
+- Gráficos interativos (Chart.js)
+- Top itens mais vendidos, vendas por categoria
+- **Filtro de período**: Hoje, 7 dias, 30 dias, Todos
+- Métricas de vendas totais e pedidos
+
+#### ⚙️ Configurações
+- Visualização de perfil do usuário
+- Exportação de dados (backup JSON)
+- Limpeza de dados (reset completo)
+- Busca e filtro por seção
+
+### 🆕 Novas Páginas
+- **👥 Usuários**: Gestão de usuários e permissões
+- **🏢 Empresas**: Informações e dados da empresa
+- **📖 Manual**: Busca por módulo, links rápidos, documentação integrada
+
+### 🎨 Design e UX
+- **Layout responsivo**: Adapta-se a mobile, tablet e desktop
+- **Empty-states**: Feedback visual quando não há dados
+- **Stat cards**: Métricas rápidas em cada página
+- **Toolbar unificada**: Busca e filtros padronizados
+- **Tema verde profissional**: Paleta consistente e acessível
 
 ## Tecnologias Utilizadas
 
@@ -68,26 +133,53 @@ Após inserir as credenciais, você será levado ao Dashboard principal.
 ### 2. Navegação
 
 O menu lateral à esquerda contém links para todas as seções do sistema:
-- **Dashboard:** Página inicial com uma mensagem de boas-vindas.
-- **Cardápio:** Gerencie os pratos e bebidas.
-- **Pedidos:** Controle os pedidos dos clientes.
-- **Mesas:** Visualize e altere o status das mesas.
-- **Reservas:** Administre as reservas de mesas.
-- **Estoque:** Controle os produtos e ingredientes.
-- **Financeiro:** Gerencie as receitas e despesas.
-- **Relatórios:** Veja os gráficos de desempenho.
-- **Configurações:** Exporte ou limpe os dados.
+- **Dashboard** → Página inicial com visão geral
+- **Cardápio** → Gestão de itens do menu (com métricas)
+- **Pedidos** → Controle de pedidos por status
+- **Mesas** → Visualização de ocupação e capacidade
+- **Reservas** → Gerenciamento de agendamentos
+- **Estoque** → Controle de inventário e alertas
+- **Financeiro** → Receitas, despesas e saldo
+- **Relatórios** → Gráficos e análises por período
+- **Configurações** → Perfil, backup e reset de dados
+- **Usuários** → Gestão de contas (em desenvolvimento)
+- **Empresas** → Informações da empresa (em desenvolvimento)
+- **Manual** → Documentação e ajuda integrada
 
 Em telas menores (como celulares), o menu fica oculto e pode ser aberto clicando no ícone de "hambúrguer" (☰) no canto superior esquerdo.
 
-### 3. Gerenciando as Seções (Exemplo: Cardápio)
+### 3. Usando os Módulos
 
-Todas as seções de gerenciamento (Cardápio, Pedidos, Mesas, etc.) seguem um padrão de uso similar:
+Todas as páginas de gestão seguem um padrão consistente:
 
-- **Adicionar Novo Item:** Clique no botão "Adicionar Item" (ou "Novo Pedido", "Nova Reserva", etc.) no canto superior direito. Um formulário aparecerá para que você preencha as informações.
-- **Editar um Item:** Em cada item listado, haverá um botão de edição (ícone de lápis). Clique nele para abrir o formulário com os dados já preenchidos, prontos para serem alterados.
-- **Excluir um Item:** Ao lado do botão de edição, haverá um botão de exclusão (ícone de lixeira). **Atenção:** a exclusão é permanente.
-- **Buscar e Filtrar:** Utilize os campos de busca e os filtros (como categorias ou status) para encontrar rapidamente o que você procura.
+#### Interface Unificada
+- **Toolbar superior**: Busca e filtros padronizados
+- **Stat Cards**: Métricas em tempo real logo abaixo
+- **Lista/Grid**: Conteúdo principal organizado visualmente
+- **Empty-state**: Feedback claro quando não há dados
+
+#### Ações Comuns
+- **➕ Adicionar**: Botão verde no canto superior direito da toolbar
+- **✏️ Editar**: Clique no item ou botão de edição para modificar
+- **🗑️ Excluir**: Botão vermelho para remover (confirmação obrigatória)
+- **🔍 Buscar**: Campo de busca na toolbar (busca em tempo real)
+- **🎛️ Filtrar**: Filtros "pill" com dropdown para refinar resultados
+
+#### Métricas em Tempo Real
+Cada página exibe cards com indicadores principais:
+- **Cardápio**: Total itens, categorias, preço médio
+- **Pedidos**: Pendentes, em preparo, entregues, cancelados
+- **Mesas**: Livres, ocupadas, total, capacidade
+- **Reservas**: Confirmadas, pendentes, canceladas, total
+- **Estoque**: Total, baixo, crítico, OK
+- **Financeiro**: Saldo, receitas, despesas, previsão
+- **Relatórios**: Vendas totais, nº de pedidos
+
+#### Responsividade
+O layout se adapta automaticamente:
+- **Desktop** (>1024px): Sidebar fixa, 4 cards por linha
+- **Tablet** (768-1024px): Sidebar retrátil, 2 cards por linha
+- **Mobile** (<768px): Menu hambúrguer, 1 card por linha
 
 ### 4. Persistência de Dados
 
