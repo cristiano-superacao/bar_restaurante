@@ -163,6 +163,24 @@ const CONFIG = {
     }
 };
 
+// Override de API via LocalStorage (útil em produção sem rebuild)
+// Chave: apiConfigOverride = { enabled?: boolean, baseUrl?: string, timeoutMs?: number }
+try {
+    if (typeof window !== 'undefined' && window.localStorage) {
+        const raw = localStorage.getItem('apiConfigOverride');
+        if (raw) {
+            const ov = JSON.parse(raw);
+            if (ov && typeof ov === 'object') {
+                if (typeof ov.enabled === 'boolean') CONFIG.API.enabled = ov.enabled;
+                if (typeof ov.baseUrl === 'string' && ov.baseUrl.trim()) CONFIG.API.baseUrl = ov.baseUrl.trim().replace(/\/$/, '');
+                if (typeof ov.timeoutMs === 'number' && Number.isFinite(ov.timeoutMs) && ov.timeoutMs >= 1000) CONFIG.API.timeoutMs = ov.timeoutMs;
+            }
+        }
+    }
+} catch {
+    // Ignorar override inválido
+}
+
 // Exportar configurações globalmente
 if (typeof window !== 'undefined') {
     window.CONFIG = CONFIG;

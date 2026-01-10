@@ -9,6 +9,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const sectionFilterEl = document.getElementById('settings-section-filter');
     const settingsCards = Array.from(document.querySelectorAll('.settings-card'));
 
+    // Painel API
+    const apiEnabledToggle = document.getElementById('api-enabled-toggle');
+    const apiBaseUrlEl = document.getElementById('api-baseurl');
+    const apiTimeoutEl = document.getElementById('api-timeout');
+    const apiTestBtn = document.getElementById('api-test-btn');
+    const apiSaveBtn = document.getElementById('api-save-btn');
+    const apiResetBtn = document.getElementById('api-reset-btn');
+    const apiStatusEl = document.getElementById('api-status');
+
     // --- Funções ---
 
     // Carrega informações do perfil do localStorage
@@ -31,6 +40,99 @@ document.addEventListener('DOMContentLoaded', function () {
             const matchesSection = section === 'all' || (card.dataset.section === section);
             card.style.display = (matchesSearch && matchesSection) ? '' : 'none';
         });
+    }
+
+    function setApiStatus(text, type) {
+        if (!apiStatusEl) return;
+        apiStatusEl.textContent = text || '';
+        apiStatusEl.classList.remove('ok', 'err');
+        if (type) apiStatusEl.classList.add(type);
+    }
+
+    function getApiConfigFromConfig() {
+        const cfg = (typeof window !== 'undefined' && window.CONFIG) ? window.CONFIG : null;
+        const api = cfg && cfg.API ? cfg.API : { enabled: false, baseUrl: '', timeoutMs: 8000 };
+        return {
+            enabled: !!api.enabled,
+            baseUrl: String(api.baseUrl || ''),
+            timeoutMs: Number(api.timeoutMs || 8000)
+        };
+    }
+
+    function loadApiPanel() {
+        if (!apiEnabledToggle || !apiBaseUrlEl || !apiTimeoutEl) return;
+        const apiCfg = getApiConfigFromConfig();
+        apiEnabledToggle.checked = !!apiCfg.enabled;
+        apiBaseUrlEl.value = apiCfg.baseUrl;
+        apiTimeoutEl.value = String(apiCfg.timeoutMs || 8000);
+        setApiStatus(apiCfg.enabled ? 'API habilitada (config atual).' : 'API desabilitada (LocalStorage).');
+    }
+
+    function normalizeBaseUrl(url) {
+        const u = String(url || '').trim();
+        if (!u) return '';
+        return u.replace(/\/$/, '');
+    }
+
+    function saveApiOverride() {
+        if (!apiEnabledToggle || !apiBaseUrlEl || !apiTimeoutEl) return;
+        const enabled = !!apiEnabledToggle.checked;
+        const baseUrl = normalizeBaseUrl(apiBaseUrlEl.value);
+        const timeoutMs = Math.max(1000, Number(apiTimeoutEl.value || 8000));
+
+        if (enabled) {
+            if (!baseUrl || !(baseUrl.startsWith('http://') || baseUrl.startsWith('https://'))) {
+                setApiStatus('Informe uma URL válida (http/https) para habilitar a API.', 'err');
+                return;
+            }
+        }
+
+        const payload = { enabled, baseUrl, timeoutMs };
+        try {
+            localStorage.setItem('apiConfigOverride', JSON.stringify(payload));
+        } catch {
+            setApiStatus('Não foi possível salvar no navegador.', 'err');
+            return;
+        }
+
+        setApiStatus('Configuração salva. Recarregando...', 'ok');
+        setTimeout(() => window.location.reload(), 600);
+    }
+
+    function resetApiOverride() {
+        try {
+            localStorage.removeItem('apiConfigOverride');
+        } catch {}
+        setApiStatus('Configuração removida. Voltando ao padrão...', 'ok');
+        setTimeout(() => window.location.reload(), 600);
+    }
+
+    async function testApiConnection() {
+        if (!apiBaseUrlEl) return;
+        const baseUrl = normalizeBaseUrl(apiBaseUrlEl.value);
+        if (!baseUrl || !(baseUrl.startsWith('http://') || baseUrl.startsWith('https://'))) {
+            setApiStatus('Informe uma URL válida para testar.', 'err');
+            return;
+        }
+
+        const timeoutMs = Math.max(1000, Number(apiTimeoutEl?.value || 8000));
+        const controller = new AbortController();
+        const id = setTimeout(() => controller.abort(), timeoutMs);
+        setApiStatus('Testando conexão...', null);
+
+        try {
+            const res = await fetch(`${baseUrl}/health`, { signal: controller.signal });
+            if (!res.ok) {
+                setApiStatus(`Falha no /health (HTTP ${res.status}).`, 'err');
+                return;
+            }
+            setApiStatus('Conexão OK. /health respondeu com sucesso.', 'ok');
+        } catch (e) {
+            const msg = (e && e.name === 'AbortError') ? 'Timeout no teste.' : 'Falha ao conectar (CORS/URL/servidor offline).';
+            setApiStatus(msg, 'err');
+        } finally {
+            clearTimeout(id);
+        }
     }
 
     // Exporta todos os dados do localStorage para um arquivo JSON
@@ -95,7 +197,12 @@ document.addEventListener('DOMContentLoaded', function () {
     if (settingsSearchEl) settingsSearchEl.addEventListener('input', applySettingsFilters);
     if (sectionFilterEl) sectionFilterEl.addEventListener('change', applySettingsFilters);
 
+    if (apiTestBtn) apiTestBtn.addEventListener('click', testApiConnection);
+    if (apiSaveBtn) apiSaveBtn.addEventListener('click', saveApiOverride);
+    if (apiResetBtn) apiResetBtn.addEventListener('click', resetApiOverride);
+
     // --- Inicialização ---
     loadProfileInfo();
     applySettingsFilters();
+    loadApiPanel();
 });

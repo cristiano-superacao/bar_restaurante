@@ -55,6 +55,7 @@
                             <option value="all">Todas</option>
                             <option value="perfil">Perfil</option>
                             <option value="dados">Dados</option>
+                            <option value="api">Conexão (API)</option>
                         </select>
                         <i class="fas fa-chevron-down"></i>
                     </div>
@@ -80,11 +81,46 @@
                             <button id="clear-data-btn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar Todos os Dados</button>
                         </div>
                     </div>
+
+                    <div class="settings-card" data-section="api">
+                        <h3><i class="fas fa-plug"></i> Conexão com API</h3>
+                        <p class="settings-help">Ative a API para salvar dados no servidor (Postgres). Quando desativada, o sistema usa LocalStorage.</p>
+
+                        <div class="api-grid">
+                            <div class="form-group">
+                                <label class="toggle-row" for="api-enabled-toggle">
+                                    <span>API habilitada</span>
+                                    <input type="checkbox" id="api-enabled-toggle" />
+                                </label>
+                                <small class="muted">Requer recarregar a página após salvar.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="api-baseurl">URL da API (baseUrl)</label>
+                                <input type="url" id="api-baseurl" placeholder="https://sua-api.up.railway.app" />
+                                <small class="muted">Dica: use HTTPS em produção.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="api-timeout">Timeout (ms)</label>
+                                <input type="number" id="api-timeout" min="1000" step="500" />
+                            </div>
+                        </div>
+
+                        <div class="data-actions">
+                            <button id="api-test-btn" class="btn btn-secondary" type="button"><i class="fas fa-vial"></i> Testar</button>
+                            <button id="api-save-btn" class="btn btn-primary" type="button"><i class="fas fa-save"></i> Salvar</button>
+                            <button id="api-reset-btn" class="btn btn-secondary" type="button"><i class="fas fa-rotate-left"></i> Voltar ao padrão</button>
+                        </div>
+
+                        <div id="api-status" class="api-status" aria-live="polite"></div>
+                    </div>
                 </div>
             </section>
         </main>
     </div>
 
+    <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth-neon.js"></script>
     <script src="js/dashboard.js"></script>
