@@ -22,6 +22,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const addItemToOrderBtn = document.getElementById('add-item-to-order-btn');
     const orderItemsContainer = document.getElementById('order-items-container');
     const orderTotalPriceEl = document.getElementById('order-total-price');
+    const orderDiscountInput = document.getElementById('order-discount');
+    const orderPaymentSelect = document.getElementById('order-payment');
+    const orderCloseBtn = document.getElementById('order-close-btn');
 
     let currentOrderItems = [];
 
@@ -40,18 +43,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 [menuItems, mesas, pedidos] = await Promise.all([
                     window.API.menu.list(),
                     window.API.tables.list(),
-                    window.API.orders.listWithItems()
+                    window.API.orders.listWithItems({ type: 'Mesa' })
                 ]);
             } catch (e) {
                 console.warn('Falha ao carregar via API, usando LocalStorage.', e);
                 menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
                 mesas = JSON.parse(localStorage.getItem('tables')) || mesas;
-                pedidos = JSON.parse(localStorage.getItem('pedidos')) || pedidos;
+                pedidos = (JSON.parse(localStorage.getItem('pedidos')) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
             }
         } else {
             menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
             mesas = JSON.parse(localStorage.getItem('tables')) || mesas;
-            pedidos = JSON.parse(localStorage.getItem('pedidos')) || pedidos;
+            pedidos = (JSON.parse(localStorage.getItem('pedidos')) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
         }
     }
 
@@ -70,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
             filteredOrders.forEach(o => {
                 if (o.status === 'Pendente') stats.Pendentes++;
                 else if (o.status === 'Em Preparo') stats['Em Preparo']++;
-                else if (o.status === 'Entregue') stats.Entregues++;
+                else if (o.status === 'Entregue' || o.status === 'Pago') stats.Entregues++;
                 else if (o.status === 'Cancelado') stats.Cancelados++;
             });
             const el = id => document.getElementById(id);
@@ -164,7 +167,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateOrderTotal() {
-        const total = currentOrderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const subtotal = currentOrderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const discount = orderDiscountInput ? (parseFloat(orderDiscountInput.value) || 0) : 0;
+        const total = Math.max(0, subtotal - discount);
         orderTotalPriceEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
     }
 
@@ -206,6 +211,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (order) {
             modalTitle.textContent = 'Editar Pedido';
             orderIdInput.value = order.id;
+            if (orderDiscountInput) orderDiscountInput.value = String(Number(order.discount ?? 0));
+            if (orderPaymentSelect) orderPaymentSelect.value = order.paymentMethod || order.payment_method || '';
             if (apiEnabled) {
                 // tentar selecionar mesa pelo nome
                 const opts = Array.from(orderTableSelect.options);
@@ -216,10 +223,16 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             document.getElementById('order-status').value = order.status;
             currentOrderItems = JSON.parse(JSON.stringify(order.items)); // Deep copy
+
+            const isClosable = order.status !== 'Pago' && order.status !== 'Cancelado';
+            if (orderCloseBtn) orderCloseBtn.style.display = isClosable ? 'inline-flex' : 'none';
         } else {
             modalTitle.textContent = 'Novo Pedido';
             orderIdInput.value = '';
             currentOrderItems = [];
+            if (orderDiscountInput) orderDiscountInput.value = '0';
+            if (orderPaymentSelect) orderPaymentSelect.value = '';
+            if (orderCloseBtn) orderCloseBtn.style.display = 'none';
         }
         renderCurrentOrderItems();
         modal.classList.add('show');
@@ -232,7 +245,10 @@ document.addEventListener('DOMContentLoaded', function () {
     async function handleFormSubmit(e) {
         e.preventDefault();
         const id = orderIdInput.value;
-        const total = currentOrderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const subtotal = currentOrderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const discount = orderDiscountInput ? (parseFloat(orderDiscountInput.value) || 0) : 0;
+        const total = Math.max(0, subtotal - discount);
+        const paymentMethod = orderPaymentSelect ? orderPaymentSelect.value : '';
 
         if (currentOrderItems.length === 0) {
             alert('Adicione pelo menos um item ao pedido.');
@@ -244,13 +260,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 const status = document.getElementById('order-status').value;
                 if (id) {
                     // Atualiza apenas o status pelo endpoint
-                    await window.API.orders.update(parseInt(id), { status });
+                    await window.API.orders.update(parseInt(id), { status, discount, paymentMethod });
                 } else {
                     const tableId = parseInt(document.getElementById('order-table').value);
                     const items = currentOrderItems.map(it => ({ menuItemId: it.id, quantity: it.quantity, price: it.price }));
-                    await window.API.orders.create({ tableId, status, items });
+                    await window.API.orders.create({ tableId, status, items, orderType: 'Mesa', discount, paymentMethod });
                 }
-                pedidos = await window.API.orders.listWithItems();
+                pedidos = await window.API.orders.listWithItems({ type: 'Mesa' });
                 filterAndRenderOrders();
                 closeModal();
             } catch (err) {
@@ -261,7 +277,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 id: id ? parseInt(id) : Date.now(),
                 table: document.getElementById('order-table').value,
                 items: currentOrderItems,
-                total: total,
+                orderType: 'Mesa',
+                paymentMethod,
+                discount,
+                subtotal,
+                total,
                 status: document.getElementById('order-status').value,
                 data: new Date().toISOString()
             };
@@ -274,6 +294,54 @@ document.addEventListener('DOMContentLoaded', function () {
             filterAndRenderOrders();
             closeModal();
         }
+    }
+
+    async function handleCloseAccount() {
+        const id = orderIdInput.value;
+        if (!id) return;
+
+        const discount = orderDiscountInput ? (parseFloat(orderDiscountInput.value) || 0) : 0;
+        const paymentMethod = (orderPaymentSelect && orderPaymentSelect.value) ? orderPaymentSelect.value : 'Dinheiro';
+
+        if (apiEnabled && window.API) {
+            try {
+                await window.API.orders.close(parseInt(id), { paymentMethod, discount, deliveryFee: 0 });
+                pedidos = await window.API.orders.listWithItems({ type: 'Mesa' });
+                filterAndRenderOrders();
+                closeModal();
+                window.open(`cupom.html?orderId=${encodeURIComponent(String(id))}`, '_blank');
+            } catch (e) {
+                alert('Erro ao fechar conta via API.');
+            }
+            return;
+        }
+
+        const now = new Date().toISOString();
+        const updated = pedidos.map(o => {
+            if (String(o.id) !== String(id)) return o;
+            const subtotal = (o.items || []).reduce((sum, it) => sum + (Number(it.price) * Number(it.quantity)), 0);
+            const total = Math.max(0, subtotal - discount);
+            return { ...o, status: 'Pago', paymentMethod, discount, subtotal, total, paidAt: now };
+        });
+        pedidos = updated;
+        saveOrders();
+
+        // Gera transação de receita no financeiro (LocalStorage)
+        const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+        const orderTotal = updated.find(o => String(o.id) === String(id))?.total || 0;
+        transacoes.push({
+            id: String(Date.now()),
+            descricao: `Pedido #${String(id).padStart(4, '0')} (Mesa)`,
+            valor: Number(orderTotal) || 0,
+            tipo: 'Receita',
+            data: new Date().toISOString().slice(0, 10),
+            status: 'pago'
+        });
+        localStorage.setItem('transacoes', JSON.stringify(transacoes));
+
+        filterAndRenderOrders();
+        closeModal();
+        window.open(`cupom.html?orderId=${encodeURIComponent(String(id))}`, '_blank');
     }
     
     function handleGridClick(e) {
@@ -297,7 +365,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     addItemToOrderBtn.addEventListener('click', handleAddItemToOrder);
     orderItemsContainer.addEventListener('click', handleRemoveOrderItem);
+    if (orderDiscountInput) orderDiscountInput.addEventListener('input', updateOrderTotal);
     orderForm.addEventListener('submit', handleFormSubmit);
+    if (orderCloseBtn) orderCloseBtn.addEventListener('click', handleCloseAccount);
     ordersGrid.addEventListener('click', handleGridClick);
 
 

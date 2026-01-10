@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cupom</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/cupom.css" />
+</head>
+<body>
+  <main class="receipt">
+    <header class="receipt-header">
+      <div class="company" id="company-block"></div>
+      <div class="meta" id="order-meta"></div>
+    </header>
+
+    <section class="receipt-items" id="items"></section>
+
+    <section class="receipt-totals" id="totals"></section>
+
+    <footer class="receipt-footer">
+      <div class="actions no-print">
+        <button class="btn" id="print-btn" type="button">Imprimir</button>
+        <button class="btn secondary" id="close-btn" type="button">Fechar</button>
+      </div>
+      <div class="fineprint">
+        <strong>Cupom não fiscal</strong> • Emitido para conferência
+      </div>
+    </footer>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/cupom.js"></script>
+</body>
+</html>

@@ -160,6 +160,14 @@ const CONFIG = {
             const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             return re.test(email);
         }
+    },
+
+    // Variáveis de negócio
+    CONSTS: {
+        ORDER_TYPES: ['Mesa', 'Delivery'],
+        ORDER_STATUS_MESA: ['Pendente', 'Em Preparo', 'Entregue', 'Pago', 'Cancelado'],
+        ORDER_STATUS_DELIVERY: ['Pendente', 'Em Preparo', 'Saiu para Entrega', 'Entregue', 'Pago', 'Cancelado'],
+        PAYMENT_METHODS: ['Dinheiro', 'Cartão', 'PIX']
     }
 };
 

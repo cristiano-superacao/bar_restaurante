@@ -2,13 +2,14 @@
 
 :root {
     --primary-color: #4a90e2;
-    --primary-green: #1f7a4c;
-    --primary-green-dark: #12402a;
-    --accent-green: #30c48d;
+    /* Convergimos toda a paleta para tons de azul */
+    --primary-green: #2f6bb3; /* mantido o nome para compatibilidade */
+    --primary-green-dark: #1b3b6f;
+    --accent-green: #64a8ff;
     --accent-red: #ff6b6b;
     --accent-orange: #fbbc05;
     --accent-violet: #7367f0;
-    --sidebar-bg-color: #122d19;
+    --sidebar-bg-color: #0c1f3a; /* azul bem escuro no lugar do verde */
     --main-bg-color: #f0f2f5;
     --text-color-light: #ecf0f1;
     --text-color-dark: #34495e;
@@ -169,8 +170,8 @@ body {
     font-weight: 700;
     font-size: 18px;
 }
-.stat-card.saldo .icon { background: #eaf6ef; color: var(--primary-green); }
-.stat-card.receitas .icon { background: #eaf6ef; color: var(--accent-green); }
+.stat-card.saldo .icon { background: #e8f0fe; color: var(--primary-green); }
+.stat-card.receitas .icon { background: #e8f0fe; color: var(--accent-green); }
 .stat-card.despesas .icon { background: #fdeaea; color: var(--accent-red); }
 .stat-card.previsao .icon { background: #eee9ff; color: var(--accent-violet); }
 
@@ -249,7 +250,7 @@ body {
     font-weight: 700;
     border: 1px solid var(--border-color);
 }
-.badge-success { background: #eaf6ef; color: var(--primary-green); }
+.badge-success { background: #e8f0fe; color: var(--primary-green); }
 .badge-muted { background: #f3f6f9; color: #7b8a97; }
 
 @media (max-width: 1024px) {
@@ -570,7 +571,7 @@ body {
 }
 
 .card-icon.mesas { background-color: #e8f0fe; color: #4a90e2; }
-.card-icon.vendas { background-color: #e6f8f0; color: #34a853; }
+.card-icon.vendas { background-color: #e8f0fe; color: #4a90e2; }
 .card-icon.pedidos { background-color: #fef7e6; color: #fbbc05; }
 .card-icon.estoque { background-color: #fce8e6; color: #ea4335; }
 

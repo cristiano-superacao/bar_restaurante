@@ -38,6 +38,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Funções de Cálculo ---
 
+    function isPaidOrder(order) {
+        const st = order && order.status ? String(order.status) : '';
+        if (st === 'Pago') return true;
+        // Legado: alguns fluxos antigos marcavam como Entregue sem pagamento
+        if (st === 'Entregue' && !order.paidAt && !order.paid_at) return true;
+        return false;
+    }
+
     // Calcula o valor total de vendas
     function calculateTotalSales(data) {
         return data.reduce((total, order) => total + (order.total || 0), 0);
@@ -52,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function getTopSellingItems(data) {
         const itemCounts = {};
         data.forEach(order => {
-            order.items.forEach(item => {
+            (order.items || []).forEach(item => {
                 if (itemCounts[item.name]) {
                     itemCounts[item.name] += item.quantity;
                 } else {
@@ -70,8 +78,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function getSalesByCategory(data) {
         const categorySales = {};
         data.forEach(order => {
-            order.items.forEach(orderItem => {
-                const menuItem = menuItems.find(mi => mi.id === orderItem.id);
+            (order.items || []).forEach(orderItem => {
+                const menuItem = menuItems.find(mi => String(mi.id) === String(orderItem.id));
                 if (menuItem) {
                     const category = menuItem.category;
                     if (categorySales[category]) {
@@ -122,7 +130,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderTopItemsChart(data) {
         const topItems = getTopSellingItems(data);
         const labels = topItems.map(item => item[0]);
-        const data = topItems.map(item => item[1]);
+        const values = topItems.map(item => item[1]);
+
+        if (!topItemsChartCanvas || typeof Chart === 'undefined') return;
 
         if (topItemsChart) topItemsChart.destroy();
         topItemsChart = new Chart(topItemsChartCanvas, {
@@ -131,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: labels,
                 datasets: [{
                     label: 'Quantidade Vendida',
-                    data: chartData,
+                    data: values,
                     backgroundColor: 'rgba(54, 162, 235, 0.6)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
@@ -157,7 +167,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderSalesByCategoryChart(data) {
         const categorySales = getSalesByCategory(data);
         const labels = categorySales.map(cat => cat[0]);
-        const data = categorySales.map(cat => cat[1]);
+        const values = categorySales.map(cat => cat[1]);
+
+        if (!salesByCategoryChartCanvas || typeof Chart === 'undefined') return;
 
         if (salesByCategoryChart) salesByCategoryChart.destroy();
         salesByCategoryChart = new Chart(salesByCategoryChartCanvas, {
@@ -166,7 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 labels: labels,
                 datasets: [{
                     label: 'Vendas por Categoria',
-                    data: chartData,
+                    data: values,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.7)',
                         'rgba(54, 162, 235, 0.7)',
@@ -186,8 +198,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Inicialização ---
     function renderAll() {
         const period = periodFilterEl ? periodFilterEl.value : 'all';
-        const data = filterOrdersByPeriod(period);
-        const hasData = data && data.length > 0;
+        const scoped = filterOrdersByPeriod(period);
+        const data = (scoped || []).filter(isPaidOrder);
+        const hasData = data.length > 0;
         if (emptyEl) emptyEl.style.display = hasData ? 'none' : 'flex';
         renderSummaryCards(data);
         if (hasData) {

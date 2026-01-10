@@ -1,0 +1,9 @@
+.order-status.Saiu-para-Entrega { background-color: #7e57c2; }
+.order-status.Pago { background-color: #1a73e8; }
+
+.delivery-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-end;
+}

@@ -44,7 +44,7 @@
 }
 
 .table-card.Livre {
-    border-top-color: #2ecc71; /* Verde para livre */
+    border-top-color: #2f6bb3; /* Azul para livre */
 }
 
 .table-card.Ocupada {
@@ -58,7 +58,7 @@
 }
 
 .table-card.Livre .table-icon {
-    color: #2ecc71;
+    color: #2f6bb3;
 }
 
 .table-card.Ocupada .table-icon {
@@ -89,7 +89,7 @@
 }
 
 .table-card.Livre .table-status-text {
-    color: #2ecc71;
+    color: #2f6bb3;
 }
 
 .table-card.Ocupada .table-status-text {

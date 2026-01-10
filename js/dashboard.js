@@ -141,7 +141,7 @@ function loadDashboardData() {
     const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
     const hoje = new Date().toISOString().split('T')[0];
     const vendasHoje = pedidos
-        .filter(p => p.data && p.data.startsWith(hoje) && p.status === 'Entregue')
+        .filter(p => p.data && p.data.startsWith(hoje) && (p.status === 'Pago' || p.status === 'Entregue'))
         .reduce((acc, p) => acc + (p.total || 0), 0);
     const vendasEl = document.getElementById('vendas-hoje-valor');
     if(vendasEl) vendasEl.textContent = `R$ ${vendasHoje.toFixed(2).replace('.', ',')}`;

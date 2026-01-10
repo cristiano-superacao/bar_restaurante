@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Delivery - Bar e Restaurante</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/pedidos.css" />
+  <link rel="stylesheet" href="css/delivery.css" />
+</head>
+<body>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <i class="fas fa-utensils"></i>
+        <h3>Restaurante</h3>
+      </div>
+      <nav class="sidebar-nav">
+        <ul>
+          <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+          <li><a href="cardapio.html"><i class="fas fa-book-open"></i> Cardápio</a></li>
+          <li><a href="pedidos.html"><i class="fas fa-receipt"></i> Pedidos</a></li>
+          <li><a href="clientes.html"><i class="fas fa-user"></i> Clientes</a></li>
+          <li><a href="delivery.html" class="active"><i class="fas fa-motorcycle"></i> Delivery</a></li>
+          <li><a href="mesas.html"><i class="fas fa-chair"></i> Mesas</a></li>
+          <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> Reservas</a></li>
+          <li><a href="estoque.html"><i class="fas fa-boxes"></i> Estoque</a></li>
+          <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
+          <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+          <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
+          <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+          <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
+          <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
+        </ul>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Sair</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="main-header">
+        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-title">
+          <h1>Delivery</h1>
+          <p>Crie, acompanhe e feche entregas com cupom</p>
+        </div>
+        <div class="header-user">
+          <div class="user-info">
+            <span id="username-display"></span>
+            <small id="user-role-display"></small>
+          </div>
+          <img src="https://i.pravatar.cc/150?u=admin" alt="Avatar do Usuário" class="user-avatar" />
+        </div>
+      </header>
+
+      <section class="content-area">
+        <div class="toolbar">
+          <div class="search-input">
+            <i class="fas fa-search"></i>
+            <input type="text" id="search-delivery-input" placeholder="Buscar por cliente, telefone ou ID..." aria-label="Buscar delivery" />
+          </div>
+          <div class="filter-pill">
+            <i class="fas fa-filter"></i>
+            <select id="delivery-status-filter" aria-label="Filtrar por status">
+              <option value="all">Todos os Status</option>
+              <option value="Pendente">Pendente</option>
+              <option value="Em Preparo">Em Preparo</option>
+              <option value="Saiu para Entrega">Saiu para Entrega</option>
+              <option value="Entregue">Entregue</option>
+              <option value="Pago">Pago</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+            <i class="fas fa-chevron-down"></i>
+          </div>
+          <button class="btn btn-primary" id="add-delivery-btn"><i class="fas fa-plus"></i> Novo Delivery</button>
+        </div>
+
+        <div class="stat-cards">
+          <div class="stat-card saldo"><div class="icon"><i class="fas fa-hourglass-start"></i></div><div class="content"><h4>Pendentes</h4><div class="value" id="delivery-pendentes">0</div></div></div>
+          <div class="stat-card receitas"><div class="icon"><i class="fas fa-fire"></i></div><div class="content"><h4>Em Preparo</h4><div class="value" id="delivery-preparo">0</div></div></div>
+          <div class="stat-card previsao"><div class="icon"><i class="fas fa-truck"></i></div><div class="content"><h4>Saiu</h4><div class="value" id="delivery-saiu">0</div></div></div>
+          <div class="stat-card despesas"><div class="icon"><i class="fas fa-check-circle"></i></div><div class="content"><h4>Entregues</h4><div class="value" id="delivery-entregues">0</div></div></div>
+        </div>
+
+        <div class="empty-state" id="delivery-empty" style="display:none;">
+          <div class="icon"><i class="fas fa-motorcycle"></i></div>
+          <div class="content">
+            <h3>Nenhum delivery encontrado</h3>
+            <p>Ajuste filtros ou crie um novo delivery.</p>
+          </div>
+        </div>
+
+        <div class="orders-grid" id="delivery-grid"></div>
+      </section>
+    </main>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  </div>
+
+  <!-- Modal Delivery -->
+  <div id="delivery-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="delivery-modal-title">Novo Delivery</h2>
+        <span class="close-btn">&times;</span>
+      </div>
+      <form id="delivery-form">
+        <input type="hidden" id="delivery-id" />
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="delivery-customer-name">Cliente</label>
+            <input type="text" id="delivery-customer-name" placeholder="Nome do cliente" required />
+          </div>
+          <div class="form-group">
+            <label for="delivery-customer-phone">Telefone</label>
+            <input type="tel" id="delivery-customer-phone" placeholder="(DDD) 9xxxx-xxxx" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="delivery-customer-address">Endereço</label>
+          <input type="text" id="delivery-customer-address" placeholder="Rua, número, complemento" required />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="delivery-customer-neighborhood">Bairro</label>
+            <input type="text" id="delivery-customer-neighborhood" placeholder="Bairro" />
+          </div>
+          <div class="form-group">
+            <label for="delivery-customer-reference">Referência</label>
+            <input type="text" id="delivery-customer-reference" placeholder="Ponto de referência" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="delivery-status">Status</label>
+            <select id="delivery-status">
+              <option value="Pendente">Pendente</option>
+              <option value="Em Preparo">Em Preparo</option>
+              <option value="Saiu para Entrega">Saiu para Entrega</option>
+              <option value="Entregue">Entregue</option>
+              <option value="Pago">Pago</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="delivery-fee">Taxa de entrega</label>
+            <input type="number" id="delivery-fee" value="0" min="0" step="0.01" />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="delivery-discount">Desconto</label>
+            <input type="number" id="delivery-discount" value="0" min="0" step="0.01" />
+          </div>
+          <div class="form-group">
+            <label for="delivery-payment">Pagamento</label>
+            <select id="delivery-payment">
+              <option value="">(opcional)</option>
+              <option value="Dinheiro">Dinheiro</option>
+              <option value="Cartão">Cartão</option>
+              <option value="PIX">PIX</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Itens do Delivery</label>
+          <div class="add-item-form">
+            <select id="delivery-menu-item-select" aria-label="Selecionar item do cardápio"></select>
+            <input type="number" id="delivery-item-quantity" value="1" min="1" aria-label="Quantidade do item" />
+            <button type="button" id="delivery-add-item-btn" class="btn btn-secondary"><i class="fas fa-plus"></i> Adicionar</button>
+          </div>
+          <div id="delivery-items-container"></div>
+        </div>
+
+        <div class="order-total">
+          <div class="delivery-totals">
+            <div><strong>Subtotal:</strong> <span id="delivery-subtotal">R$ 0,00</span></div>
+            <div><strong>Total:</strong> <span id="delivery-total">R$ 0,00</span></div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Salvar</button>
+          <button type="button" class="btn btn-secondary" id="delivery-close-btn" style="display:none;">Fechar conta + Cupom</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth-neon.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/delivery.js"></script>
+</body>
+</html>

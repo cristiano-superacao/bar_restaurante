@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const filtered = transacoes.filter(t => {
             const matchSearch = !searchTerm || (t.descricao || '').toLowerCase().includes(searchTerm);
             const matchTipo = tipoFilter === 'todos' || (t.tipo || '').toLowerCase() === (tipoFilter === 'receita' ? 'receita' : 'despesa');
-            const matchStatus = statusFilter === 'todos' || (t.status || 'pendente') === statusFilter;
+            const matchStatus = statusFilter === 'todos' || (t.status || 'pago') === statusFilter;
             return matchSearch && matchTipo && matchStatus;
         });
 
@@ -127,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             valor: parseFloat(document.getElementById('transacao-valor').value),
             tipo: document.getElementById('transacao-tipo').value,
             data: document.getElementById('transacao-data').value,
+            status: 'pago'
         };
 
         if (apiEnabled && window.API) {

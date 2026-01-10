@@ -1,0 +1,302 @@
+/* Landing Page - Sistema de Gestão */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-blue: #1e3a8a;
+    --secondary-blue: #2563eb;
+    --accent-blue: #3b82f6;
+    --light-blue: #60a5fa;
+    --bg-gradient-start: #0f2557;
+    --bg-gradient-end: #2563eb;
+    --text-white: #ffffff;
+    --text-light: rgba(255, 255, 255, 0.9);
+    --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.3);
+    --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.4);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.landing-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de background animado sutil */
+.landing-container::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: backgroundMove 20s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes backgroundMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(50px, 50px); }
+}
+
+.landing-content {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Logo Section */
+.logo-section {
+    margin-bottom: 3rem;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    box-shadow: var(--shadow-lg);
+}
+
+.logo-badge i {
+    font-size: 2rem;
+    color: var(--text-white);
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+}
+
+.logo-text strong {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-white);
+    line-height: 1.2;
+}
+
+.logo-text span {
+    font-size: 0.85rem;
+    color: var(--text-light);
+    line-height: 1.2;
+}
+
+/* Hero Section */
+.hero-section {
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: var(--text-white);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    color: var(--text-light);
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+/* Feature Pills */
+.features-pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.feature-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50px;
+    padding: 0.875rem 1.75rem;
+    color: var(--text-white);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.feature-pill:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.feature-pill i {
+    font-size: 1.2rem;
+}
+
+/* CTA Section */
+.cta-section {
+    margin-bottom: 3rem;
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.btn-primary-landing {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--text-white);
+    color: var(--primary-blue);
+    font-size: 1.125rem;
+    font-weight: 700;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.btn-primary-landing:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+    background: #f8fafc;
+}
+
+.btn-primary-landing i {
+    transition: transform 0.3s ease;
+}
+
+.btn-primary-landing:hover i {
+    transform: translateX(4px);
+}
+
+/* Footer */
+.landing-footer {
+    animation: fadeInUp 0.8s ease-out 0.8s both;
+}
+
+.landing-footer p {
+    font-size: 0.875rem;
+    color: var(--text-light);
+    opacity: 0.8;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .landing-container {
+        padding: 1.5rem;
+    }
+
+    .logo-badge {
+        padding: 0.625rem 1.25rem;
+        gap: 0.75rem;
+    }
+
+    .logo-badge i {
+        font-size: 1.5rem;
+    }
+
+    .logo-text strong {
+        font-size: 1rem;
+    }
+
+    .logo-text span {
+        font-size: 0.75rem;
+    }
+
+    .hero-section {
+        margin-bottom: 2rem;
+    }
+
+    .features-pills {
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+    }
+
+    .feature-pill {
+        padding: 0.75rem 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .feature-pill i {
+        font-size: 1rem;
+    }
+
+    .btn-primary-landing {
+        font-size: 1rem;
+        padding: 0.875rem 2rem;
+    }
+
+    .cta-section {
+        margin-bottom: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .landing-container {
+        padding: 1rem;
+    }
+
+    .features-pills {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .feature-pill {
+        justify-content: center;
+        width: 100%;
+    }
+}

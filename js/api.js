@@ -75,6 +75,24 @@
   const api = {
     enabled,
     auth: {
+      async register({ username, email, password, name, companyName }) {
+        if (!enabled) {
+          const users = LS.get('users', []);
+          const exists = (users || []).some(u => String(u.username).toLowerCase() === String(username).toLowerCase())
+            || Object.values((window.CONFIG && window.CONFIG.USERS) || {}).some(u => String(u.username).toLowerCase() === String(username).toLowerCase());
+          if (exists) throw new Error('Usuário já existe');
+          const item = {
+            id: Date.now(),
+            username, email: email || '', name: name || '', role: 'admin',
+            // Armazenar senha em LS é apenas para modo demo; não usar em produção
+            password
+          };
+          users.push(item); LS.set('users', users);
+          return { ok: true, user: { id: item.id, username: item.username, role: item.role } };
+        }
+        const body = JSON.stringify({ username, email, password, name, companyName });
+        return fetchWithTimeout('/api/auth/register', { method: 'POST', body });
+      },
       async login({ username, email, password }) {
         if (!enabled) throw new Error('API disabled');
         const body = JSON.stringify({ username, email, password });
@@ -117,6 +135,45 @@
           window.location.href = 'index.html';
         }
         return ok;
+      }
+    },
+    // Clientes (por empresa)
+    customers: {
+      _lsKey(){
+        const companyId = localStorage.getItem('activeCompanyId') || 'default';
+        return `clientes_${companyId}`;
+      },
+      async list(){
+        if (!enabled) return LS.get(this._lsKey(), []);
+        return fetchWithTimeout('/api/customers');
+      },
+      async create(data){
+        if (!enabled){
+          const key = this._lsKey();
+          const curr = LS.get(key, []);
+          const item = { id: Date.now(), ...data };
+          curr.push(item); LS.set(key, curr); return item;
+        }
+        return fetchWithTimeout('/api/customers', { method: 'POST', body: JSON.stringify(data) });
+      },
+      async update(id, data){
+        if (!enabled){
+          const key = this._lsKey();
+          const curr = LS.get(key, []);
+          const upd = curr.map(c => c.id === id ? { ...c, ...data, id } : c);
+          LS.set(key, upd); return upd.find(c => c.id === id) || null;
+        }
+        return fetchWithTimeout(`/api/customers/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      },
+      async remove(id){
+        if (!enabled){
+          const key = this._lsKey();
+          const curr = LS.get(key, []);
+          LS.set(key, curr.filter(c => c.id !== id));
+          return true;
+        }
+        await fetchWithTimeout(`/api/customers/${id}`, { method: 'DELETE' });
+        return true;
       }
     },
 
@@ -211,17 +268,36 @@
 
     // Pedidos
     orders: {
-      async listWithItems() {
+      async listWithItems(opts = {}) {
         if (!enabled) return LS.get('pedidos', []);
-        const orders = await fetchWithTimeout('/api/orders');
+        const type = opts && opts.type ? String(opts.type) : '';
+        const q = type ? `?type=${encodeURIComponent(type)}` : '';
+        const orders = await fetchWithTimeout(`/api/orders${q}`);
         const itemsByOrder = await Promise.all(orders.map(o => fetchWithTimeout(`/api/orders/${o.id}/items`)));
         return orders.map((o, idx) => ({
           id: o.id,
           table: o.table_name || '',
           status: o.status,
+          orderType: o.order_type || 'Mesa',
+          customerName: o.customer_name || '',
+          customerPhone: o.customer_phone || '',
+          customerAddress: o.customer_address || '',
+          customerNeighborhood: o.customer_neighborhood || '',
+          customerReference: o.customer_reference || '',
+          paymentMethod: o.payment_method || '',
+          discount: Number(o.discount) || 0,
+          deliveryFee: Number(o.delivery_fee) || 0,
+          subtotal: Number(o.subtotal) || 0,
           total: Number(o.total) || 0,
           data: o.created_at,
-          items: (itemsByOrder[idx] || []).map(it => ({ id: it.id, name: it.name, price: Number(it.price), quantity: it.quantity }))
+          paidAt: o.paid_at,
+          items: (itemsByOrder[idx] || []).map(it => ({
+            id: it.menu_item_id,
+            orderItemId: it.id,
+            name: it.name,
+            price: Number(it.price),
+            quantity: it.quantity
+          }))
         }));
       },
       async create(payload) {
@@ -239,6 +315,60 @@
           LS.set('pedidos', upd); return upd.find(p => p.id === id) || null;
         }
         return fetchWithTimeout(`/api/orders/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      },
+      async close(id, data) {
+        if (!enabled) {
+          const curr = LS.get('pedidos', []);
+          const now = new Date().toISOString();
+          const upd = curr.map(p => {
+            if (p.id !== id) return p;
+            const discount = Number(data?.discount) || 0;
+            const deliveryFee = Number(data?.deliveryFee) || 0;
+            const subtotal = (p.items || []).reduce((acc, it) => acc + (Number(it.price) * Number(it.quantity)), 0);
+            const total = Math.max(0, subtotal + deliveryFee - discount);
+            return { ...p, status: 'Pago', paymentMethod: data?.paymentMethod || '', discount, deliveryFee, subtotal, total, paidAt: now };
+          });
+          LS.set('pedidos', upd);
+          return { ok: true };
+        }
+        return fetchWithTimeout(`/api/orders/${id}/close`, { method: 'POST', body: JSON.stringify(data || {}) });
+      },
+      async receipt(id) {
+        if (!enabled) {
+          const orders = LS.get('pedidos', []);
+          const order = (orders || []).find(o => o.id === id);
+          if (!order) throw new Error('NOT_FOUND');
+          const companyName = localStorage.getItem('activeCompanyName') || (window.CONFIG?.APP?.name || '');
+          const discount = Number(order.discount) || 0;
+          const deliveryFee = Number(order.deliveryFee) || 0;
+          const subtotal = Number(order.subtotal) || (order.items || []).reduce((acc, it) => acc + (Number(it.price) * Number(it.quantity)), 0);
+          const total = Number(order.total) || Math.max(0, subtotal + deliveryFee - discount);
+          return {
+            company: { name: companyName },
+            order: {
+              id: order.id,
+              status: order.status,
+              orderType: order.orderType || 'Mesa',
+              customerName: order.customerName || '',
+              customerPhone: order.customerPhone || '',
+              customerAddress: order.customerAddress || '',
+              paymentMethod: order.paymentMethod || '',
+              discount,
+              deliveryFee,
+              subtotal,
+              total,
+              paidAt: order.paidAt || null,
+              createdAt: order.data || null
+            },
+            items: (order.items || []).map(it => ({
+              name: it.name,
+              quantity: Number(it.quantity) || 0,
+              price: Number(it.price) || 0,
+              lineTotal: (Number(it.price) || 0) * (Number(it.quantity) || 0)
+            }))
+          };
+        }
+        return fetchWithTimeout(`/api/orders/${id}/receipt`);
       },
       async remove(id) {
         if (!enabled) {

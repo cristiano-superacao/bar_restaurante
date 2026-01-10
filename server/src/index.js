@@ -10,6 +10,7 @@ import stockRoutes from './routes/stock.js';
 import transactionRoutes from './routes/transactions.js';
 import companyRoutes from './routes/companies.js';
 import userRoutes from './routes/users.js';
+import customerRoutes from './routes/customers.js';
 import { requireAuth } from './middleware/auth.js';
 
 dotenv.config();
@@ -36,6 +37,7 @@ app.use('/api/tables', requireAuth, tableRoutes);
 app.use('/api/orders', requireAuth, orderRoutes);
 app.use('/api/stock', requireAuth, stockRoutes);
 app.use('/api/transactions', requireAuth, transactionRoutes);
+app.use('/api/customers', requireAuth, customerRoutes);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`API rodando na porta ${port}`));

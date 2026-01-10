@@ -1,0 +1,20 @@
+/* Página de Clientes: estilos específicos mantendo o design base */
+
+.client-item .title {
+  font-weight: 700;
+  color: var(--text-color-dark);
+}
+
+.client-item .meta {
+  color: #7b8a97;
+  font-size: 12px;
+}
+
+.client-badge {
+  background: #e8f0fe;
+  color: #4a90e2;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 600;
+  font-size: 12px;
+}

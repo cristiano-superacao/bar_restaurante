@@ -4,9 +4,18 @@
 CREATE TABLE IF NOT EXISTS companies (
   id SERIAL PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
+  legal_name TEXT,
+  document TEXT,
+  phone TEXT,
+  address TEXT,
   active BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS legal_name TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS document TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS address TEXT;
 
 -- Usuários (superadmin sem company_id)
 CREATE TABLE IF NOT EXISTS users (
@@ -52,10 +61,32 @@ CREATE TABLE IF NOT EXISTS orders (
   company_id INT REFERENCES companies(id) ON DELETE CASCADE,
   table_id INT REFERENCES tables(id) ON DELETE SET NULL,
   status TEXT NOT NULL DEFAULT 'Pendente',
+  order_type TEXT NOT NULL DEFAULT 'Mesa',
+  customer_name TEXT,
+  customer_phone TEXT,
+  customer_address TEXT,
+  customer_neighborhood TEXT,
+  customer_reference TEXT,
+  payment_method TEXT,
+  discount NUMERIC(12,2) NOT NULL DEFAULT 0,
+  delivery_fee NUMERIC(12,2) NOT NULL DEFAULT 0,
+  subtotal NUMERIC(12,2) NOT NULL DEFAULT 0,
   total NUMERIC(12,2) NOT NULL DEFAULT 0,
+  paid_at TIMESTAMP WITHOUT TIME ZONE,
   created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
 );
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS company_id INT REFERENCES companies(id) ON DELETE CASCADE;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_type TEXT NOT NULL DEFAULT 'Mesa';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_name TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_phone TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_address TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_neighborhood TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_reference TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS payment_method TEXT;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount NUMERIC(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_fee NUMERIC(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS subtotal NUMERIC(12,2) NOT NULL DEFAULT 0;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS paid_at TIMESTAMP WITHOUT TIME ZONE;
 
 CREATE TABLE IF NOT EXISTS order_items (
   id SERIAL PRIMARY KEY,
@@ -76,6 +107,26 @@ CREATE TABLE IF NOT EXISTS stock (
   min_quantity INT NOT NULL DEFAULT 0
 );
 ALTER TABLE stock ADD COLUMN IF NOT EXISTS company_id INT REFERENCES companies(id) ON DELETE CASCADE;
+
+-- Clientes (por empresa)
+CREATE TABLE IF NOT EXISTS customers (
+  id SERIAL PRIMARY KEY,
+  company_id INT REFERENCES companies(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  email TEXT,
+  phone TEXT,
+  address TEXT,
+  birthdate DATE,
+  notes TEXT,
+  created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
+);
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS company_id INT REFERENCES companies(id) ON DELETE CASCADE;
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS birthdate DATE;
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS notes TEXT;
+ALTER TABLE customers ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW();
 
 -- Financeiro
 CREATE TABLE IF NOT EXISTS transactions (
@@ -124,6 +175,10 @@ UPDATE tables SET company_id = (SELECT id FROM c) WHERE company_id IS NULL;
 
 WITH c AS (SELECT id FROM companies WHERE name='Default' LIMIT 1)
 UPDATE orders SET company_id = (SELECT id FROM c) WHERE company_id IS NULL;
+
+-- Backfill: subtotal e total para registros antigos
+UPDATE orders SET subtotal = total WHERE subtotal IS NULL OR subtotal = 0;
+UPDATE orders SET total = (subtotal + delivery_fee - discount) WHERE total IS NULL OR total = 0;
 
 WITH c AS (SELECT id FROM companies WHERE name='Default' LIMIT 1)
 UPDATE stock SET company_id = (SELECT id FROM c) WHERE company_id IS NULL;

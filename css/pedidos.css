@@ -117,7 +117,7 @@
 .order-total-price {
     font-size: 18px;
     font-weight: 700;
-    color: #34a853;
+    color: #4a90e2;
 }
 
 .order-status {
@@ -132,7 +132,8 @@
 
 .order-status.Pendente { background-color: #fbbc05; }
 .order-status.Em-Preparo { background-color: #4a90e2; }
-.order-status.Entregue { background-color: #34a853; }
+.order-status.Entregue { background-color: #4a90e2; }
+.order-status.Pago { background-color: #1a73e8; }
 .order-status.Cancelado { background-color: #ea4335; }
 
 
