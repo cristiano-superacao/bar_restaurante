@@ -64,6 +64,12 @@ node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 2. Aguarde a build completar (pode levar 2-3 minutos)
 3. Verifique os logs para garantir que não há erros
 
+### Deploy Automático via GitHub Actions (opcional e recomendado)
+
+Adicione o secret `RAILWAY_TOKEN` no repositório (Settings → Secrets → Actions) e use o workflow `.github/workflows/railway-deploy.yml` já incluído.
+
+O deploy será disparado a cada push no branch `main` e publicará o serviço `server/` no Railway com `environment: production`.
+
 ## Passo 5: Executar Migrations
 
 1. No dashboard do Railway, clique no serviço do backend
@@ -102,8 +108,8 @@ Opção B: Atualize o arquivo `js/config.js` (modo fixo por código):
 
 ```javascript
 API: {
-    enabled: true,  // ← Ativar API
-    baseUrl: 'https://sua-url-railway.up.railway.app',  // ← Sua URL
+    enabled: false, // habilitar via tela de Configurações
+    baseUrl: '',    // definido pelo client (LocalStorage)
     timeoutMs: 8000
 }
 ```
