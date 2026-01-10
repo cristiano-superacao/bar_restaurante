@@ -233,3 +233,74 @@ Com o backend ativado, os dados são salvos no servidor:
 - ⚠️ Requer conexão com internet
 
 Para ativar, veja [MIGRACAO_API.md](MIGRACAO_API.md)
+
+---
+
+## 🌐 Modo Cloud (Railway)
+
+Para salvar tudo na nuvem com acesso em qualquer computador e persistência por módulo:
+
+- **Backend no Railway:** deploy do diretório `server/` com Postgres gerenciado.
+- **Auto-migrações:** `server/src/index.js` aplica [server/src/migrations/schema.sql](server/src/migrations/schema.sql) em cada inicialização (idempotente).
+- **Autenticação:** JWT via `/api/auth/login`.
+
+### Habilitar API no Frontend
+
+Opção recomendada (sem alterar código):
+
+1. Abra **Configurações → Conexão com API** em [configuracoes.html](configuracoes.html)
+2. **API habilitada:** marcar
+3. **URL da API:** `https://SEU_SERVICO.up.railway.app`
+4. Testar e salvar (persistido em LocalStorage, funciona em qualquer PC)
+
+Opcional por código: ajuste `API.enabled=true` e `API.baseUrl` em [js/config.js](js/config.js).
+
+### Escopo Multi-empresa (company_id)
+
+- Usuários `admin/staff`: contexto de empresa vem no JWT automaticamente.
+- `superadmin`: informe empresa via `X-Company-Id` header ou `?companyId=...` query.
+
+### Mapeamento por Módulo (Rotas ↔ Tabelas)
+
+- **Cardápio:** `GET/POST/PUT/DELETE /api/menu-items` ↔ `menu_items (company_id)`
+- **Mesas:** `GET/POST/PUT/DELETE /api/tables` ↔ `tables (company_id)`
+- **Pedidos:** `GET/POST/PUT/DELETE /api/orders` (+ itens) ↔ `orders / order_items (company_id)`
+- **Estoque:** `GET/POST/PUT/DELETE /api/stock` ↔ `stock (company_id)`
+- **Clientes:** `GET/POST/PUT/DELETE /api/customers` ↔ `customers (company_id)`
+- **Reservas:** `GET/POST/PUT/DELETE /api/reservations` ↔ `reservations (company_id)`
+- **Financeiro:** `GET/POST/PUT/DELETE /api/transactions` ↔ `transactions (company_id)`
+- **Usuários:** `GET/POST/PUT/DELETE /api/users` ↔ `users (company_id opcional)`
+- **Empresas:** `GET/POST/PUT /api/companies` ↔ `companies`
+- **Database:** `GET /api/database/info`, `GET /api/database/schema/:table`
+
+### Variáveis no Railway
+
+No serviço `server/` defina:
+
+```
+DATABASE_URL=postgres://... (fornecido pelo Railway)
+JWT_SECRET=um_token_forte_de_32+_chars
+PORT=3000
+NODE_ENV=production
+```
+
+### Testes Rápidos (curl)
+
+```
+# Login superadmin
+curl -X POST https://SEU_SERVICO.up.railway.app/api/auth/login \
+	-H "Content-Type: application/json" \
+	-d '{"username":"superadmin","password":"superadmin123"}'
+
+# Listar empresas
+curl -H "Authorization: Bearer $TOKEN" \
+	https://SEU_SERVICO.up.railway.app/api/companies
+
+# Listar cardápio de uma empresa (superadmin)
+curl -H "Authorization: Bearer $TOKEN" -H "X-Company-Id: 1" \
+	https://SEU_SERVICO.up.railway.app/api/menu-items
+```
+
+### Layout Responsivo
+
+O frontend permanece responsivo e profissional (mobile/desktop), independente do modo. Ao habilitar a API, os dados passam a ser centralizados no Postgres sem alterar a UX.
