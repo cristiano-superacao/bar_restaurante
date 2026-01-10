@@ -125,7 +125,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function renderSummaryCards(data) {
         const totalSales = calculateTotalSales(data);
         const totalOrders = countTotalOrders(data);
-        const formatted = `R$ ${totalSales.toFixed(2).replace('.', ',')}`;
+        const formatted = (window.CONFIG && window.CONFIG.UTILS && typeof window.CONFIG.UTILS.formatCurrency === 'function')
+            ? window.CONFIG.UTILS.formatCurrency(totalSales)
+            : `R$ ${Number(totalSales || 0).toFixed(2).replace('.', ',')}`;
         if (totalSalesValueEl) totalSalesValueEl.textContent = formatted;
         if (totalOrdersCountEl) totalOrdersCountEl.textContent = totalOrders;
         if (summaryTotalSalesEl) summaryTotalSalesEl.textContent = formatted;

@@ -37,6 +37,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Funções ---
 
+    const formatCurrency = (value) => {
+        if (window.CONFIG && window.CONFIG.UTILS && typeof window.CONFIG.UTILS.formatCurrency === 'function') {
+            return window.CONFIG.UTILS.formatCurrency(value);
+        }
+        return `R$ ${Number(value || 0).toFixed(2).replace('.', ',')}`;
+    };
+
     function saveOrders() {
         if (!apiEnabled) {
             STORE.set('pedidos', pedidos);
@@ -98,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const itemsHtml = order.items.map(item => `
                 <li>
                     <span class="item-name">${item.quantity}x ${item.name}</span>
-                    <span class="item-price">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+                    <span class="item-price">${formatCurrency(item.price * item.quantity)}</span>
                 </li>
             `).join('');
 
@@ -111,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <ul>${itemsHtml}</ul>
                 </div>
                 <div class="order-card-footer">
-                    <span class="order-total-price">R$ ${order.total.toFixed(2).replace('.', ',')}</span>
+                    <span class="order-total-price">${formatCurrency(order.total)}</span>
                     <span class="order-status ${order.status.replace(' ', '-')}">${order.status}</span>
                 </div>
             `;
@@ -147,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
         menuItems.forEach(item => {
             const option = document.createElement('option');
             option.value = item.id;
-            option.textContent = `${item.name} - R$ ${item.price.toFixed(2)}`;
+            option.textContent = `${item.name} - ${formatCurrency(item.price)}`;
             option.dataset.price = item.price;
             option.dataset.name = item.name;
             menuItemSelect.appendChild(option);
@@ -164,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 itemRow.className = 'order-item-row';
                 itemRow.innerHTML = `
                     <span>${item.quantity}x ${item.name}</span>
-                    <span>R$ ${(item.price * item.quantity).toFixed(2).replace('.',',')}</span>
+                    <span>${formatCurrency(item.price * item.quantity)}</span>
                     <button type="button" class="btn-remove-item" data-index="${index}" title="Remover item">&times;</button>
                 `;
                 orderItemsContainer.appendChild(itemRow);
@@ -177,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const subtotal = currentOrderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         const discount = orderDiscountInput ? (parseFloat(orderDiscountInput.value) || 0) : 0;
         const total = Math.max(0, subtotal - discount);
-        orderTotalPriceEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        orderTotalPriceEl.textContent = formatCurrency(total);
     }
 
     function handleAddItemToOrder() {
