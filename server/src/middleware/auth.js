@@ -43,3 +43,4 @@ export function requireCompanyContext(req, res, next) {
   req.isSuperadmin = isSuperadmin;
   return next();
 }
+

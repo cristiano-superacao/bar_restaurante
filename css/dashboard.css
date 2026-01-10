@@ -630,7 +630,7 @@ body {
     .menu-toggle {
         display: block;
     }
-    
+
     .main-header {
         justify-content: flex-start;
         gap: 15px;
@@ -652,3 +652,4 @@ body {
         display: none;
     }
 }
+

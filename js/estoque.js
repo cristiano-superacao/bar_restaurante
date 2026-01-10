@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filteredEstoque.forEach(produto => {
             const item = document.createElement('div');
             item.className = 'estoque-item';
-            
+
             let statusClass = 'ok';
             let statusText = 'OK';
             if (produto.quantity <= produto.minQuantity) {
@@ -197,3 +197,4 @@ document.addEventListener('DOMContentLoaded', () => {
         renderEstoque();
     })();
 });
+

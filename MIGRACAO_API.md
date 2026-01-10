@@ -268,3 +268,4 @@ Com a API ativa, você pode:
 ## Suporte
 
 Dúvidas? Abra uma issue no repositório do projeto.
+

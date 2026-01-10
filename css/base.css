@@ -1,4 +1,4 @@
-/* 
+/*
  * Base CSS - Sistema Maria Flor
  * Estilos base compartilhados entre todas as páginas
  */
@@ -196,11 +196,11 @@ input:focus, textarea:focus, select:focus {
     h1 { font-size: 2rem; }
     h2 { font-size: 1.75rem; }
     h3 { font-size: 1.5rem; }
-    
+
     .container {
         padding: 0 15px;
     }
-    
+
     .grid-2,
     .grid-3,
     .grid-4 {
@@ -226,3 +226,4 @@ input:focus, textarea:focus, select:focus {
 ::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+

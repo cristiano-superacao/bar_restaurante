@@ -22,7 +22,7 @@ const STATIC_FILES = [
 // Install Service Worker
 self.addEventListener('install', event => {
     console.log('🔧 Service Worker instalando...');
-    
+
     event.waitUntil(
         caches.open(STATIC_CACHE)
             .then(cache => {
@@ -35,14 +35,14 @@ self.addEventListener('install', event => {
                 console.error('Erro no cache:', error);
             })
     );
-    
+
     self.skipWaiting();
 });
 
 // Activate Service Worker
 self.addEventListener('activate', event => {
     console.log('✅ Service Worker ativado');
-    
+
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
@@ -55,7 +55,7 @@ self.addEventListener('activate', event => {
             );
         })
     );
-    
+
     self.clients.claim();
 });
 
@@ -63,7 +63,7 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', event => {
     // Apenas interceptar requests GET
     if (event.request.method !== 'GET') return;
-    
+
     event.respondWith(
         caches.match(event.request)
             .then(response => {
@@ -71,7 +71,7 @@ self.addEventListener('fetch', event => {
                 if (response) {
                     return response;
                 }
-                
+
                 // Senão, fazer fetch e cachear
                 return fetch(event.request)
                     .then(response => {
@@ -79,16 +79,16 @@ self.addEventListener('fetch', event => {
                         if (!response || response.status !== 200 || response.type !== 'basic') {
                             return response;
                         }
-                        
+
                         // Clonar a resposta
                         const responseToCache = response.clone();
-                        
+
                         // Adicionar ao cache dinâmico
                         caches.open(DYNAMIC_CACHE)
                             .then(cache => {
                                 cache.put(event.request, responseToCache);
                             });
-                        
+
                         return response;
                     })
                     .catch(() => {
@@ -122,7 +122,7 @@ self.addEventListener('push', event => {
                 url: data.url || '/'
             }
         };
-        
+
         event.waitUntil(
             self.registration.showNotification(data.title, options)
         );
@@ -144,7 +144,7 @@ self.addEventListener('message', event => {
     if (event.data && event.data.type === 'SKIP_WAITING') {
         self.skipWaiting();
     }
-    
+
     if (event.data && event.data.type === 'GET_VERSION') {
         event.ports[0].postMessage({ version: CACHE_NAME });
     }

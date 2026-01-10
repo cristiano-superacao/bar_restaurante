@@ -20,3 +20,4 @@ export async function query(text, params) {
   }
   return res;
 }
+

@@ -32,15 +32,15 @@
         throw err;
       }
 
-      const res = await fetch(baseUrl + url, { 
-        ...options, 
-        signal: controller.signal, 
-        headers: { 
+      const res = await fetch(baseUrl + url, {
+        ...options,
+        signal: controller.signal,
+        headers: {
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
           ...companyHeader,
-          ...(options.headers || {}) 
-        } 
+          ...(options.headers || {})
+        }
       });
       if (!res.ok) {
         if (res.status === 401) {
@@ -489,3 +489,4 @@
     window.API = api;
   }
 })();
+

@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach(transacao => {
             const item = document.createElement('div');
             item.className = 'transacao-item';
-            
+
             if(transacao.tipo === 'Receita') {
                 totalReceitas += transacao.valor;
             } else {
@@ -192,3 +192,4 @@ document.addEventListener('DOMContentLoaded', () => {
         renderFinanceiro();
     })();
 });
+

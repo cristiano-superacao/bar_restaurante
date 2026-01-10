@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
         menuItemSelect.value = '';
         itemQuantityInput.value = 1;
     }
-    
+
     function handleRemoveOrderItem(e) {
         if (e.target.classList.contains('btn-remove-item')) {
             const index = parseInt(e.target.dataset.index);
@@ -343,7 +343,7 @@ document.addEventListener('DOMContentLoaded', function () {
         closeModal();
         window.open(`cupom.html?orderId=${encodeURIComponent(String(id))}`, '_blank');
     }
-    
+
     function handleGridClick(e) {
         const card = e.target.closest('.order-card');
         if (card) {

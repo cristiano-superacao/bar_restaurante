@@ -90,3 +90,4 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (printBtn) printBtn.addEventListener('click', () => window.print());
   if (closeBtn) closeBtn.addEventListener('click', () => window.close());
 });
+

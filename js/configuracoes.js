@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function loadProfileInfo() {
         const username = localStorage.getItem('username') || 'Não definido';
         const userRole = localStorage.getItem('userRole') || 'Não definido';
-        
+
         if (profileNameEl && profileRoleEl) {
             profileNameEl.value = username;
             profileRoleEl.value = userRole;

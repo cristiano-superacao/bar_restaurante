@@ -105,3 +105,4 @@ Exemplo:
 - Crie um novo serviço a partir deste diretório server/
 - Defina as variáveis DATABASE_URL e JWT_SECRET
 - Habilite AUTO DEPLOY e vincule ao Postgres gerenciado
+

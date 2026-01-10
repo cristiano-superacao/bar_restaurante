@@ -30,10 +30,6 @@
   "homepage": "https://barestaurante.netlify.app",
   "devDependencies": {
     "http-server": "^14.1.1"
-  },
-  "dependencies": {
-    "@neondatabase/serverless": "^1.0.2",
-    "bcryptjs": "^3.0.2",
-    "jsonwebtoken": "^9.0.2"
   }
 }
+

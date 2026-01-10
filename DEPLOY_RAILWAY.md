@@ -84,7 +84,7 @@ railway run npm run migrate
 
 1. No serviço backend, vá em **"Settings"**
 2. Clique em **"Generate Domain"**
-3. Copie a URL gerada (ex: `https://bar-restaurante-production.up.railway.app`)
+3. Copie a URL gerada (ex: `https://sua-api.up.railway.app`)
 
 ## Passo 7: Configurar Frontend
 
@@ -93,7 +93,7 @@ Opção A (recomendado): use a tela **Configurações → Conexão com API**
 1. Abra `configuracoes.html`
 2. Em **Conexão com API**:
     - Marque **API habilitada**
-    - Cole a URL do Railway (ex: `https://bar-restaurante-production.up.railway.app`)
+    - Cole a URL do Railway (ex: `https://sua-api.up.railway.app`)
     - Clique em **Testar** e depois **Salvar**
 
 Isso salva no navegador (LocalStorage) e evita precisar editar/commitar arquivos.
@@ -201,3 +201,4 @@ Antes de ir ao ar:
 - [Documentação Railway](https://docs.railway.app)
 - [Discord Railway](https://discord.gg/railway)
 - Issues no GitHub do projeto
+

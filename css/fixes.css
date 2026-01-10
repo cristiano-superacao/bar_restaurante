@@ -1,4 +1,4 @@
-/* 
+/*
  * Correções de CSS - Sistema Maria Flor
  * Mantendo o layout original com melhorias de estabilidade
  */
@@ -54,16 +54,16 @@ i.fas::before, i.far::before, i.fab::before {
         padding: 10px;
         margin: 0;
     }
-    
+
     .login-container {
         width: 95%;
         max-width: 400px;
     }
-    
+
     .sidebar {
         width: 250px;
     }
-    
+
     .sidebar.collapsed {
         width: 70px;
     }

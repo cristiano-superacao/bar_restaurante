@@ -14,7 +14,7 @@ class AuthSystemNeon {
         // Verificar se já existe login salvo
         const savedToken = localStorage.getItem('authToken');
         const savedUser = localStorage.getItem('currentUser');
-        
+
         if (savedToken && savedUser) {
             try {
                 this.token = savedToken;
@@ -31,10 +31,10 @@ class AuthSystemNeon {
     async login(username, senha) {
         try {
             console.log('🔄 Tentando login:', username);
-            
+
             // Usar credenciais do arquivo de configuração
             const validUsers = {};
-            
+
             // Criar mapa de usuários a partir da configuração
             if (typeof CONFIG !== 'undefined' && CONFIG.USERS) {
                 Object.values(CONFIG.USERS).forEach(userConfig => {
@@ -50,7 +50,7 @@ class AuthSystemNeon {
                             permissions: userConfig.permissions || []
                         }
                     };
-                    
+
                     // Por email
                     validUsers[userConfig.email] = {
                         senha: userConfig.password,
@@ -77,11 +77,11 @@ class AuthSystemNeon {
             if (validUsers[username] && validUsers[username].senha === senha) {
                 this.currentUser = validUsers[username].user;
                 this.token = 'static-auth-token'; // Token simples para demo
-                
+
                 // Salvar no localStorage
                 localStorage.setItem('authToken', this.token);
                 localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
-                
+
                 console.log('✅ Login realizado:', this.currentUser.nome);
                 console.log('👤 Usuário logado:', this.currentUser);
                 return { success: true, user: this.currentUser };
@@ -91,9 +91,9 @@ class AuthSystemNeon {
             }
         } catch (error) {
             console.error('❌ Erro no login:', error);
-            return { 
-                success: false, 
-                message: 'Erro interno do sistema' 
+            return {
+                success: false,
+                message: 'Erro interno do sistema'
             };
         }
     }
@@ -102,14 +102,14 @@ class AuthSystemNeon {
     logout() {
         this.currentUser = null;
         this.token = null;
-        
+
         localStorage.removeItem('authToken');
         localStorage.removeItem('currentUser');
-        
+
         console.log('✅ Logout realizado');
-        
+
         // Redirecionar para login se não estiver na página de login
-        if (!window.location.pathname.includes('index.html') && 
+        if (!window.location.pathname.includes('index.html') &&
             window.location.pathname !== '/') {
             window.location.href = '/index.html';
         }
@@ -128,9 +128,9 @@ class AuthSystemNeon {
     // Verificar permissão por role
     hasRole(role) {
         if (!this.currentUser) return false;
-        
+
         if (this.currentUser.role === 'administrador' || this.currentUser.role === 'admin') return true; // Admin tem acesso a tudo
-        
+
         return this.currentUser.role === role;
     }
 
@@ -150,7 +150,7 @@ class AuthSystemNeon {
         if (typeof CONFIG !== 'undefined' && CONFIG.MOCK_DATA) {
             return CONFIG.MOCK_DATA;
         }
-        
+
         // Fallback para dados hardcoded
         return {
             vendas: { hoje: 2500.00, ontem: 2100.00, semana: 15750.00, mes: 67500.00 },
@@ -204,7 +204,7 @@ function requireGerente() {
 function updateUserInterface() {
     if (auth.isAuthenticated()) {
         const user = auth.getCurrentUser();
-        
+
         // Atualizar nome do usuário na interface
         const userNameElements = document.querySelectorAll('[data-user-name]');
         userNameElements.forEach(element => {
@@ -214,7 +214,7 @@ function updateUserInterface() {
         // Atualizar role do usuário
         const userRoleElements = document.querySelectorAll('[data-user-role]');
         userRoleElements.forEach(element => {
-            element.textContent = user.role === 'admin' ? 'Administrador' : 
+            element.textContent = user.role === 'admin' ? 'Administrador' :
                                   user.role === 'gerente' ? 'Gerente' : 'Funcionário';
         });
 
@@ -234,7 +234,7 @@ function updateUserInterface() {
 // Inicializar quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     updateUserInterface();
-    
+
     // Logout global: vincula o botão padrão em todas as páginas
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {

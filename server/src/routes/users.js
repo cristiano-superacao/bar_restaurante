@@ -143,3 +143,4 @@ router.get('/me/is-superadmin', requireRole(['superadmin']), (_req, res) => {
 });
 
 export default router;
+
