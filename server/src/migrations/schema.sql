@@ -381,3 +381,105 @@ SELECT (SELECT id FROM c), 'Pudim', 'Sobremesas', 12.00, 'Pudim de leite condens
 WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
   SELECT 1 FROM menu_items WHERE name='Pudim' AND company_id=(SELECT id FROM c)
 );
+
+-- Seeds: Estoque básico para empresas de teste
+-- Empresa Teste A - Estoque
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO stock (company_id, name, category, quantity, unit, min_quantity)
+SELECT (SELECT id FROM c), 'Carne', 'Insumos', 20, 'kg', 5
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM stock WHERE name='Carne' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO stock (company_id, name, category, quantity, unit, min_quantity)
+SELECT (SELECT id FROM c), 'Queijo', 'Insumos', 15, 'kg', 3
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM stock WHERE name='Queijo' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO stock (company_id, name, category, quantity, unit, min_quantity)
+SELECT (SELECT id FROM c), 'Pão', 'Insumos', 50, 'un', 10
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM stock WHERE name='Pão' AND company_id=(SELECT id FROM c)
+);
+
+-- Empresa Teste B - Estoque
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO stock (company_id, name, category, quantity, unit, min_quantity)
+SELECT (SELECT id FROM c), 'Carne', 'Insumos', 20, 'kg', 5
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM stock WHERE name='Carne' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO stock (company_id, name, category, quantity, unit, min_quantity)
+SELECT (SELECT id FROM c), 'Queijo', 'Insumos', 15, 'kg', 3
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM stock WHERE name='Queijo' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO stock (company_id, name, category, quantity, unit, min_quantity)
+SELECT (SELECT id FROM c), 'Pão', 'Insumos', 50, 'un', 10
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM stock WHERE name='Pão' AND company_id=(SELECT id FROM c)
+);
+
+-- Seeds: Pedidos de demonstração com itens (idempotentes)
+-- Empresa Teste A - Pedido Demo
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1),
+     t AS (SELECT id FROM tables WHERE company_id=(SELECT id FROM c) AND name='Mesa 01' LIMIT 1)
+INSERT INTO orders (company_id, table_id, status, order_type, customer_name, payment_method, discount, delivery_fee, subtotal, total, paid_at)
+SELECT (SELECT id FROM c), (SELECT id FROM t), 'Concluído', 'Mesa', 'Pedido Demo A', 'Dinheiro', 0, 0, 28.90, 28.90, NOW()
+WHERE EXISTS (SELECT 1 FROM c) AND EXISTS (SELECT 1 FROM t)
+AND NOT EXISTS (SELECT 1 FROM orders WHERE company_id=(SELECT id FROM c) AND customer_name='Pedido Demo A');
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1),
+     o AS (SELECT id FROM orders WHERE company_id=(SELECT id FROM c) AND customer_name='Pedido Demo A' LIMIT 1),
+     mi1 AS (SELECT id FROM menu_items WHERE company_id=(SELECT id FROM c) AND name='Burger Clássico' LIMIT 1)
+INSERT INTO order_items (order_id, menu_item_id, quantity, price)
+SELECT (SELECT id FROM o), (SELECT id FROM mi1), 1, 22.90
+WHERE EXISTS (SELECT 1 FROM o) AND EXISTS (SELECT 1 FROM mi1)
+AND NOT EXISTS (
+  SELECT 1 FROM order_items WHERE order_id=(SELECT id FROM o) AND menu_item_id=(SELECT id FROM mi1)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1),
+     o AS (SELECT id FROM orders WHERE company_id=(SELECT id FROM c) AND customer_name='Pedido Demo A' LIMIT 1),
+     mi2 AS (SELECT id FROM menu_items WHERE company_id=(SELECT id FROM c) AND name='Coca-Cola Lata' LIMIT 1)
+INSERT INTO order_items (order_id, menu_item_id, quantity, price)
+SELECT (SELECT id FROM o), (SELECT id FROM mi2), 1, 6.00
+WHERE EXISTS (SELECT 1 FROM o) AND EXISTS (SELECT 1 FROM mi2)
+AND NOT EXISTS (
+  SELECT 1 FROM order_items WHERE order_id=(SELECT id FROM o) AND menu_item_id=(SELECT id FROM mi2)
+);
+
+-- Empresa Teste B - Pedido Demo
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1),
+     t AS (SELECT id FROM tables WHERE company_id=(SELECT id FROM c) AND name='Mesa 01' LIMIT 1)
+INSERT INTO orders (company_id, table_id, status, order_type, customer_name, payment_method, discount, delivery_fee, subtotal, total, paid_at)
+SELECT (SELECT id FROM c), (SELECT id FROM t), 'Concluído', 'Mesa', 'Pedido Demo B', 'Cartão', 0, 0, 28.90, 28.90, NOW()
+WHERE EXISTS (SELECT 1 FROM c) AND EXISTS (SELECT 1 FROM t)
+AND NOT EXISTS (SELECT 1 FROM orders WHERE company_id=(SELECT id FROM c) AND customer_name='Pedido Demo B');
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1),
+     o AS (SELECT id FROM orders WHERE company_id=(SELECT id FROM c) AND customer_name='Pedido Demo B' LIMIT 1),
+     mi1 AS (SELECT id FROM menu_items WHERE company_id=(SELECT id FROM c) AND name='Burger Clássico' LIMIT 1)
+INSERT INTO order_items (order_id, menu_item_id, quantity, price)
+SELECT (SELECT id FROM o), (SELECT id FROM mi1), 1, 22.90
+WHERE EXISTS (SELECT 1 FROM o) AND EXISTS (SELECT 1 FROM mi1)
+AND NOT EXISTS (
+  SELECT 1 FROM order_items WHERE order_id=(SELECT id FROM o) AND menu_item_id=(SELECT id FROM mi1)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1),
+     o AS (SELECT id FROM orders WHERE company_id=(SELECT id FROM c) AND customer_name='Pedido Demo B' LIMIT 1),
+     mi2 AS (SELECT id FROM menu_items WHERE company_id=(SELECT id FROM c) AND name='Coca-Cola Lata' LIMIT 1)
+INSERT INTO order_items (order_id, menu_item_id, quantity, price)
+SELECT (SELECT id FROM o), (SELECT id FROM mi2), 1, 6.00
+WHERE EXISTS (SELECT 1 FROM o) AND EXISTS (SELECT 1 FROM mi2)
+AND NOT EXISTS (
+  SELECT 1 FROM order_items WHERE order_id=(SELECT id FROM o) AND menu_item_id=(SELECT id FROM mi2)
+);
