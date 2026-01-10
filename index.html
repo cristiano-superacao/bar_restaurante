@@ -18,11 +18,11 @@
             <form id="login-form">
                 <div class="input-group">
                     <label for="username"><i class="fas fa-user"></i></label>
-                    <input type="text" id="username" placeholder="Usuário" required value="admin">
+                    <input type="text" id="username" placeholder="Usuário" required autocomplete="username">
                 </div>
                 <div class="input-group">
                     <label for="password"><i class="fas fa-lock"></i></label>
-                    <input type="password" id="password" placeholder="Senha" required value="123456">
+                    <input type="password" id="password" placeholder="Senha" required autocomplete="current-password">
                 </div>
                 <button type="submit" class="login-btn">Entrar</button>
                 <div id="error-message" class="error-message"></div>
@@ -32,6 +32,7 @@
             </div>
         </div>
     </div>
+    <script src="js/config.js"></script>
     <script src="js/api.js"></script>
     <script src="js/login.js"></script>
 </body>
