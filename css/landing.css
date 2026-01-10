@@ -66,7 +66,7 @@ body {
 .landing-content {
     position: relative;
     z-index: 1;
-    max-width: 760px;
+    max-width: 980px;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -77,7 +77,7 @@ body {
 /* Glass Panel Principal */
 .landing-glass-panel {
     width: 100%;
-    padding: 28px 28px;
+    padding: 32px 32px;
     border-radius: 22px;
     border: 1px solid var(--glass-border);
     background: var(--glass-bg);
@@ -165,10 +165,68 @@ body {
     font-size: clamp(14px, 2.5vw, 16px);
     color: var(--text-light);
     line-height: 1.5;
-    max-width: 560px;
+    max-width: 620px;
     margin: 0 auto;
     opacity: 0.9;
 }
+
+/* Hero Grid */
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 28px;
+    align-items: start;
+}
+
+.hero-left { text-align: center; }
+.hero-right { text-align: left; }
+
+.benefits-list {
+    display: grid;
+    gap: 10px;
+}
+.benefit-item {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+}
+.benefit-item i {
+    color: var(--text-white);
+    opacity: 0.9;
+}
+.benefit-item strong {
+    color: var(--text-white);
+    font-size: 14px;
+}
+.benefit-item small {
+    color: var(--text-light);
+    font-size: 12px;
+}
+
+.mini-cards {
+    margin-top: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.mini-card {
+    display: grid;
+    grid-template-columns: 26px 1fr;
+    gap: 8px;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.06);
+}
+.mini-card i { color: var(--text-white); opacity: 0.9; }
+.mini-card strong { color: var(--text-white); font-size: 13px; }
+.mini-card small { color: var(--text-light); font-size: 12px; }
 
 /* Feature Pills */
 .features-pills {
@@ -333,6 +391,12 @@ body {
     .step-text {
         text-align: center;
     }
+
+    .hero-grid {
+        grid-template-columns: 1fr;
+    }
+    .hero-right { text-align: center; }
+    .mini-cards { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 640px) {
