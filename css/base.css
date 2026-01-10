@@ -121,6 +121,14 @@ a:hover {
 }
 .btn-outline:hover { background: rgba(26,115,232,0.08); }
 
+/* Variant Danger (exclusões/ações críticas) */
+.btn-danger {
+    background: #ef4444;
+    color: var(--text-white);
+    box-shadow: var(--shadow-sm);
+}
+.btn-danger:hover { filter: brightness(1.05); transform: translateY(-1px); }
+
 /* Forms */
 input, textarea, select {
     font-family: inherit;
