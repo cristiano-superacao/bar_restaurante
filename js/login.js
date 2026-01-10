@@ -5,7 +5,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Verificar se já está logado
     if (localStorage.getItem('authToken')) {
-        window.location.href = 'dashboard.html';
+        const role = localStorage.getItem('userRole');
+        const activeCompanyId = localStorage.getItem('activeCompanyId');
+        if (role === 'superadmin' && !activeCompanyId) {
+            window.location.href = 'empresas.html';
+        } else {
+            window.location.href = 'dashboard.html';
+        }
         return;
     }
 
@@ -21,7 +27,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const res = await window.API.auth.login({ username, password });
                 if (res && res.token) {
                     localStorage.setItem('loginTime', new Date().toISOString());
-                    window.location.href = 'dashboard.html';
+                    const role = (res.user && res.user.role) ? res.user.role : localStorage.getItem('userRole');
+                    const activeCompanyId = localStorage.getItem('activeCompanyId');
+                    if (role === 'superadmin' && !activeCompanyId) {
+                        window.location.href = 'empresas.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
                     return;
                 }
                 throw new Error('Falha no login');
@@ -41,6 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('authToken', 'dummy_token_12345');
             localStorage.setItem('username', username);
             localStorage.setItem('userRole', 'admin');
+            localStorage.setItem('activeCompanyId', '1');
             localStorage.setItem('loginTime', new Date().toISOString());
             window.location.href = 'dashboard.html';
         } else {

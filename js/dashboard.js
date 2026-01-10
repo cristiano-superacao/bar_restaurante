@@ -65,10 +65,18 @@ document.addEventListener('DOMContentLoaded', function () {
     const username = localStorage.getItem('username');
     const userRole = localStorage.getItem('userRole');
     const apiEnabled = typeof window !== 'undefined' && window.CONFIG && window.CONFIG.API && window.CONFIG.API.enabled;
+    const activeCompanyId = localStorage.getItem('activeCompanyId');
+    const activeCompanyName = localStorage.getItem('activeCompanyName');
 
     // Se não houver token, redireciona para a página de login
     if (!authToken) {
         window.location.href = 'index.html';
+        return;
+    }
+
+    // Multi-empresa: superadmin precisa selecionar empresa antes de usar módulos
+    if (apiEnabled && userRole === 'superadmin' && !activeCompanyId && !window.location.pathname.includes('empresas.html')) {
+        window.location.href = 'empresas.html';
         return;
     }
 
@@ -88,7 +96,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
     const userRoleDisplay = document.getElementById('user-role-display');
     if (userRoleDisplay && userRole) {
-        userRoleDisplay.textContent = userRole;
+        if (userRole === 'superadmin') {
+            userRoleDisplay.textContent = activeCompanyName
+                ? `superadmin • ${activeCompanyName}`
+                : 'superadmin • selecione empresa';
+        } else {
+            userRoleDisplay.textContent = userRole;
+        }
     }
 
     // Menu responsivo

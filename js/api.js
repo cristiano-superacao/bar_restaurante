@@ -11,12 +11,34 @@
     const id = setTimeout(() => controller.abort(), timeoutMs);
     try {
       const token = localStorage.getItem('authToken');
+
+      // Multi-empresa: para superadmin, enviar contexto via header quando definido
+      const userRole = localStorage.getItem('userRole');
+      const activeCompanyId = localStorage.getItem('activeCompanyId');
+      const companyHeader = (userRole === 'superadmin' && activeCompanyId)
+        ? { 'X-Company-Id': String(activeCompanyId) }
+        : {};
+
+      // Se for superadmin, exige empresa selecionada para endpoints escopados
+      const needsCompany = /^\/api\/(menu-items|tables|orders|stock|transactions)(\/|$)/.test(url);
+      if (userRole === 'superadmin' && needsCompany && !activeCompanyId) {
+        try {
+          if (typeof window !== 'undefined' && !String(window.location?.pathname || '').includes('empresas.html')) {
+            window.location.href = 'empresas.html';
+          }
+        } catch {}
+        const err = new Error('NO_COMPANY_CONTEXT');
+        err.code = 'NO_COMPANY_CONTEXT';
+        throw err;
+      }
+
       const res = await fetch(baseUrl + url, { 
         ...options, 
         signal: controller.signal, 
         headers: { 
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+          ...companyHeader,
           ...(options.headers || {}) 
         } 
       });
@@ -62,6 +84,13 @@
           if (res.user) {
             localStorage.setItem('username', res.user.username || res.user.email || '');
             localStorage.setItem('userRole', res.user.role || '');
+
+            // Se o usuário vier com companyId (admin/staff), guardar para contexto
+            if (res.user.companyId) {
+              localStorage.setItem('activeCompanyId', String(res.user.companyId));
+            } else {
+              localStorage.removeItem('activeCompanyId');
+            }
           }
         }
         return res;
@@ -88,6 +117,63 @@
           window.location.href = 'index.html';
         }
         return ok;
+      }
+    },
+
+    // Empresas (somente superadmin quando API habilitada)
+    companies: {
+      async list() {
+        if (!enabled) return LS.get('companies', []);
+        return fetchWithTimeout('/api/companies');
+      },
+      async create(data) {
+        if (!enabled) {
+          const curr = LS.get('companies', []);
+          const item = { id: Date.now(), ...data };
+          curr.push(item); LS.set('companies', curr); return item;
+        }
+        return fetchWithTimeout('/api/companies', { method: 'POST', body: JSON.stringify(data) });
+      },
+      async update(id, data) {
+        if (!enabled) {
+          const curr = LS.get('companies', []);
+          const upd = curr.map(c => c.id === id ? { ...c, ...data, id } : c);
+          LS.set('companies', upd); return upd.find(c => c.id === id) || null;
+        }
+        return fetchWithTimeout(`/api/companies/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      }
+    },
+
+    // Usuários (admin e superadmin quando API habilitada)
+    users: {
+      async list() {
+        if (!enabled) return LS.get('users', []);
+        return fetchWithTimeout('/api/users');
+      },
+      async create(data) {
+        if (!enabled) {
+          const curr = LS.get('users', []);
+          const item = { id: Date.now(), ...data };
+          curr.push(item); LS.set('users', curr); return item;
+        }
+        return fetchWithTimeout('/api/users', { method: 'POST', body: JSON.stringify(data) });
+      },
+      async update(id, data) {
+        if (!enabled) {
+          const curr = LS.get('users', []);
+          const upd = curr.map(u => u.id === id ? { ...u, ...data, id } : u);
+          LS.set('users', upd); return upd.find(u => u.id === id) || null;
+        }
+        return fetchWithTimeout(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      },
+      async remove(id) {
+        if (!enabled) {
+          const curr = LS.get('users', []);
+          LS.set('users', curr.filter(u => u.id !== id));
+          return true;
+        }
+        await fetchWithTimeout(`/api/users/${id}`, { method: 'DELETE' });
+        return true;
       }
     },
     // Mesas
