@@ -166,6 +166,15 @@ INSERT INTO companies (name)
 SELECT 'Default'
 WHERE NOT EXISTS (SELECT 1 FROM companies WHERE name = 'Default');
 
+-- Seeds: Empresas de teste (idempotentes)
+INSERT INTO companies (name, legal_name, document, phone, address)
+SELECT 'Empresa Teste A', 'Empresa Teste A LTDA', '00000000000000', '(11) 0000-0000', 'Rua Exemplo, 123 - Centro'
+WHERE NOT EXISTS (SELECT 1 FROM companies WHERE name = 'Empresa Teste A');
+
+INSERT INTO companies (name, legal_name, document, phone, address)
+SELECT 'Empresa Teste B', 'Empresa Teste B LTDA', '11111111111111', '(21) 1111-1111', 'Av. Demonstração, 456 - Bairro'
+WHERE NOT EXISTS (SELECT 1 FROM companies WHERE name = 'Empresa Teste B');
+
 -- Seed: Super Admin (login global)
 -- Credenciais padrão:
 --  username: superadmin
@@ -182,6 +191,17 @@ WITH c AS (SELECT id FROM companies WHERE name='Default' LIMIT 1)
 INSERT INTO users (username, email, password_hash, role, company_id)
 SELECT 'admin', 'admin@default.local', '$2b$10$YOrlZnm7QyqvVGDZvjQrcuQIfpqvfNaXYEca41g2U94Qy39HVry/K', 'admin', (SELECT id FROM c)
 WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='admin');
+
+-- Seeds: Admins das empresas de teste (idempotentes)
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO users (username, email, password_hash, role, company_id)
+SELECT 'adminA', 'adminA@teste.local', '$2b$10$YOrlZnm7QyqvVGDZvjQrcuQIfpqvfNaXYEca41g2U94Qy39HVry/K', 'admin', (SELECT id FROM c)
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='adminA');
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO users (username, email, password_hash, role, company_id)
+SELECT 'adminB', 'adminB@teste.local', '$2b$10$YOrlZnm7QyqvVGDZvjQrcuQIfpqvfNaXYEca41g2U94Qy39HVry/K', 'admin', (SELECT id FROM c)
+WHERE NOT EXISTS (SELECT 1 FROM users WHERE username='adminB');
 
 -- Vincula dados existentes à empresa Default (quando aplicável)
 WITH c AS (SELECT id FROM companies WHERE name='Default' LIMIT 1)
