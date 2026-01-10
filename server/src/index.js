@@ -8,6 +8,8 @@ import tableRoutes from './routes/tables.js';
 import orderRoutes from './routes/orders.js';
 import stockRoutes from './routes/stock.js';
 import transactionRoutes from './routes/transactions.js';
+import companyRoutes from './routes/companies.js';
+import userRoutes from './routes/users.js';
 import { requireAuth } from './middleware/auth.js';
 
 dotenv.config();
@@ -27,6 +29,8 @@ app.get('/health', async (_req, res) => {
 
 app.use('/api/auth', authRoutes);
 // Protege as rotas a seguir com JWT
+app.use('/api/companies', requireAuth, companyRoutes);
+app.use('/api/users', requireAuth, userRoutes);
 app.use('/api/menu-items', requireAuth, menuRoutes);
 app.use('/api/tables', requireAuth, tableRoutes);
 app.use('/api/orders', requireAuth, orderRoutes);
