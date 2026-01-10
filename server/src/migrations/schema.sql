@@ -483,3 +483,65 @@ WHERE EXISTS (SELECT 1 FROM o) AND EXISTS (SELECT 1 FROM mi2)
 AND NOT EXISTS (
   SELECT 1 FROM order_items WHERE order_id=(SELECT id FROM o) AND menu_item_id=(SELECT id FROM mi2)
 );
+
+-- Seeds: Transações financeiras por empresa (idempotentes)
+-- Empresa Teste A
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO transactions (company_id, descricao, valor, tipo, data)
+SELECT (SELECT id FROM c), 'Venda Dia 1', 150.00, 'Receita', CURRENT_DATE
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM transactions WHERE company_id=(SELECT id FROM c) AND descricao='Venda Dia 1' AND data=CURRENT_DATE
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO transactions (company_id, descricao, valor, tipo, data)
+SELECT (SELECT id FROM c), 'Compra Insumos', 80.00, 'Despesa', CURRENT_DATE
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM transactions WHERE company_id=(SELECT id FROM c) AND descricao='Compra Insumos' AND data=CURRENT_DATE
+);
+
+-- Empresa Teste B
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO transactions (company_id, descricao, valor, tipo, data)
+SELECT (SELECT id FROM c), 'Venda Dia 1', 180.00, 'Receita', CURRENT_DATE
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM transactions WHERE company_id=(SELECT id FROM c) AND descricao='Venda Dia 1' AND data=CURRENT_DATE
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO transactions (company_id, descricao, valor, tipo, data)
+SELECT (SELECT id FROM c), 'Compra Insumos', 70.00, 'Despesa', CURRENT_DATE
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM transactions WHERE company_id=(SELECT id FROM c) AND descricao='Compra Insumos' AND data=CURRENT_DATE
+);
+
+-- Seeds: Reservas por empresa (idempotentes)
+-- Empresa Teste A
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO reservations (company_id, name, phone, date, time, people, status, notes)
+SELECT (SELECT id FROM c), 'Reserva João', '(11) 99999-1111', CURRENT_DATE + INTERVAL '1 day', TIME '19:00', 2, 'Confirmada', 'Mesa próxima à janela'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM reservations WHERE company_id=(SELECT id FROM c) AND name='Reserva João' AND date=CURRENT_DATE + INTERVAL '1 day'
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO reservations (company_id, name, phone, date, time, people, status, notes)
+SELECT (SELECT id FROM c), 'Reserva Maria', '(11) 98888-2222', CURRENT_DATE + INTERVAL '2 day', TIME '20:30', 4, 'Pendente', 'Preferência por área interna'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM reservations WHERE company_id=(SELECT id FROM c) AND name='Reserva Maria' AND date=CURRENT_DATE + INTERVAL '2 day'
+);
+
+-- Empresa Teste B
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO reservations (company_id, name, phone, date, time, people, status, notes)
+SELECT (SELECT id FROM c), 'Reserva Pedro', '(21) 97777-3333', CURRENT_DATE + INTERVAL '1 day', TIME '18:30', 3, 'Confirmada', 'Aniversário'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM reservations WHERE company_id=(SELECT id FROM c) AND name='Reserva Pedro' AND date=CURRENT_DATE + INTERVAL '1 day'
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO reservations (company_id, name, phone, date, time, people, status, notes)
+SELECT (SELECT id FROM c), 'Reserva Ana', '(21) 96666-4444', CURRENT_DATE + INTERVAL '3 day', TIME '21:00', 5, 'Pendente', 'Mesa maior'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM reservations WHERE company_id=(SELECT id FROM c) AND name='Reserva Ana' AND date=CURRENT_DATE + INTERVAL '3 day'
+);
