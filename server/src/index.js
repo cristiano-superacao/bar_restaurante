@@ -1,6 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
+import url from 'url';
 import { pool } from './db.js';
 import authRoutes from './routes/auth.js';
 import menuRoutes from './routes/menuItems.js';
@@ -16,6 +19,8 @@ import databaseRoutes from './routes/database.js';
 import { requireAuth } from './middleware/auth.js';
 
 dotenv.config();
+
+const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 const app = express();
 app.use(cors());
@@ -43,6 +48,32 @@ app.use('/api/customers', requireAuth, customerRoutes);
 app.use('/api/reservations', requireAuth, reservationRoutes);
 app.use('/api/database', requireAuth, databaseRoutes);
 
+// Função para executar migrações automaticamente
+async function runMigrations() {
+  try {
+    console.log('🔄 Executando migrações do banco de dados...');
+    const schemaPath = path.join(__dirname, 'migrations', 'schema.sql');
+    const sql = fs.readFileSync(schemaPath, 'utf-8');
+    await pool.query(sql);
+    console.log('✅ Migrações aplicadas com sucesso!');
+  } catch (error) {
+    console.error('❌ Erro ao executar migrações:', error);
+    throw error;
+  }
+}
+
+// Inicializa o servidor após executar migrações
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`API rodando na porta ${port}`));
+
+runMigrations()
+  .then(() => {
+    app.listen(port, () => {
+      console.log(`🚀 API rodando na porta ${port}`);
+      console.log(`📊 Database: ${process.env.DATABASE_URL ? 'PostgreSQL (Railway)' : 'Local'}`);
+    });
+  })
+  .catch((error) => {
+    console.error('💥 Falha ao inicializar servidor:', error);
+    process.exit(1);
+  });
 

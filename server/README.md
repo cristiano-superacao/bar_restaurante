@@ -2,6 +2,19 @@
 
 API compatível com Railway para o sistema Maria Flor. Rotas expõem CRUD para entidades principais e autenticação JWT.
 
+## 🚀 Migrações Automáticas
+
+**O servidor executa migrações automaticamente ao iniciar!**
+
+Ao rodar `npm start` (ou fazer deploy no Railway), o sistema:
+
+1. ✅ Conecta ao PostgreSQL
+2. ✅ Executa `src/migrations/schema.sql`
+3. ✅ Cria/atualiza todas as tabelas
+4. ✅ Inicia a API
+
+**Não é necessário rodar `npm run migrate` manualmente!** As tabelas são criadas automaticamente.
+
 ## Requisitos
 
 - Node 18+
@@ -17,16 +30,26 @@ JWT_SECRET=troque_este_segredo
 PORT=3000
 ```
 
-1. Instale deps:
+2. Instale dependências:
 
+```bash
 cd server
 npm install
+```
 
-1. Aplique o schema/migrations:
+3. Inicie o servidor (migrações rodam automaticamente):
 
-`npm run migrate`
+```bash
+npm start
+```
 
-Isso executa `src/migrate.js`, que aplica `src/migrations/schema.sql`.
+### Migração Manual (Opcional)
+
+Se preferir executar migrações separadamente:
+
+```bash
+npm run migrate
+```
 
 Observação: o schema já inclui suporte a multi-empresa e seeds iniciais.
 
