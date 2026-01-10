@@ -168,7 +168,12 @@ function loadDashboardData() {
         .filter(p => p.data && p.data.startsWith(hoje) && (p.status === 'Pago' || p.status === 'Entregue'))
         .reduce((acc, p) => acc + (p.total || 0), 0);
     const vendasEl = document.getElementById('vendas-hoje-valor');
-    if(vendasEl) vendasEl.textContent = `R$ ${vendasHoje.toFixed(2).replace('.', ',')}`;
+    if (vendasEl) {
+        const fmt = (window.CONFIG && window.CONFIG.UTILS && typeof window.CONFIG.UTILS.formatCurrency === 'function')
+            ? window.CONFIG.UTILS.formatCurrency
+            : (v => `R$ ${Number(v || 0).toFixed(2).replace('.', ',')}`);
+        vendasEl.textContent = fmt(vendasHoje);
+    }
 
     // Pedidos Pendentes
     const pedidosPendentes = pedidos.filter(p => p.status === 'Pendente').length;
