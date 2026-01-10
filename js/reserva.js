@@ -78,7 +78,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="reserva-card-body">
                     <p><i class="fas fa-phone"></i> ${reserva.phone}</p>
-                    <p><i class="fas fa-calendar-day"></i> ${new Date(reserva.date + 'T00:00:00').toLocaleDateString()}</p>
+                    <p><i class="fas fa-calendar-day"></i> ${(window.CONFIG && window.CONFIG.UTILS && typeof window.CONFIG.UTILS.formatDate === 'function')
+                        ? window.CONFIG.UTILS.formatDate(reserva.date)
+                        : new Date(reserva.date + 'T00:00:00').toLocaleDateString()}</p>
                     <p><i class="fas fa-clock"></i> ${fmtTime(reserva.time)}</p>
                     <p><i class="fas fa-users"></i> ${reserva.people} pessoas</p>
                 </div>

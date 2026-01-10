@@ -7,8 +7,11 @@
   function fmtDate(iso) {
     if (!iso) return '';
     try {
+      if (window.CONFIG && window.CONFIG.UTILS && typeof window.CONFIG.UTILS.formatDate === 'function') {
+        return window.CONFIG.UTILS.formatDate(iso);
+      }
       const d = new Date(iso);
-      return d.toLocaleString('pt-BR');
+      return d.toLocaleDateString('pt-BR');
     } catch {
       return String(iso);
     }

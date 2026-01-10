@@ -13,6 +13,15 @@
     return new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }).format(d);
   };
 
+  const formatDateTime = (date, locale = 'pt-BR') => {
+    if (!date) return '';
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return new Intl.DateTimeFormat(locale, {
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    }).format(d);
+  };
+
   const debounce = (fn, wait = 250) => {
     let t;
     return (...args) => {
@@ -66,7 +75,7 @@
 
   // Disponibiliza globalmente em window.UTILS
   if (typeof window !== 'undefined') {
-    window.UTILS = { formatCurrency, formatDate, debounce, throttle, storage, toast, currencyInputMask };
+    window.UTILS = { formatCurrency, formatDate, formatDateTime, debounce, throttle, storage, toast, currencyInputMask };
     // Mescla com CONFIG.UTILS, preservando chaves existentes e padronizando as funções críticas
     if (window.CONFIG) {
       const existing = window.CONFIG.UTILS || {};
@@ -74,6 +83,7 @@
         ...existing,
         formatCurrency,
         formatDate,
+        formatDateTime,
         debounce,
         throttle,
         storage,

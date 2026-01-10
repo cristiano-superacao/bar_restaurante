@@ -80,7 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div>${transacao.descricao}</div>
                 <div class="valor ${transacao.tipo.toLowerCase()}">${formatCurrency(transacao.valor)}</div>
                 <div>${transacao.tipo}</div>
-                <div>${new Date(transacao.data + 'T00:00:00').toLocaleDateString()}</div>
+                <div>${(window.CONFIG && window.CONFIG.UTILS && typeof window.CONFIG.UTILS.formatDate === 'function')
+                    ? window.CONFIG.UTILS.formatDate(transacao.data)
+                    : new Date(transacao.data + 'T00:00:00').toLocaleDateString()}</div>
                 <div class="transacao-actions">
                     <button class="btn btn-secondary edit-btn" data-id="${transacao.id}"><i class="fas fa-edit"></i></button>
                     <button class="btn btn-danger delete-btn" data-id="${transacao.id}"><i class="fas fa-trash"></i></button>

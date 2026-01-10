@@ -20,6 +20,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   function fmtDateTime(v) {
     if (!v) return '';
     try {
+      if (window.CONFIG && window.CONFIG.UTILS && typeof window.CONFIG.UTILS.formatDateTime === 'function') {
+        return window.CONFIG.UTILS.formatDateTime(v);
+      }
       return new Date(v).toLocaleString('pt-BR');
     } catch { return String(v); }
   }
