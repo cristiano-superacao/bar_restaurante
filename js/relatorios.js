@@ -27,25 +27,31 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Elementos do DOM ---
     const totalSalesValueEl = document.getElementById('total-sales-value');
     const totalOrdersCountEl = document.getElementById('total-orders-count');
+    const summaryTotalSalesEl = document.getElementById('summary-total-sales');
+    const summaryTotalOrdersEl = document.getElementById('summary-total-orders');
+    const periodFilterEl = document.getElementById('reports-period-filter');
+    const emptyEl = document.getElementById('reports-empty');
     const topItemsChartCanvas = document.getElementById('top-items-chart');
     const salesByCategoryChartCanvas = document.getElementById('sales-by-category-chart');
+    let topItemsChart = null;
+    let salesByCategoryChart = null;
 
     // --- Funções de Cálculo ---
 
     // Calcula o valor total de vendas
-    function calculateTotalSales() {
-        return orders.reduce((total, order) => total + order.total, 0);
+    function calculateTotalSales(data) {
+        return data.reduce((total, order) => total + (order.total || 0), 0);
     }
 
     // Conta o número total de pedidos
-    function countTotalOrders() {
-        return orders.length;
+    function countTotalOrders(data) {
+        return data.length;
     }
 
     // Analisa os itens mais vendidos
-    function getTopSellingItems() {
+    function getTopSellingItems(data) {
         const itemCounts = {};
-        orders.forEach(order => {
+        data.forEach(order => {
             order.items.forEach(item => {
                 if (itemCounts[item.name]) {
                     itemCounts[item.name] += item.quantity;
@@ -61,9 +67,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Analisa as vendas por categoria
-    function getSalesByCategory() {
+    function getSalesByCategory(data) {
         const categorySales = {};
-        orders.forEach(order => {
+        data.forEach(order => {
             order.items.forEach(orderItem => {
                 const menuItem = menuItems.find(mi => mi.id === orderItem.id);
                 if (menuItem) {
@@ -79,25 +85,53 @@ document.addEventListener('DOMContentLoaded', function () {
         return Object.entries(categorySales);
     }
 
-    // --- Funções de Renderização ---
-
-    function renderSummaryCards() {
-        totalSalesValueEl.textContent = `R$ ${calculateTotalSales().toFixed(2).replace('.', ',')}`;
-        totalOrdersCountEl.textContent = countTotalOrders();
+    function filterOrdersByPeriod(period) {
+        if (!period || period === 'all') return orders;
+        const now = new Date();
+        const start = new Date(now);
+        if (period === 'hoje') {
+            start.setHours(0, 0, 0, 0);
+        } else if (period === 'semana') {
+            start.setDate(now.getDate() - 7);
+        } else if (period === 'mes') {
+            start.setDate(now.getDate() - 30);
+        } else {
+            return orders;
+        }
+        return orders.filter(o => {
+            const d = o.data || o.createdAt || o.date;
+            if (!d) return true; // se não houver data, considerar no conjunto
+            const od = new Date(d);
+            if (period === 'hoje') return od.toDateString() === now.toDateString();
+            return od >= start && od <= now;
+        });
     }
 
-    function renderTopItemsChart() {
-        const topItems = getTopSellingItems();
+    // --- Funções de Renderização ---
+
+    function renderSummaryCards(data) {
+        const totalSales = calculateTotalSales(data);
+        const totalOrders = countTotalOrders(data);
+        const formatted = `R$ ${totalSales.toFixed(2).replace('.', ',')}`;
+        if (totalSalesValueEl) totalSalesValueEl.textContent = formatted;
+        if (totalOrdersCountEl) totalOrdersCountEl.textContent = totalOrders;
+        if (summaryTotalSalesEl) summaryTotalSalesEl.textContent = formatted;
+        if (summaryTotalOrdersEl) summaryTotalOrdersEl.textContent = totalOrders;
+    }
+
+    function renderTopItemsChart(data) {
+        const topItems = getTopSellingItems(data);
         const labels = topItems.map(item => item[0]);
         const data = topItems.map(item => item[1]);
 
-        new Chart(topItemsChartCanvas, {
+        if (topItemsChart) topItemsChart.destroy();
+        topItemsChart = new Chart(topItemsChartCanvas, {
             type: 'bar',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Quantidade Vendida',
-                    data: data,
+                    data: chartData,
                     backgroundColor: 'rgba(54, 162, 235, 0.6)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 1
@@ -120,18 +154,19 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    function renderSalesByCategoryChart() {
-        const categorySales = getSalesByCategory();
+    function renderSalesByCategoryChart(data) {
+        const categorySales = getSalesByCategory(data);
         const labels = categorySales.map(cat => cat[0]);
         const data = categorySales.map(cat => cat[1]);
 
-        new Chart(salesByCategoryChartCanvas, {
+        if (salesByCategoryChart) salesByCategoryChart.destroy();
+        salesByCategoryChart = new Chart(salesByCategoryChartCanvas, {
             type: 'doughnut',
             data: {
                 labels: labels,
                 datasets: [{
                     label: 'Vendas por Categoria',
-                    data: data,
+                    data: chartData,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.7)',
                         'rgba(54, 162, 235, 0.7)',
@@ -149,12 +184,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- Inicialização ---
-    if (totalSalesValueEl && totalOrdersCountEl && topItemsChartCanvas && salesByCategoryChartCanvas) {
-        (async () => {
-            await loadData();
-            renderSummaryCards();
-            renderTopItemsChart();
-            renderSalesByCategoryChart();
-        })();
+    function renderAll() {
+        const period = periodFilterEl ? periodFilterEl.value : 'all';
+        const data = filterOrdersByPeriod(period);
+        const hasData = data && data.length > 0;
+        if (emptyEl) emptyEl.style.display = hasData ? 'none' : 'flex';
+        renderSummaryCards(data);
+        if (hasData) {
+            renderTopItemsChart(data);
+            renderSalesByCategoryChart(data);
+        }
     }
+
+    (async () => {
+        await loadData();
+        renderAll();
+    })();
+
+    if (periodFilterEl) periodFilterEl.addEventListener('change', renderAll);
 });

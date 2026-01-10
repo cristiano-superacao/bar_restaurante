@@ -1,20 +1,5 @@
 /* Estilos para a página de Pedidos, alinhados com o novo design */
 
-.controls-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-    gap: 15px;
-}
-
-.search-filter-container {
-    display: flex;
-    gap: 15px;
-    flex-wrap: wrap;
-    flex-grow: 1;
-}
 
 .search-wrapper {
     position: relative;
@@ -213,13 +198,6 @@
     width: 80px;
 }
 
-.btn-secondary {
-    background-color: #6c757d;
-    color: white;
-}
-.btn-secondary:hover {
-    background-color: #5a6268;
-}
 
 .order-total {
     text-align: right;

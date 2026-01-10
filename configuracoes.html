@@ -23,6 +23,9 @@
                     <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
                     <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
                     <li class="active"><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
+                    <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -41,8 +44,23 @@
                 <h1>Configurações</h1>
             </header>
             <section class="content-body">
+                <div class="toolbar">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="settings-search" placeholder="Buscar configurações..." aria-label="Buscar configurações">
+                    </div>
+                    <div class="filter-pill">
+                        <i class="fas fa-filter"></i>
+                        <select id="settings-section-filter" aria-label="Filtrar por seção">
+                            <option value="all">Todas</option>
+                            <option value="perfil">Perfil</option>
+                            <option value="dados">Dados</option>
+                        </select>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
                 <div class="settings-grid">
-                    <div class="settings-card">
+                    <div class="settings-card" data-section="perfil">
                         <h3><i class="fas fa-user-cog"></i> Perfil</h3>
                         <div class="form-group">
                             <label for="profile-name">Nome de Usuário</label>
@@ -54,7 +72,7 @@
                         </div>
                     </div>
 
-                    <div class="settings-card">
+                    <div class="settings-card" data-section="dados">
                         <h3><i class="fas fa-database"></i> Gerenciamento de Dados</h3>
                         <p>Exporte todos os dados da aplicação ou limpe o armazenamento local para recomeçar.</p>
                         <div class="data-actions">
@@ -68,6 +86,7 @@
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/auth-neon.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/configuracoes.js"></script>
 </body>

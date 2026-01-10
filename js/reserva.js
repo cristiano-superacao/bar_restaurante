@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const reservasGrid = document.getElementById('reservas-grid');
     const searchInput = document.getElementById('search-input');
     const dateFilter = document.getElementById('date-filter');
+    const statusFilter = document.getElementById('status-filter');
+    const emptyEl = document.getElementById('reservas-empty');
 
     let reservas = JSON.parse(localStorage.getItem('reservas')) || [];
     let editingReservaId = null;
@@ -17,11 +19,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderReservas = () => {
         reservasGrid.innerHTML = '';
         const filteredReservas = reservas.filter(reserva => {
-            const searchMatch = reserva.name.toLowerCase().includes(searchInput.value.toLowerCase()) ||
-                                reserva.phone.includes(searchInput.value);
+            const q = (searchInput.value || '').toLowerCase();
+            const searchMatch = (reserva.name || '').toLowerCase().includes(q) || (reserva.phone || '').includes(searchInput.value || '');
             const dateMatch = !dateFilter.value || reserva.date === dateFilter.value;
-            return searchMatch && dateMatch;
+            const statusMatch = !statusFilter || statusFilter.value === 'all' || reserva.status === statusFilter.value;
+            return searchMatch && dateMatch && statusMatch;
         });
+
+        // métricas
+        const stats = { Confirmada: 0, Pendente: 0, Cancelada: 0, total: filteredReservas.length };
+        filteredReservas.forEach(r => { if (stats[r.status] !== undefined) stats[r.status]++; });
+        const el = id => document.getElementById(id);
+        if (el('reservas-confirmadas')) el('reservas-confirmadas').textContent = String(stats.Confirmada);
+        if (el('reservas-pendentes')) el('reservas-pendentes').textContent = String(stats.Pendente);
+        if (el('reservas-canceladas')) el('reservas-canceladas').textContent = String(stats.Cancelada);
+        if (el('reservas-total')) el('reservas-total').textContent = String(stats.total);
+
+        // empty-state toggle
+        if (filteredReservas.length === 0) {
+            if (emptyEl) emptyEl.style.display = 'flex';
+            return;
+        } else {
+            if (emptyEl) emptyEl.style.display = 'none';
+        }
 
         filteredReservas.forEach(reserva => {
             const card = document.createElement('div');
@@ -115,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     searchInput.addEventListener('input', renderReservas);
     dateFilter.addEventListener('change', renderReservas);
+    if (statusFilter) statusFilter.addEventListener('change', renderReservas);
 
     renderReservas();
 });

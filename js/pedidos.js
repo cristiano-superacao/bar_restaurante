@@ -57,12 +57,30 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderOrders(filteredOrders) {
         ordersGrid.innerHTML = '';
+        const emptyEl = document.getElementById('orders-empty');
         if (filteredOrders.length === 0) {
-            ordersGrid.innerHTML = '<p class="empty-message">Nenhum pedido encontrado com os filtros atuais.</p>';
+            if (emptyEl) emptyEl.style.display = 'flex';
             return;
+        } else {
+            if (emptyEl) emptyEl.style.display = 'none';
         }
 
-        filteredOrders.sort((a, b) => b.id - a.id).forEach(order => {
+            // Estatísticas por status
+            const stats = { Pendentes: 0, 'Em Preparo': 0, Entregues: 0, Cancelados: 0 };
+            filteredOrders.forEach(o => {
+                if (o.status === 'Pendente') stats.Pendentes++;
+                else if (o.status === 'Em Preparo') stats['Em Preparo']++;
+                else if (o.status === 'Entregue') stats.Entregues++;
+                else if (o.status === 'Cancelado') stats.Cancelados++;
+            });
+            const el = id => document.getElementById(id);
+            if (el('pedidos-pendentes')) el('pedidos-pendentes').textContent = String(stats.Pendentes);
+            if (el('pedidos-preparo')) el('pedidos-preparo').textContent = String(stats['Em Preparo']);
+            if (el('pedidos-entregues')) el('pedidos-entregues').textContent = String(stats.Entregues);
+            if (el('pedidos-cancelados')) el('pedidos-cancelados').textContent = String(stats.Cancelados);
+
+            // Render cards
+            filteredOrders.sort((a, b) => b.id - a.id).forEach(order => {
             const card = document.createElement('div');
             card.className = 'order-card';
             card.dataset.id = order.id;

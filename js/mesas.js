@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Elementos do DOM ---
     const tablesGrid = document.getElementById('tables-grid');
+    const searchInput = document.getElementById('search-table-input');
     const statusFilter = document.getElementById('table-status-filter');
     const addTableBtn = document.getElementById('add-table-btn');
     const modal = document.getElementById('table-modal');
@@ -43,9 +44,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function renderTables(filteredTables) {
         tablesGrid.innerHTML = '';
+
+        const emptyEl = document.getElementById('tables-empty');
+
+        // Atualiza métricas
+        const livres = filteredTables.filter(t => t.status === 'Livre').length;
+        const ocupadas = filteredTables.filter(t => t.status === 'Ocupada').length;
+        const capacidade = filteredTables.reduce((sum, t) => sum + (t.capacity || 0), 0);
+        const total = filteredTables.length;
+        const el = id => document.getElementById(id);
+        if (el('mesas-livres')) el('mesas-livres').textContent = String(livres);
+        if (el('mesas-ocupadas')) el('mesas-ocupadas').textContent = String(ocupadas);
+        if (el('mesas-capacidade')) el('mesas-capacidade').textContent = String(capacidade);
+        if (el('mesas-total')) el('mesas-total').textContent = String(total);
+
         if (filteredTables.length === 0) {
-            tablesGrid.innerHTML = '<p>Nenhuma mesa encontrada.</p>';
+            if (emptyEl) emptyEl.style.display = 'flex';
             return;
+        } else {
+            if (emptyEl) emptyEl.style.display = 'none';
         }
 
         filteredTables.forEach(table => {
@@ -65,7 +82,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function filterAndRenderTables() {
         const status = statusFilter.value;
-        const filtered = status === 'all' ? tables : tables.filter(table => table.status === status);
+        const query = (searchInput?.value || '').toLowerCase();
+        let filtered = status === 'all' ? tables : tables.filter(table => table.status === status);
+        if (query) filtered = filtered.filter(table => (table.name || '').toLowerCase().includes(query));
         renderTables(filtered);
     }
 
@@ -135,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // --- Event Listeners ---
+    if (searchInput) searchInput.addEventListener('input', filterAndRenderTables);
     statusFilter.addEventListener('change', filterAndRenderTables);
     addTableBtn.addEventListener('click', () => openModal());
     closeModalBtn.addEventListener('click', closeModal);

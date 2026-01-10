@@ -4,9 +4,9 @@
   "description": "Sistema de Gestão para Bar e Restaurante - Cliente Estático",
   "main": "index.html",
   "scripts": {
-    "start": "python utils/dev-server.py",
-    "dev": "python -m http.server 8000",
-    "serve": "python -m http.server 8000",
+    "start": "npm run serve:node",
+    "dev": "npm run serve:node",
+    "serve": "npm run serve:node",
     "serve:node": "npx http-server . -p 8000 -c-1 -o",
     "build": "echo 'Site estático - Pronto para deploy'",
     "deploy": "git add . && git commit -m 'Deploy automático' && git push origin main",
@@ -28,6 +28,9 @@
     "url": "https://github.com/cristiano-superacao/bar_restaurante.git"
   },
   "homepage": "https://barestaurante.netlify.app",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.2",
     "bcryptjs": "^3.0.2",

@@ -23,6 +23,9 @@
                     <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
                     <li class="active"><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
                     <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
+                    <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -41,6 +44,29 @@
                 <h1>Relatórios e Análises</h1>
             </header>
             <section class="content-body">
+                <div class="toolbar">
+                    <div class="filter-pill">
+                        <i class="fas fa-filter"></i>
+                        <select id="reports-period-filter" aria-label="Filtrar por período">
+                            <option value="all">Todos</option>
+                            <option value="hoje">Hoje</option>
+                            <option value="semana">Últimos 7 dias</option>
+                            <option value="mes">Últimos 30 dias</option>
+                        </select>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="stat-cards">
+                    <div class="stat-card receitas"><div class="icon"><i class="fas fa-dollar-sign"></i></div><div class="content"><h4>Vendas Totais</h4><div class="value" id="summary-total-sales">R$ 0,00</div></div></div>
+                    <div class="stat-card previsao"><div class="icon"><i class="fas fa-receipt"></i></div><div class="content"><h4>Pedidos</h4><div class="value" id="summary-total-orders">0</div></div></div>
+                </div>
+                <div class="empty-state" id="reports-empty" style="display:none;">
+                    <div class="icon"><i class="fas fa-inbox"></i></div>
+                    <div class="content">
+                        <h3>Sem dados para o período</h3>
+                        <p>Ajuste o filtro para visualizar os relatórios.</p>
+                    </div>
+                </div>
                 <div class="reports-grid">
                     <!-- Card de Vendas Totais -->
                     <div class="report-card">
@@ -75,6 +101,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/api.js"></script>
+    <script src="js/auth-neon.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/relatorios.js"></script>
 </body>

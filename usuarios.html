@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários - Sistema</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-utensils logo-icon"></i>
+                <h2>Sistema</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
+                    <li><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
+                    <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
+                    <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
+                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
+                    <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
+                    <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                    <li class="active"><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <span id="username-display">Usuário</span>
+                        <small id="user-role-display">Cargo</small>
+                    </div>
+                </div>
+                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <h1>Usuários</h1>
+                <div class="toolbar">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Buscar usuários...">
+                    </div>
+                    <button class="btn btn-primary"><i class="fas fa-user-plus"></i> Novo Usuário</button>
+                </div>
+            </header>
+            <section class="content-body">
+                <div class="stat-cards">
+                    <div class="stat-card saldo">
+                        <div class="icon"><i class="fas fa-users"></i></div>
+                        <div class="content">
+                            <h4>Total</h4>
+                            <div class="value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card receitas">
+                        <div class="icon"><i class="fas fa-user-check"></i></div>
+                        <div class="content">
+                            <h4>Ativos</h4>
+                            <div class="value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card previsao">
+                        <div class="icon"><i class="fas fa-user-clock"></i></div>
+                        <div class="content">
+                            <h4>Pendentes</h4>
+                            <div class="value">0</div>
+                        </div>
+                    </div>
+                    <div class="stat-card despesas">
+                        <div class="icon"><i class="fas fa-user-slash"></i></div>
+                        <div class="content">
+                            <h4>Inativos</h4>
+                            <div class="value">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="empty-state">
+                    <div class="icon"><i class="fas fa-users"></i></div>
+                    <div>Nenhum usuário cadastrado</div>
+                    <small>Adicione um novo usuário para começar.</small>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script src="js/auth-neon.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

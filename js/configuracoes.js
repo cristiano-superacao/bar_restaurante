@@ -5,6 +5,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const profileRoleEl = document.getElementById('profile-role');
     const exportDataBtn = document.getElementById('export-data-btn');
     const clearDataBtn = document.getElementById('clear-data-btn');
+    const settingsSearchEl = document.getElementById('settings-search');
+    const sectionFilterEl = document.getElementById('settings-section-filter');
+    const settingsCards = Array.from(document.querySelectorAll('.settings-card'));
 
     // --- Funções ---
 
@@ -17,6 +20,17 @@ document.addEventListener('DOMContentLoaded', function () {
             profileNameEl.value = username;
             profileRoleEl.value = userRole;
         }
+    }
+
+    function applySettingsFilters() {
+        const q = (settingsSearchEl?.value || '').toLowerCase();
+        const section = sectionFilterEl?.value || 'all';
+        settingsCards.forEach(card => {
+            const title = (card.querySelector('h3')?.textContent || '').toLowerCase();
+            const matchesSearch = !q || title.includes(q);
+            const matchesSection = section === 'all' || (card.dataset.section === section);
+            card.style.display = (matchesSearch && matchesSection) ? '' : 'none';
+        });
     }
 
     // Exporta todos os dados do localStorage para um arquivo JSON
@@ -78,7 +92,10 @@ document.addEventListener('DOMContentLoaded', function () {
     if (clearDataBtn) {
         clearDataBtn.addEventListener('click', clearAllData);
     }
+    if (settingsSearchEl) settingsSearchEl.addEventListener('input', applySettingsFilters);
+    if (sectionFilterEl) sectionFilterEl.addEventListener('change', applySettingsFilters);
 
     // --- Inicialização ---
     loadProfileInfo();
+    applySettingsFilters();
 });

@@ -122,6 +122,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         renderMenuItems(filteredItems);
+
+        // Atualiza cards de métricas
+        const total = menuItems.length;
+        const categorias = new Set(menuItems.map(i => i.category));
+        const precoMedio = total ? (menuItems.reduce((sum, i) => sum + (i.price || 0), 0) / total) : 0;
+        const fmt = (window.CONFIG && window.CONFIG.UTILS) ? window.CONFIG.UTILS.formatCurrency : (v => `R$ ${v.toFixed(2).replace('.', ',')}`);
+        const totalEl = document.getElementById('menu-total');
+        const catEl = document.getElementById('menu-categorias');
+        const avgEl = document.getElementById('menu-preco-medio');
+        if (totalEl) totalEl.textContent = total;
+        if (catEl) catEl.textContent = categorias.size;
+        if (avgEl) avgEl.textContent = fmt(precoMedio);
     }
 
     // Abre o modal

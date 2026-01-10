@@ -26,6 +26,9 @@
                     <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> Financeiro</a></li>
                     <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                     <li><a href="configuracoes.html"><i class="fas fa-cog"></i> Configurações</a></li>
+                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
+                    <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -50,12 +53,13 @@
                 </div>
             </header>
             <section class="content-area">
-                <div class="controls-container">
-                    <div class="search-filter-container">
-                        <div class="search-wrapper">
-                            <i class="fas fa-search"></i>
-                            <input type="text" id="search-order-input" placeholder="Buscar por mesa ou ID..." aria-label="Buscar pedido">
-                        </div>
+                <div class="toolbar">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-order-input" placeholder="Buscar por mesa ou ID..." aria-label="Buscar pedido">
+                    </div>
+                    <div class="filter-pill">
+                        <i class="fas fa-filter"></i>
                         <select id="status-filter" aria-label="Filtrar por status">
                             <option value="all">Todos os Status</option>
                             <option value="Pendente">Pendente</option>
@@ -63,8 +67,22 @@
                             <option value="Entregue">Entregue</option>
                             <option value="Cancelado">Cancelado</option>
                         </select>
+                        <i class="fas fa-chevron-down"></i>
                     </div>
                     <button class="btn btn-primary" id="add-order-btn"><i class="fas fa-plus"></i> Novo Pedido</button>
+                </div>
+                <div class="stat-cards">
+                    <div class="stat-card saldo"><div class="icon"><i class="fas fa-hourglass-start"></i></div><div class="content"><h4>Pendentes</h4><div class="value" id="pedidos-pendentes">0</div></div></div>
+                    <div class="stat-card receitas"><div class="icon"><i class="fas fa-fire"></i></div><div class="content"><h4>Em Preparo</h4><div class="value" id="pedidos-preparo">0</div></div></div>
+                    <div class="stat-card previsao"><div class="icon"><i class="fas fa-check-circle"></i></div><div class="content"><h4>Entregues</h4><div class="value" id="pedidos-entregues">0</div></div></div>
+                    <div class="stat-card despesas"><div class="icon"><i class="fas fa-ban"></i></div><div class="content"><h4>Cancelados</h4><div class="value" id="pedidos-cancelados">0</div></div></div>
+                </div>
+                <div class="empty-state" id="orders-empty" style="display:none;">
+                    <div class="icon"><i class="fas fa-inbox"></i></div>
+                    <div class="content">
+                        <h3>Nenhum pedido encontrado</h3>
+                        <p>Ajuste filtros ou crie um novo pedido.</p>
+                    </div>
                 </div>
                 <div class="orders-grid" id="orders-grid">
                     <!-- Pedidos serão inseridos aqui -->
@@ -122,6 +140,7 @@
     </div>
 
     <script src="js/api.js"></script>
+    <script src="js/auth-neon.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/pedidos.js"></script>
 </body>

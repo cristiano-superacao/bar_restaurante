@@ -109,21 +109,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    // Adiciona funcionalidade de logout
-    const logoutBtn = document.getElementById('logout-btn');
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-
-            // Limpa o localStorage
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('username');
-            localStorage.removeItem('userRole');
-
-            // Redireciona para a página de login
-            window.location.href = 'index.html';
-        });
-    }
+    // Logout agora centralizado em auth-neon.js
 
     // Carrega os dados do dashboard
     loadDashboardData();

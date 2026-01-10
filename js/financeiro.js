@@ -29,10 +29,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const formatCurrency = (value) => {
+        if (window.CONFIG && window.CONFIG.UTILS && typeof window.CONFIG.UTILS.formatCurrency === 'function') {
+            return window.CONFIG.UTILS.formatCurrency(value);
+        }
         return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     };
 
     const renderFinanceiro = () => {
+        const empty = document.getElementById('transacoes-empty');
         transacoesList.innerHTML = `
             <div class="transacao-header">
                 <div>Descrição</div>
@@ -45,7 +49,18 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalReceitas = 0;
         let totalDespesas = 0;
 
-        transacoes.forEach(transacao => {
+        const searchTerm = (document.getElementById('financeiro-search')?.value || '').toLowerCase();
+        const tipoFilter = document.getElementById('financeiro-tipo-filter')?.value || 'todos';
+        const statusFilter = document.getElementById('financeiro-status-filter')?.value || 'todos';
+
+        const filtered = transacoes.filter(t => {
+            const matchSearch = !searchTerm || (t.descricao || '').toLowerCase().includes(searchTerm);
+            const matchTipo = tipoFilter === 'todos' || (t.tipo || '').toLowerCase() === (tipoFilter === 'receita' ? 'receita' : 'despesa');
+            const matchStatus = statusFilter === 'todos' || (t.status || 'pendente') === statusFilter;
+            return matchSearch && matchTipo && matchStatus;
+        });
+
+        filtered.forEach(transacao => {
             const item = document.createElement('div');
             item.className = 'transacao-item';
             
@@ -71,6 +86,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('total-receitas').textContent = formatCurrency(totalReceitas);
         document.getElementById('total-despesas').textContent = formatCurrency(totalDespesas);
         document.getElementById('saldo-total').textContent = formatCurrency(totalReceitas - totalDespesas);
+        const hasItems = filtered.length > 0;
+        if (empty) empty.style.display = hasItems ? 'none' : 'flex';
     };
 
     const openModal = (transacao = null) => {
@@ -157,6 +174,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 saveTransacoes();
             }
             renderFinanceiro();
+        }
+    });
+
+    // Filtros e busca
+    ['financeiro-search','financeiro-tipo-filter','financeiro-status-filter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', renderFinanceiro);
+            el.addEventListener('change', renderFinanceiro);
         }
     });
 

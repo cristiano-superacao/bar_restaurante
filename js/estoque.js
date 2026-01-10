@@ -47,6 +47,29 @@ document.addEventListener('DOMContentLoaded', () => {
             return searchMatch && categoryMatch;
         });
 
+        // Atualiza métricas
+        const total = filteredEstoque.length;
+        let baixo = 0, critico = 0, ok = 0;
+        filteredEstoque.forEach(produto => {
+            if (produto.quantity === 0) critico++;
+            else if (produto.quantity <= produto.minQuantity) baixo++;
+            else ok++;
+        });
+        const el = id => document.getElementById(id);
+        if (el('estoque-total')) el('estoque-total').textContent = String(total);
+        if (el('estoque-baixo')) el('estoque-baixo').textContent = String(baixo);
+        if (el('estoque-critico')) el('estoque-critico').textContent = String(critico);
+        if (el('estoque-ok')) el('estoque-ok').textContent = String(ok);
+
+        // Empty-state toggle
+        const emptyEl = document.getElementById('estoque-empty');
+        if (filteredEstoque.length === 0) {
+            if (emptyEl) emptyEl.style.display = 'flex';
+            return;
+        } else {
+            if (emptyEl) emptyEl.style.display = 'none';
+        }
+
         filteredEstoque.forEach(produto => {
             const item = document.createElement('div');
             item.className = 'estoque-item';

@@ -1,35 +1,7 @@
+/* Usa componentes compartilhados definidos em dashboard.css */
 .financeiro-summary {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 16px;
 }
-
-.summary-card {
-    background-color: #fff;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.summary-card h3 {
-    margin-top: 0;
-    font-size: 1rem;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.summary-card p {
-    margin-bottom: 0;
-    font-size: 1.8rem;
-    font-weight: 600;
-}
-
-.summary-card.receitas p { color: var(--success-color); }
-.summary-card.despesas p { color: var(--danger-color); }
-.summary-card.saldo p { color: var(--primary-color); }
 
 .transacoes-list {
     background-color: #fff;
@@ -63,4 +35,8 @@
     display: flex;
     gap: 0.5rem;
     justify-content: flex-end;
+}
+
+.toolbar .btn {
+    border-radius: 12px;
 }

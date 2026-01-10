@@ -235,6 +235,15 @@ function updateUserInterface() {
 document.addEventListener('DOMContentLoaded', function() {
     updateUserInterface();
     
+    // Logout global: vincula o botão padrão em todas as páginas
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            auth.logout();
+        });
+    }
+
     // Testar sistema (só no dashboard)
     if (window.location.pathname.includes('dashboard.html')) {
         auth.testConnection();
