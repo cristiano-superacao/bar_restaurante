@@ -1,6 +1,7 @@
-# 🚀 Deploy no Railway - Guia Rápido
+# Deploy no Railway - Guia Rápido
 
 ## Pré-requisitos
+
 - Conta no [Railway.app](https://railway.app)
 - Repositório GitHub conectado
 
@@ -24,17 +25,20 @@
 3. Configure as seguintes opções:
 
 ### Root Directory
-```
+
+```text
 server
 ```
 
 ### Build Command
-```
+
+```bash
 npm install
 ```
 
 ### Start Command
-```
+
+```bash
 npm start
 ```
 
@@ -49,6 +53,7 @@ PORT=3000
 ```
 
 **⚠️ IMPORTANTE:** Gere um `JWT_SECRET` seguro. Você pode usar:
+
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
@@ -70,6 +75,7 @@ npm run migrate && npm start
 ```
 
 Ou use o Railway CLI:
+
 ```bash
 railway run npm run migrate
 ```
@@ -82,7 +88,17 @@ railway run npm run migrate
 
 ## Passo 7: Configurar Frontend
 
-Atualize o arquivo `js/config.js`:
+Opção A (recomendado): use a tela **Configurações → Conexão com API**
+
+1. Abra `configuracoes.html`
+2. Em **Conexão com API**:
+    - Marque **API habilitada**
+    - Cole a URL do Railway (ex: `https://bar-restaurante-production.up.railway.app`)
+    - Clique em **Testar** e depois **Salvar**
+
+Isso salva no navegador (LocalStorage) e evita precisar editar/commitar arquivos.
+
+Opção B: Atualize o arquivo `js/config.js` (modo fixo por código):
 
 ```javascript
 API: {
@@ -97,27 +113,33 @@ API: {
 1. Faça push da alteração no `config.js`
 2. Acesse seu frontend (Netlify/Vercel)
 3. Faça login com:
-   - **Usuário:** admin
-   - **Senha:** admin123
+    - **Admin (empresa Default):** `admin` / `admin123`
+    - **Superadmin (todas empresas):** `superadmin` / `superadmin123`
+
+Se logar como **superadmin**, selecione uma empresa em **Empresas** antes de usar Cardápio/Pedidos/Mesas/etc.
 
 ## 🔧 Comandos Úteis Railway CLI
 
 Instalar Railway CLI:
+
 ```bash
 npm i -g @railway/cli
 ```
 
 Fazer login:
+
 ```bash
 railway login
 ```
 
 Ver logs em tempo real:
+
 ```bash
 railway logs
 ```
 
 Executar comando no servidor:
+
 ```bash
 railway run npm run migrate
 ```
@@ -125,22 +147,28 @@ railway run npm run migrate
 ## 🐛 Troubleshooting
 
 ### Erro de conexão com banco
+
 - Verifique se o serviço Postgres está rodando
 - Confirme que as variáveis de ambiente estão conectadas
 
 ### Migrations não aplicadas
+
 Execute manualmente:
+
 ```bash
 railway run npm run migrate
 ```
 
 ### JWT inválido
+
 - Gere um novo `JWT_SECRET` com pelo menos 32 caracteres
 - Atualize a variável de ambiente no Railway
 - Faça redeploy
 
 ### CORS error no frontend
+
 O backend já está configurado para aceitar requisições de qualquer origem. Se persistir:
+
 - Verifique se `baseUrl` no `config.js` está correto
 - Confirme que a URL inclui `https://` (não `http://`)
 
