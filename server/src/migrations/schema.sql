@@ -264,3 +264,120 @@ CREATE INDEX IF NOT EXISTS idx_reservations_status ON reservations(status);
 CREATE INDEX IF NOT EXISTS idx_transactions_company ON transactions(company_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(data);
 CREATE INDEX IF NOT EXISTS idx_transactions_tipo ON transactions(tipo);
+
+-- Seeds: Mesas e Cardápio de teste (idempotentes)
+-- Empresa Teste A - Mesas
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO tables (company_id, name, capacity, status)
+SELECT (SELECT id FROM c), 'Mesa 01', 4, 'Livre'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM tables WHERE name='Mesa 01' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO tables (company_id, name, capacity, status)
+SELECT (SELECT id FROM c), 'Mesa 02', 4, 'Livre'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM tables WHERE name='Mesa 02' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO tables (company_id, name, capacity, status)
+SELECT (SELECT id FROM c), 'Mesa 03', 6, 'Livre'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM tables WHERE name='Mesa 03' AND company_id=(SELECT id FROM c)
+);
+
+-- Empresa Teste A - Cardápio
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Coca-Cola Lata', 'Bebidas', 6.00, '350ml', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Coca-Cola Lata' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Suco de Laranja', 'Bebidas', 8.00, 'Natural 300ml', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Suco de Laranja' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Burger Clássico', 'Pratos', 22.90, 'Pão, carne, queijo, alface e tomate', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Burger Clássico' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Pizza Mussarela', 'Pratos', 39.90, '8 fatias, queijo e orégano', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Pizza Mussarela' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Pudim', 'Sobremesas', 12.00, 'Pudim de leite condensado', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Pudim' AND company_id=(SELECT id FROM c)
+);
+
+-- Empresa Teste B - Mesas
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO tables (company_id, name, capacity, status)
+SELECT (SELECT id FROM c), 'Mesa 01', 4, 'Livre'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM tables WHERE name='Mesa 01' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO tables (company_id, name, capacity, status)
+SELECT (SELECT id FROM c), 'Mesa 02', 4, 'Livre'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM tables WHERE name='Mesa 02' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO tables (company_id, name, capacity, status)
+SELECT (SELECT id FROM c), 'Mesa 03', 6, 'Livre'
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM tables WHERE name='Mesa 03' AND company_id=(SELECT id FROM c)
+);
+
+-- Empresa Teste B - Cardápio
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Coca-Cola Lata', 'Bebidas', 6.00, '350ml', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Coca-Cola Lata' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Suco de Laranja', 'Bebidas', 8.00, 'Natural 300ml', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Suco de Laranja' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Burger Clássico', 'Pratos', 22.90, 'Pão, carne, queijo, alface e tomate', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Burger Clássico' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Pizza Mussarela', 'Pratos', 39.90, '8 fatias, queijo e orégano', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Pizza Mussarela' AND company_id=(SELECT id FROM c)
+);
+
+WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1)
+INSERT INTO menu_items (company_id, name, category, price, description, image)
+SELECT (SELECT id FROM c), 'Pudim', 'Sobremesas', 12.00, 'Pudim de leite condensado', NULL
+WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
+  SELECT 1 FROM menu_items WHERE name='Pudim' AND company_id=(SELECT id FROM c)
+);
