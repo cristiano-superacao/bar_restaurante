@@ -9,12 +9,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const statusFilter = document.getElementById('status-filter');
     const emptyEl = document.getElementById('reservas-empty');
 
-    let reservas = JSON.parse(localStorage.getItem('reservas')) || [];
+    const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
+    const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+        ? window.APP_STORAGE
+        : {
+            get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : (def ?? null); } catch { return def ?? null; } },
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+        };
+
+    let reservas = STORE.get('reservas', [], ['reservas']) || [];
     let editingReservaId = null;
 
+    async function loadReservas() {
+        if (apiEnabled && window.API && window.API.reservations) {
+            try {
+                reservas = await window.API.reservations.list();
+                return;
+            } catch (e) {
+                console.warn('Falha ao carregar reservas da API, usando LocalStorage.', e);
+            }
+        }
+        reservas = STORE.get('reservas', [], ['reservas']) || [];
+    }
+
     const saveReservas = () => {
-        localStorage.setItem('reservas', JSON.stringify(reservas));
+        STORE.set('reservas', reservas);
     };
+
+    function fmtTime(v) {
+        const s = String(v || '');
+        return s.length >= 5 ? s.slice(0, 5) : s;
+    }
 
     const renderReservas = () => {
         reservasGrid.innerHTML = '';
@@ -54,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="reserva-card-body">
                     <p><i class="fas fa-phone"></i> ${reserva.phone}</p>
                     <p><i class="fas fa-calendar-day"></i> ${new Date(reserva.date + 'T00:00:00').toLocaleDateString()}</p>
-                    <p><i class="fas fa-clock"></i> ${reserva.time}</p>
+                    <p><i class="fas fa-clock"></i> ${fmtTime(reserva.time)}</p>
                     <p><i class="fas fa-users"></i> ${reserva.people} pessoas</p>
                 </div>
                 <div class="reserva-card-actions">
@@ -97,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    reservaForm.addEventListener('submit', (e) => {
+    reservaForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const reservaData = {
             id: editingReservaId || Date.now().toString(),
@@ -109,6 +134,25 @@ document.addEventListener('DOMContentLoaded', () => {
             status: document.getElementById('reserva-status').value,
         };
 
+        if (apiEnabled && window.API && window.API.reservations) {
+            try {
+                if (editingReservaId) {
+                    await window.API.reservations.update(editingReservaId, reservaData);
+                } else {
+                    const payload = { ...reservaData };
+                    delete payload.id;
+                    await window.API.reservations.create(payload);
+                }
+                await loadReservas();
+                renderReservas();
+                closeModal();
+                return;
+            } catch (err) {
+                alert('Erro ao salvar reserva via API.');
+                return;
+            }
+        }
+
         if (editingReservaId) {
             reservas = reservas.map(r => r.id === editingReservaId ? reservaData : r);
         } else {
@@ -119,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal();
     });
 
-    reservasGrid.addEventListener('click', (e) => {
+    reservasGrid.addEventListener('click', async (e) => {
         if (e.target.closest('.edit-btn')) {
             const id = e.target.closest('.edit-btn').dataset.id;
             const reserva = reservas.find(r => r.id === id);
@@ -127,6 +171,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (e.target.closest('.delete-btn')) {
             const id = e.target.closest('.delete-btn').dataset.id;
+
+            if (apiEnabled && window.API && window.API.reservations) {
+                if (!confirm('Deseja excluir esta reserva?')) return;
+                try {
+                    await window.API.reservations.remove(id);
+                    await loadReservas();
+                    renderReservas();
+                    return;
+                } catch (err) {
+                    alert('Erro ao excluir reserva via API.');
+                    return;
+                }
+            }
+
             reservas = reservas.filter(r => r.id !== id);
             saveReservas();
             renderReservas();
@@ -137,6 +195,9 @@ document.addEventListener('DOMContentLoaded', () => {
     dateFilter.addEventListener('change', renderReservas);
     if (statusFilter) statusFilter.addEventListener('change', renderReservas);
 
-    renderReservas();
+    (async () => {
+        await loadReservas();
+        renderReservas();
+    })();
 });
 

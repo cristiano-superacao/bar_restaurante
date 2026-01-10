@@ -5,6 +5,14 @@
   const baseUrl = (CFG.API && CFG.API.baseUrl) || '';
   const timeoutMs = (CFG.API && CFG.API.timeoutMs) || 8000;
 
+  function getActiveCompanyId() {
+    return localStorage.getItem('activeCompanyId') || 'default';
+  }
+
+  function companyKey(baseKey) {
+    return `${String(baseKey)}_${getActiveCompanyId()}`;
+  }
+
   async function fetchWithTimeout(url, options = {}) {
     if (!enabled) throw new Error('API disabled');
     const controller = new AbortController();
@@ -20,7 +28,7 @@
         : {};
 
       // Se for superadmin, exige empresa selecionada para endpoints escopados
-      const needsCompany = /^\/api\/(menu-items|tables|orders|stock|transactions)(\/|$)/.test(url);
+      const needsCompany = /^\/api\/(menu-items|tables|orders|stock|transactions|customers|reservations)(\/|$)/.test(url);
       if (userRole === 'superadmin' && needsCompany && !activeCompanyId) {
         try {
           if (typeof window !== 'undefined' && !String(window.location?.pathname || '').includes('empresas.html')) {
@@ -72,6 +80,39 @@
     del: (k) => localStorage.removeItem(k),
   };
 
+  // Storage por empresa (LocalStorage) com migração automática de chaves legadas
+  const APP_STORAGE = {
+    key(baseKey) {
+      return companyKey(baseKey);
+    },
+    get(baseKey, def, legacyKeys = []) {
+      const scopedKey = companyKey(baseKey);
+      const scoped = LS.get(scopedKey, null);
+      if (scoped !== null) return scoped;
+
+      const legacies = Array.isArray(legacyKeys) ? legacyKeys : [];
+      for (const k of legacies) {
+        const v = LS.get(k, null);
+        if (v !== null) {
+          // migra somente se ainda não há nada no escopo atual
+          try { LS.set(scopedKey, v); } catch {}
+          return v;
+        }
+      }
+      return def ?? null;
+    },
+    set(baseKey, value) {
+      return LS.set(companyKey(baseKey), value);
+    },
+    del(baseKey) {
+      return LS.del(companyKey(baseKey));
+    }
+  };
+
+  try {
+    if (typeof window !== 'undefined') window.APP_STORAGE = APP_STORAGE;
+  } catch {}
+
   const api = {
     enabled,
     auth: {
@@ -102,6 +143,10 @@
           if (res.user) {
             localStorage.setItem('username', res.user.username || res.user.email || '');
             localStorage.setItem('userRole', res.user.role || '');
+
+            if (res.user.companyName) {
+              localStorage.setItem('activeCompanyName', String(res.user.companyName));
+            }
 
             // Se o usuário vier com companyId (admin/staff), guardar para contexto
             if (res.user.companyId) {
@@ -139,37 +184,30 @@
     },
     // Clientes (por empresa)
     customers: {
-      _lsKey(){
-        const companyId = localStorage.getItem('activeCompanyId') || 'default';
-        return `clientes_${companyId}`;
-      },
       async list(){
-        if (!enabled) return LS.get(this._lsKey(), []);
+        if (!enabled) return APP_STORAGE.get('clientes', [], ['clientes', companyKey('clientes')]);
         return fetchWithTimeout('/api/customers');
       },
       async create(data){
         if (!enabled){
-          const key = this._lsKey();
-          const curr = LS.get(key, []);
+          const curr = APP_STORAGE.get('clientes', [], ['clientes', companyKey('clientes')]);
           const item = { id: Date.now(), ...data };
-          curr.push(item); LS.set(key, curr); return item;
+          curr.push(item); APP_STORAGE.set('clientes', curr); return item;
         }
         return fetchWithTimeout('/api/customers', { method: 'POST', body: JSON.stringify(data) });
       },
       async update(id, data){
         if (!enabled){
-          const key = this._lsKey();
-          const curr = LS.get(key, []);
+          const curr = APP_STORAGE.get('clientes', [], ['clientes', companyKey('clientes')]);
           const upd = curr.map(c => c.id === id ? { ...c, ...data, id } : c);
-          LS.set(key, upd); return upd.find(c => c.id === id) || null;
+          APP_STORAGE.set('clientes', upd); return upd.find(c => c.id === id) || null;
         }
         return fetchWithTimeout(`/api/customers/${id}`, { method: 'PUT', body: JSON.stringify(data) });
       },
       async remove(id){
         if (!enabled){
-          const key = this._lsKey();
-          const curr = LS.get(key, []);
-          LS.set(key, curr.filter(c => c.id !== id));
+          const curr = APP_STORAGE.get('clientes', [], ['clientes', companyKey('clientes')]);
+          APP_STORAGE.set('clientes', curr.filter(c => c.id !== id));
           return true;
         }
         await fetchWithTimeout(`/api/customers/${id}`, { method: 'DELETE' });
@@ -236,29 +274,29 @@
     // Mesas
     tables: {
       async list() {
-        if (!enabled) return LS.get('tables', []);
+        if (!enabled) return APP_STORAGE.get('tables', [], ['tables', 'mesas']);
         return fetchWithTimeout('/api/tables');
       },
       async create(data) {
         if (!enabled) {
-          const curr = LS.get('tables', []);
+          const curr = APP_STORAGE.get('tables', [], ['tables', 'mesas']);
           const item = { id: Date.now(), ...data };
-          curr.push(item); LS.set('tables', curr); return item;
+          curr.push(item); APP_STORAGE.set('tables', curr); return item;
         }
         return fetchWithTimeout('/api/tables', { method: 'POST', body: JSON.stringify(data) });
       },
       async update(id, data) {
         if (!enabled) {
-          const curr = LS.get('tables', []);
+          const curr = APP_STORAGE.get('tables', [], ['tables', 'mesas']);
           const upd = curr.map(t => t.id === id ? { ...data, id } : t);
-          LS.set('tables', upd); return upd.find(t => t.id === id) || null;
+          APP_STORAGE.set('tables', upd); return upd.find(t => t.id === id) || null;
         }
         return fetchWithTimeout(`/api/tables/${id}`, { method: 'PUT', body: JSON.stringify(data) });
       },
       async remove(id) {
         if (!enabled) {
-          const curr = LS.get('tables', []);
-          LS.set('tables', curr.filter(t => t.id !== id));
+          const curr = APP_STORAGE.get('tables', [], ['tables', 'mesas']);
+          APP_STORAGE.set('tables', curr.filter(t => t.id !== id));
           return true;
         }
         await fetchWithTimeout(`/api/tables/${id}`, { method: 'DELETE' });
@@ -269,7 +307,7 @@
     // Pedidos
     orders: {
       async listWithItems(opts = {}) {
-        if (!enabled) return LS.get('pedidos', []);
+        if (!enabled) return APP_STORAGE.get('pedidos', [], ['pedidos', 'orders']);
         const type = opts && opts.type ? String(opts.type) : '';
         const q = type ? `?type=${encodeURIComponent(type)}` : '';
         const orders = await fetchWithTimeout(`/api/orders${q}`);
@@ -302,23 +340,23 @@
       },
       async create(payload) {
         if (!enabled) {
-          const curr = LS.get('pedidos', []);
+          const curr = APP_STORAGE.get('pedidos', [], ['pedidos', 'orders']);
           const item = { id: Date.now(), ...payload };
-          curr.push(item); LS.set('pedidos', curr); return item;
+          curr.push(item); APP_STORAGE.set('pedidos', curr); return item;
         }
         return fetchWithTimeout('/api/orders', { method: 'POST', body: JSON.stringify(payload) });
       },
       async update(id, data) {
         if (!enabled) {
-          const curr = LS.get('pedidos', []);
+          const curr = APP_STORAGE.get('pedidos', [], ['pedidos', 'orders']);
           const upd = curr.map(p => p.id === id ? { ...p, ...data } : p);
-          LS.set('pedidos', upd); return upd.find(p => p.id === id) || null;
+          APP_STORAGE.set('pedidos', upd); return upd.find(p => p.id === id) || null;
         }
         return fetchWithTimeout(`/api/orders/${id}`, { method: 'PUT', body: JSON.stringify(data) });
       },
       async close(id, data) {
         if (!enabled) {
-          const curr = LS.get('pedidos', []);
+          const curr = APP_STORAGE.get('pedidos', [], ['pedidos', 'orders']);
           const now = new Date().toISOString();
           const upd = curr.map(p => {
             if (p.id !== id) return p;
@@ -328,14 +366,14 @@
             const total = Math.max(0, subtotal + deliveryFee - discount);
             return { ...p, status: 'Pago', paymentMethod: data?.paymentMethod || '', discount, deliveryFee, subtotal, total, paidAt: now };
           });
-          LS.set('pedidos', upd);
+          APP_STORAGE.set('pedidos', upd);
           return { ok: true };
         }
         return fetchWithTimeout(`/api/orders/${id}/close`, { method: 'POST', body: JSON.stringify(data || {}) });
       },
       async receipt(id) {
         if (!enabled) {
-          const orders = LS.get('pedidos', []);
+          const orders = APP_STORAGE.get('pedidos', [], ['pedidos', 'orders']);
           const order = (orders || []).find(o => o.id === id);
           if (!order) throw new Error('NOT_FOUND');
           const companyName = localStorage.getItem('activeCompanyName') || (window.CONFIG?.APP?.name || '');
@@ -372,8 +410,8 @@
       },
       async remove(id) {
         if (!enabled) {
-          const curr = LS.get('pedidos', []);
-          LS.set('pedidos', curr.filter(p => p.id !== id));
+          const curr = APP_STORAGE.get('pedidos', [], ['pedidos', 'orders']);
+          APP_STORAGE.set('pedidos', curr.filter(p => p.id !== id));
           return true;
         }
         await fetchWithTimeout(`/api/orders/${id}`, { method: 'DELETE' });
@@ -384,29 +422,29 @@
     // Cardápio (somente leitura por enquanto)
     menu: {
       async list() {
-        if (!enabled) return LS.get('menuItems', []);
+        if (!enabled) return APP_STORAGE.get('menuItems', [], ['menuItems']);
         return fetchWithTimeout('/api/menu-items');
       },
       async create(data) {
         if (!enabled) {
-          const curr = LS.get('menuItems', []);
+          const curr = APP_STORAGE.get('menuItems', [], ['menuItems']);
           const item = { id: Date.now(), ...data };
-          curr.push(item); LS.set('menuItems', curr); return item;
+          curr.push(item); APP_STORAGE.set('menuItems', curr); return item;
         }
         return fetchWithTimeout('/api/menu-items', { method: 'POST', body: JSON.stringify(data) });
       },
       async update(id, data) {
         if (!enabled) {
-          const curr = LS.get('menuItems', []);
+          const curr = APP_STORAGE.get('menuItems', [], ['menuItems']);
           const upd = curr.map(m => m.id === id ? { ...m, ...data, id } : m);
-          LS.set('menuItems', upd); return upd.find(m => m.id === id) || null;
+          APP_STORAGE.set('menuItems', upd); return upd.find(m => m.id === id) || null;
         }
         return fetchWithTimeout(`/api/menu-items/${id}`, { method: 'PUT', body: JSON.stringify(data) });
       },
       async remove(id) {
         if (!enabled) {
-          const curr = LS.get('menuItems', []);
-          LS.set('menuItems', curr.filter(m => m.id !== id));
+          const curr = APP_STORAGE.get('menuItems', [], ['menuItems']);
+          APP_STORAGE.set('menuItems', curr.filter(m => m.id !== id));
           return true;
         }
         await fetchWithTimeout(`/api/menu-items/${id}`, { method: 'DELETE' });
@@ -417,33 +455,33 @@
     // Estoque
     stock: {
       async list() {
-        if (!enabled) return LS.get('estoque', []);
+        if (!enabled) return APP_STORAGE.get('estoque', [], ['estoque']);
         const rows = await fetchWithTimeout('/api/stock');
         // mapear min_quantity -> minQuantity
         return rows.map(r => ({ ...r, minQuantity: r.min_quantity }));
       },
       async create(data) {
         if (!enabled) {
-          const curr = LS.get('estoque', []);
+          const curr = APP_STORAGE.get('estoque', [], ['estoque']);
           const item = { id: Date.now().toString(), ...data };
-          curr.push(item); LS.set('estoque', curr); return item;
+          curr.push(item); APP_STORAGE.set('estoque', curr); return item;
         }
         const payload = { ...data, minQuantity: data.minQuantity };
         return fetchWithTimeout('/api/stock', { method: 'POST', body: JSON.stringify(payload) });
       },
       async update(id, data) {
         if (!enabled) {
-          const curr = LS.get('estoque', []);
+          const curr = APP_STORAGE.get('estoque', [], ['estoque']);
           const upd = curr.map(s => s.id === id ? { ...data, id } : s);
-          LS.set('estoque', upd); return upd.find(s => s.id === id) || null;
+          APP_STORAGE.set('estoque', upd); return upd.find(s => s.id === id) || null;
         }
         const payload = { ...data, minQuantity: data.minQuantity };
         return fetchWithTimeout(`/api/stock/${id}`, { method: 'PUT', body: JSON.stringify(payload) });
       },
       async remove(id) {
         if (!enabled) {
-          const curr = LS.get('estoque', []);
-          LS.set('estoque', curr.filter(s => s.id !== id));
+          const curr = APP_STORAGE.get('estoque', [], ['estoque']);
+          APP_STORAGE.set('estoque', curr.filter(s => s.id !== id));
           return true;
         }
         await fetchWithTimeout(`/api/stock/${id}`, { method: 'DELETE' });
@@ -454,32 +492,65 @@
     // Financeiro / Transações
     transactions: {
       async list() {
-        if (!enabled) return LS.get('transacoes', []);
+        if (!enabled) return APP_STORAGE.get('transacoes', [], ['transacoes']);
         return fetchWithTimeout('/api/transactions');
       },
       async create(data) {
         if (!enabled) {
-          const curr = LS.get('transacoes', []);
+          const curr = APP_STORAGE.get('transacoes', [], ['transacoes']);
           const item = { id: Date.now().toString(), ...data };
-          curr.push(item); LS.set('transacoes', curr); return item;
+          curr.push(item); APP_STORAGE.set('transacoes', curr); return item;
         }
         return fetchWithTimeout('/api/transactions', { method: 'POST', body: JSON.stringify(data) });
       },
       async update(id, data) {
         if (!enabled) {
-          const curr = LS.get('transacoes', []);
+          const curr = APP_STORAGE.get('transacoes', [], ['transacoes']);
           const upd = curr.map(t => t.id === id ? { ...data, id } : t);
-          LS.set('transacoes', upd); return upd.find(t => t.id === id) || null;
+          APP_STORAGE.set('transacoes', upd); return upd.find(t => t.id === id) || null;
         }
         return fetchWithTimeout(`/api/transactions/${id}`, { method: 'PUT', body: JSON.stringify(data) });
       },
       async remove(id) {
         if (!enabled) {
-          const curr = LS.get('transacoes', []);
-          LS.set('transacoes', curr.filter(t => t.id !== id));
+          const curr = APP_STORAGE.get('transacoes', [], ['transacoes']);
+          APP_STORAGE.set('transacoes', curr.filter(t => t.id !== id));
           return true;
         }
         await fetchWithTimeout(`/api/transactions/${id}`, { method: 'DELETE' });
+        return true;
+      }
+    },
+
+    // Reservas
+    reservations: {
+      async list() {
+        if (!enabled) return APP_STORAGE.get('reservas', [], ['reservas']);
+        return fetchWithTimeout('/api/reservations');
+      },
+      async create(data) {
+        if (!enabled) {
+          const curr = APP_STORAGE.get('reservas', [], ['reservas']);
+          const item = { id: Date.now().toString(), ...data };
+          curr.push(item); APP_STORAGE.set('reservas', curr); return item;
+        }
+        return fetchWithTimeout('/api/reservations', { method: 'POST', body: JSON.stringify(data) });
+      },
+      async update(id, data) {
+        if (!enabled) {
+          const curr = APP_STORAGE.get('reservas', [], ['reservas']);
+          const upd = curr.map(r => r.id === id ? { ...r, ...data, id } : r);
+          APP_STORAGE.set('reservas', upd); return upd.find(r => r.id === id) || null;
+        }
+        return fetchWithTimeout(`/api/reservations/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      },
+      async remove(id) {
+        if (!enabled) {
+          const curr = APP_STORAGE.get('reservas', [], ['reservas']);
+          APP_STORAGE.set('reservas', curr.filter(r => r.id !== id));
+          return true;
+        }
+        await fetchWithTimeout(`/api/reservations/${id}`, { method: 'DELETE' });
         return true;
       }
     }

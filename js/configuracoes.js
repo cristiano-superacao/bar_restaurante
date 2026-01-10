@@ -1,5 +1,21 @@
 document.addEventListener('DOMContentLoaded', function () {
 
+    const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+        ? window.APP_STORAGE
+        : {
+            _companyId: () => localStorage.getItem('activeCompanyId') || 'default',
+            key: (k) => `${String(k)}_${localStorage.getItem('activeCompanyId') || 'default'}`,
+            get: (k, def) => {
+                try {
+                    const v = localStorage.getItem(`${String(k)}_${localStorage.getItem('activeCompanyId') || 'default'}`);
+                    return v ? JSON.parse(v) : (def ?? null);
+                } catch {
+                    return def ?? null;
+                }
+            },
+            del: (k) => { try { localStorage.removeItem(`${String(k)}_${localStorage.getItem('activeCompanyId') || 'default'}`); } catch {} },
+        };
+
     // --- Elementos do DOM ---
     const profileNameEl = document.getElementById('profile-name');
     const profileRoleEl = document.getElementById('profile-role');
@@ -137,19 +153,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Exporta todos os dados do localStorage para um arquivo JSON
     function exportData() {
-        // Normaliza chaves usadas em diferentes módulos
-        const pedidos = JSON.parse(localStorage.getItem('pedidos')) || JSON.parse(localStorage.getItem('orders')) || [];
-        const mesas = JSON.parse(localStorage.getItem('mesas')) || JSON.parse(localStorage.getItem('tables')) || [];
-        const estoque = JSON.parse(localStorage.getItem('estoque')) || [];
-        const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+        // Exporta dados do tenant atual (modo LocalStorage)
+        const pedidos = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
+        const mesas = STORE.get('tables', [], ['mesas', 'tables']) || [];
+        const estoque = STORE.get('estoque', [], ['estoque']) || [];
+        const transacoes = STORE.get('transacoes', [], ['transacoes']) || [];
+        const reservas = STORE.get('reservas', [], ['reservas']) || [];
+        const clientes = STORE.get('clientes', [], ['clientes']) || [];
 
         const data = {
+            companyId: localStorage.getItem('activeCompanyId') || null,
+            companyName: localStorage.getItem('activeCompanyName') || null,
             users: JSON.parse(localStorage.getItem('users')) || [],
-            menuItems: JSON.parse(localStorage.getItem('menuItems')) || [],
+            menuItems: STORE.get('menuItems', [], ['menuItems']) || [],
             pedidos,
             mesas,
             estoque,
             transacoes,
+            reservas,
+            clientes,
             exportedAt: new Date().toISOString()
         };
 
@@ -168,23 +190,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Limpa todos os dados do localStorage
     function clearAllData() {
-        if (confirm('ATENÇÃO: Esta ação é irreversível e apagará TODOS os dados (cardápio, pedidos, mesas, etc.). Deseja continuar?')) {
-            // Dados do app
-            localStorage.removeItem('users');
-            localStorage.removeItem('menuItems');
-            localStorage.removeItem('orders');
-            localStorage.removeItem('pedidos');
-            localStorage.removeItem('tables');
-            localStorage.removeItem('mesas');
-            localStorage.removeItem('estoque');
-            localStorage.removeItem('transacoes');
-            // Sessão
+        if (!confirm('ATENÇÃO: Esta ação é irreversível e apagará os dados desta empresa (cardápio, pedidos, mesas, etc.). Deseja continuar?')) return;
+
+        // Dados do tenant atual (modo LocalStorage)
+        STORE.del('menuItems');
+        STORE.del('pedidos');
+        STORE.del('tables');
+        STORE.del('estoque');
+        STORE.del('transacoes');
+        STORE.del('reservas');
+        STORE.del('clientes');
+
+        // Sessão
+        try {
             localStorage.removeItem('authToken');
             localStorage.removeItem('username');
             localStorage.removeItem('userRole');
-            alert('Todos os dados foram limpos. A aplicação será recarregada.');
-            window.location.href = 'index.html';
-        }
+        } catch {}
+
+        alert('Dados limpos. A aplicação será recarregada.');
+        window.location.href = 'index.html';
     }
 
     // --- Event Listeners ---

@@ -1,17 +1,23 @@
 document.addEventListener('DOMContentLoaded', () => {
     const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
+    const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+        ? window.APP_STORAGE
+        : {
+            get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : (def ?? null); } catch { return def ?? null; } },
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+        };
     const addTransacaoBtn = document.getElementById('add-transacao-btn');
     const modal = document.getElementById('transacao-modal');
     const closeModalBtn = modal.querySelector('.close-btn');
     const transacaoForm = document.getElementById('transacao-form');
     const transacoesList = document.getElementById('transacoes-list');
 
-    let transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+    let transacoes = STORE.get('transacoes', [], ['transacoes']) || [];
     let editingTransacaoId = null;
 
     const saveTransacoes = () => {
         if (!apiEnabled) {
-            localStorage.setItem('transacoes', JSON.stringify(transacoes));
+            STORE.set('transacoes', transacoes);
         }
     };
 
@@ -21,10 +27,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 transacoes = await window.API.transactions.list();
             } catch (e) {
                 console.warn('Falha ao carregar transações da API, usando LocalStorage.', e);
-                transacoes = JSON.parse(localStorage.getItem('transacoes')) || transacoes;
+                transacoes = STORE.get('transacoes', transacoes, ['transacoes']) || transacoes;
             }
         } else {
-            transacoes = JSON.parse(localStorage.getItem('transacoes')) || transacoes;
+            transacoes = STORE.get('transacoes', transacoes, ['transacoes']) || transacoes;
         }
     };
 

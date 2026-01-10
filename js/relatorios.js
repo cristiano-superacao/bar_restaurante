@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', function () {
     const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
+    const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+        ? window.APP_STORAGE
+        : {
+            get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : (def ?? null); } catch { return def ?? null; } },
+        };
 
     // --- Carregar Dados ---
     let orders = [];
@@ -15,12 +20,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 menuItems = m || [];
             } catch (e) {
                 console.warn('Falha ao carregar dados da API, usando LocalStorage.', e);
-                orders = JSON.parse(localStorage.getItem('pedidos')) || JSON.parse(localStorage.getItem('orders')) || [];
-                menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
+                orders = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
+                menuItems = STORE.get('menuItems', [], ['menuItems']) || [];
             }
         } else {
-            orders = JSON.parse(localStorage.getItem('pedidos')) || JSON.parse(localStorage.getItem('orders')) || [];
-            menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
+            orders = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
+            menuItems = STORE.get('menuItems', [], ['menuItems']) || [];
         }
     }
 

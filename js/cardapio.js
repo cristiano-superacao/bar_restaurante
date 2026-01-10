@@ -12,7 +12,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Dados Iniciais (Simulação de um banco de dados) ---
     const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
-    let menuItems = JSON.parse(localStorage.getItem('menuItems')) || [
+    const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+        ? window.APP_STORAGE
+        : {
+            get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : (def ?? null); } catch { return def ?? null; } },
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+        };
+
+    let menuItems = STORE.get('menuItems', null, ['menuItems']);
+    if (!menuItems) menuItems = [
         {
             id: 1,
             name: 'Hambúrguer Clássico',
@@ -64,7 +72,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Salva os itens no localStorage
     function saveItems() {
         if (!apiEnabled) {
-            localStorage.setItem('menuItems', JSON.stringify(menuItems));
+            STORE.set('menuItems', menuItems);
         }
     }
 
@@ -74,10 +82,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 menuItems = await window.API.menu.list();
             } catch (e) {
                 console.warn('Falha ao carregar cardápio da API, usando LocalStorage.', e);
-                menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
+                menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
             }
         } else {
-            menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
+            menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
         }
     }
 

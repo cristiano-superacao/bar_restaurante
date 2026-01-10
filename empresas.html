@@ -19,6 +19,7 @@
                     <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
                     <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
                     <li><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
+                    <li><a href="clientes.html"><i class="fas fa-user"></i> <span>Clientes</span></a></li>
                     <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
                     <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
                     <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
@@ -26,8 +27,9 @@
                     <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
                     <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
                     <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
-                    <li class="active"><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
                     <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+                    <li class="active"><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
+                    <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
                 </ul>
             </nav>
             <div class="sidebar-footer">
@@ -43,14 +45,21 @@
         </aside>
         <main class="main-content">
             <header class="main-header">
-                <h1>Empresas</h1>
-                <div class="toolbar">
-                    <div class="search-input">
-                        <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Buscar empresas...">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Empresas</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="toolbar">
+                        <div class="search-input">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Buscar empresas...">
+                        </div>
+                        <button class="btn btn-secondary" id="btn-clear-company" type="button"><i class="fas fa-eraser"></i> Limpar seleção</button>
+                        <button class="btn btn-primary" id="btn-new-company" type="button"><i class="fas fa-building-circle-check"></i> Nova Empresa</button>
                     </div>
-                    <button class="btn btn-secondary" id="btn-clear-company" type="button"><i class="fas fa-eraser"></i> Limpar seleção</button>
-                    <button class="btn btn-primary" id="btn-new-company" type="button"><i class="fas fa-building-circle-check"></i> Nova Empresa</button>
                 </div>
             </header>
             <section class="content-body">
@@ -94,6 +103,7 @@
                 </div>
             </section>
         </main>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
     </div>
 
     <script src="js/config.js"></script>

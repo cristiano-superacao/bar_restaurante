@@ -2,7 +2,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Dados (Simulação de Banco de Dados) ---
     const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
-    let tables = JSON.parse(localStorage.getItem('tables')) || [
+    const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+        ? window.APP_STORAGE
+        : {
+            get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : (def ?? null); } catch { return def ?? null; } },
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+        };
+
+    let tables = STORE.get('tables', null, ['tables', 'mesas']);
+    if (!tables) tables = [
         { id: 1, name: 'Mesa 01', capacity: 4, status: 'Livre' },
         { id: 2, name: 'Mesa 02', capacity: 2, status: 'Ocupada' },
         { id: 3, name: 'Mesa 03', capacity: 6, status: 'Livre' },
@@ -25,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function saveTables() {
         if (!apiEnabled) {
-            localStorage.setItem('tables', JSON.stringify(tables));
+            STORE.set('tables', tables);
         }
     }
 
@@ -35,10 +43,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 tables = await window.API.tables.list();
             } catch (e) {
                 console.warn('Falha ao carregar mesas da API, usando LocalStorage.', e);
-                tables = JSON.parse(localStorage.getItem('tables')) || tables;
+                tables = STORE.get('tables', tables, ['tables', 'mesas']) || tables;
             }
         } else {
-            tables = JSON.parse(localStorage.getItem('tables')) || tables;
+            tables = STORE.get('tables', tables, ['tables', 'mesas']) || tables;
         }
     }
 

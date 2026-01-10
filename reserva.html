@@ -24,6 +24,8 @@
                     <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
                     <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
                     <li class="active"><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
+                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
                     <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
                     <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
                     <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
@@ -44,7 +46,13 @@
         </aside>
         <main class="main-content">
             <header class="main-header">
-                <h1>Gerenciamento de Reservas</h1>
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Gerenciamento de Reservas</h1>
+                </div>
+                <div class="header-actions"></div>
             </header>
             <section class="content-body">
                 <div class="toolbar">
@@ -86,6 +94,7 @@
                 </div>
             </section>
         </main>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
     </div>
 
     <!-- Modal para Adicionar/Editar Reserva -->

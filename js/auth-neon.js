@@ -229,11 +229,163 @@ function updateUserInterface() {
             element.style.display = auth.isGerente() ? 'block' : 'none';
         });
     }
+
+    // Compatibilidade com telas novas (IDs fixos no sidebar)
+    try {
+        const usernameDisplay = document.getElementById('username-display');
+        const userRoleDisplay = document.getElementById('user-role-display');
+
+        const storedUsername = localStorage.getItem('username');
+        const storedRole = localStorage.getItem('userRole');
+        const companyName = localStorage.getItem('activeCompanyName');
+        const apiEnabled = !!(typeof window !== 'undefined' && window.CONFIG && window.CONFIG.API && window.CONFIG.API.enabled);
+
+        const displayName = storedUsername || (auth.isAuthenticated() ? (auth.getCurrentUser()?.nome || auth.getCurrentUser()?.username || '') : '') || 'Usuário';
+        const role = storedRole || (auth.isAuthenticated() ? (auth.getCurrentUser()?.role || '') : '') || '';
+
+        if (usernameDisplay) usernameDisplay.textContent = displayName;
+
+        if (userRoleDisplay) {
+            if (role === 'superadmin') {
+                userRoleDisplay.textContent = companyName
+                    ? `superadmin • ${companyName}`
+                    : (apiEnabled ? 'superadmin • selecione empresa' : 'superadmin');
+            } else if (role) {
+                userRoleDisplay.textContent = role;
+            } else {
+                // fallback para o role do auth estático
+                const u = auth.isAuthenticated() ? auth.getCurrentUser() : null;
+                userRoleDisplay.textContent = u && u.role ? String(u.role) : '—';
+            }
+        }
+    } catch {
+        // noop
+    }
+
+    // Mostrar/ocultar menu "Empresas" conforme role (evita confusão)
+    try {
+        const role = localStorage.getItem('userRole') || (auth.isAuthenticated() ? (auth.getCurrentUser()?.role || '') : '');
+        const li = document.querySelector('.sidebar-nav a[href="empresas.html"]')?.closest('li');
+        if (li) li.style.display = (role === 'superadmin') ? '' : 'none';
+    } catch {
+        // noop
+    }
 }
+
+function renderCompanyBadge() {
+    try {
+        const token = localStorage.getItem('authToken');
+        if (!token) return;
+
+        const userRole = localStorage.getItem('userRole') || '';
+        const activeCompanyId = localStorage.getItem('activeCompanyId') || '';
+        const activeCompanyName = localStorage.getItem('activeCompanyName') || '';
+        const hasApi = !!(typeof window !== 'undefined' && window.CONFIG && window.CONFIG.API && window.CONFIG.API.enabled);
+
+        const headerActions = document.querySelector('.main-header .header-actions');
+        if (!headerActions) return;
+
+        // Evita duplicar
+        const existing = headerActions.querySelector('.company-pill');
+        if (existing) existing.remove();
+
+        // Só mostra quando há contexto de empresa OU quando for superadmin (para guiar seleção)
+        const shouldShow = !!activeCompanyName || userRole === 'superadmin';
+        if (!shouldShow) return;
+
+        const pill = document.createElement('a');
+        pill.className = 'company-pill';
+        pill.href = (userRole === 'superadmin' && hasApi) ? 'empresas.html' : '#';
+        pill.setAttribute('role', 'button');
+        pill.setAttribute('aria-label', 'Empresa ativa');
+
+        const isMissing = userRole === 'superadmin' && hasApi && !activeCompanyId;
+        if (isMissing) pill.classList.add('is-warning');
+
+        const label = (userRole === 'superadmin' && hasApi)
+            ? 'Empresa'
+            : 'Empresa';
+
+        const name = isMissing
+            ? 'Selecione'
+            : (activeCompanyName || '—');
+
+        pill.innerHTML = `
+            <i class="fas fa-building"></i>
+            <span class="label">${label}:</span>
+            <span class="name" title="${String(activeCompanyName || name)}">${name}</span>
+        `.trim();
+
+        // Se não for superadmin (ou API desligada), não navega ao clicar
+        if (!(userRole === 'superadmin' && hasApi)) {
+            pill.addEventListener('click', (e) => e.preventDefault());
+        }
+
+        // Se houver toolbar, colocar o badge dentro dela (melhor layout)
+        const toolbar = headerActions.querySelector('.toolbar');
+        if (toolbar) {
+            toolbar.appendChild(pill);
+        } else {
+            headerActions.appendChild(pill);
+        }
+    } catch {
+        // noop
+    }
+}
+
+function ensureCompanySwitchShortcut() {
+    try {
+        const role = localStorage.getItem('userRole') || '';
+        const apiEnabled = !!(typeof window !== 'undefined' && window.CONFIG && window.CONFIG.API && window.CONFIG.API.enabled);
+        if (!(role === 'superadmin' && apiEnabled)) return;
+
+        const footer = document.querySelector('.sidebar-footer');
+        if (!footer) return;
+
+        // Evita duplicar
+        if (footer.querySelector('#company-switch-btn')) return;
+
+        const btn = document.createElement('a');
+        btn.href = 'empresas.html?from=switch';
+        btn.id = 'company-switch-btn';
+        btn.className = 'logout-btn company-switch-btn';
+        btn.title = 'Trocar empresa';
+        btn.setAttribute('aria-label', 'Trocar empresa');
+        btn.innerHTML = '<i class="fas fa-building"></i>';
+
+        footer.appendChild(btn);
+    } catch {
+        // noop
+    }
+}
+
+try {
+    if (typeof window !== 'undefined') window.renderCompanyBadge = renderCompanyBadge;
+} catch {}
 
 // Inicializar quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     updateUserInterface();
+
+    // Guardar última página (para superadmin voltar após trocar empresa)
+    try {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            const path = String(window.location.pathname || '');
+            const page = path.split('/').pop() || '';
+            const isLogin = page === '' || page === 'index.html';
+            const isCompanies = page === 'empresas.html';
+            if (!isLogin && !isCompanies) {
+                localStorage.setItem('lastNonCompaniesPage', page);
+            }
+        }
+    } catch {
+        // noop
+    }
+
+    // Badge de empresa ativa (multi-tenant)
+    renderCompanyBadge();
+    ensureCompanySwitchShortcut();
 
     // Logout global: vincula o botão padrão em todas as páginas
     const logoutBtn = document.getElementById('logout-btn');

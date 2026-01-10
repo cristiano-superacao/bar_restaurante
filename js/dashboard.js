@@ -120,6 +120,24 @@ document.addEventListener('DOMContentLoaded', function () {
             sidebar.classList.remove('open');
             sidebarOverlay.classList.remove('active');
         });
+
+        // UX: fecha o menu com ESC
+        document.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Escape') {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
+
+        // UX: fecha o menu ao navegar (principalmente no mobile)
+        sidebar.addEventListener('click', (ev) => {
+            const link = ev.target && ev.target.closest ? ev.target.closest('a') : null;
+            if (!link) return;
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('active');
+            }
+        });
     }
 
 
@@ -130,15 +148,21 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function loadDashboardData() {
+    const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+        ? window.APP_STORAGE
+        : {
+            get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : (def ?? null); } catch { return def ?? null; } },
+        };
+
     // Ocupação de Mesas (usar chave 'tables' do módulo de Mesas)
-    const mesas = JSON.parse(localStorage.getItem('tables')) || [];
+    const mesas = STORE.get('tables', [], ['tables', 'mesas']) || [];
     const mesasOcupadas = mesas.filter(m => m.status === 'Ocupada').length;
     const totalMesas = mesas.length;
     const mesasEl = document.getElementById('mesas-ocupadas-valor');
     if (mesasEl) mesasEl.textContent = `${mesasOcupadas} / ${totalMesas}`;
 
     // Vendas Hoje
-    const pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+    const pedidos = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
     const hoje = new Date().toISOString().split('T')[0];
     const vendasHoje = pedidos
         .filter(p => p.data && p.data.startsWith(hoje) && (p.status === 'Pago' || p.status === 'Entregue'))
@@ -152,7 +176,7 @@ function loadDashboardData() {
     if(pendentesEl) pendentesEl.textContent = pedidosPendentes;
 
     // Itens em Baixa no Estoque
-    const estoque = JSON.parse(localStorage.getItem('estoque')) || [];
+    const estoque = STORE.get('estoque', [], ['estoque']) || [];
     const itensEmBaixa = estoque.filter(item => item.quantidade < item.quantidadeMinima).length;
     const estoqueEl = document.getElementById('estoque-baixo-valor');
     if(estoqueEl) estoqueEl.textContent = itensEmBaixa;

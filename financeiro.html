@@ -46,31 +46,38 @@
         </aside>
         <main class="main-content">
             <header class="main-header">
-                <h1>Financeiro</h1>
-                <div class="toolbar">
-                    <div class="search-input">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="financeiro-search" placeholder="Buscar transações...">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Financeiro</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="toolbar">
+                        <div class="search-input">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="financeiro-search" placeholder="Buscar transações...">
+                        </div>
+                        <div class="filter-pill">
+                            <i class="fas fa-filter"></i>
+                            <select id="financeiro-tipo-filter" aria-label="Filtrar por tipo">
+                                <option value="todos">Todos os tipos</option>
+                                <option value="receita">Receitas</option>
+                                <option value="despesa">Despesas</option>
+                            </select>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <div class="filter-pill">
+                            <i class="fas fa-check-circle"></i>
+                            <select id="financeiro-status-filter" aria-label="Filtrar por status">
+                                <option value="todos">Todos os status</option>
+                                <option value="pago">Pago</option>
+                                <option value="pendente">Pendente</option>
+                            </select>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                        <button class="btn btn-primary" id="add-transacao-btn"><i class="fas fa-plus"></i> Nova Transação</button>
                     </div>
-                    <div class="filter-pill">
-                        <i class="fas fa-filter"></i>
-                        <select id="financeiro-tipo-filter" aria-label="Filtrar por tipo">
-                            <option value="todos">Todos os tipos</option>
-                            <option value="receita">Receitas</option>
-                            <option value="despesa">Despesas</option>
-                        </select>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <div class="filter-pill">
-                        <i class="fas fa-check-circle"></i>
-                        <select id="financeiro-status-filter" aria-label="Filtrar por status">
-                            <option value="todos">Todos os status</option>
-                            <option value="pago">Pago</option>
-                            <option value="pendente">Pendente</option>
-                        </select>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <button class="btn btn-primary" id="add-transacao-btn"><i class="fas fa-plus"></i> Nova Transação</button>
                 </div>
             </header>
             <section class="content-body">
@@ -113,6 +120,7 @@
                 </div>
             </section>
         </main>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
     </div>
 
     <!-- Modal para Adicionar/Editar Transação -->

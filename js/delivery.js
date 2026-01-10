@@ -1,8 +1,15 @@
 document.addEventListener('DOMContentLoaded', function () {
   const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
 
-  let menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
-  let deliveries = JSON.parse(localStorage.getItem('pedidos')) || [];
+  const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+    ? window.APP_STORAGE
+    : {
+        get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : (def ?? null); } catch { return def ?? null; } },
+        set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+      };
+
+  let menuItems = STORE.get('menuItems', [], ['menuItems']) || [];
+  let deliveries = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
 
   const grid = document.getElementById('delivery-grid');
   const emptyEl = document.getElementById('delivery-empty');
@@ -53,7 +60,8 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function saveLocal() {
-    localStorage.setItem('pedidos', JSON.stringify(deliveries));
+    // mantido por compatibilidade, mas preferimos salvar o conjunto completo via merge
+    STORE.set('pedidos', deliveries);
   }
 
   async function loadData() {
@@ -71,8 +79,8 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
-    menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
-    deliveries = (JSON.parse(localStorage.getItem('pedidos')) || deliveries).filter(o => (o.orderType || o.order_type) === 'Delivery');
+    menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
+    deliveries = (STORE.get('pedidos', deliveries, ['pedidos', 'orders']) || deliveries).filter(o => (o.orderType || o.order_type) === 'Delivery');
   }
 
   function populateMenu() {
@@ -305,9 +313,9 @@ document.addEventListener('DOMContentLoaded', function () {
       paidAt: payload.status === 'Pago' ? now : null
     };
 
-    const allOrders = JSON.parse(localStorage.getItem('pedidos')) || [];
+    const allOrders = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
     const merged = id ? allOrders.map(o => (o.id === id ? order : o)) : [...allOrders, order];
-    localStorage.setItem('pedidos', JSON.stringify(merged));
+    STORE.set('pedidos', merged);
 
     deliveries = merged.filter(o => (o.orderType || o.order_type) === 'Delivery');
     filterAndRender();
@@ -334,16 +342,16 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    const allOrders = JSON.parse(localStorage.getItem('pedidos')) || [];
+    const allOrders = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
     const now = new Date().toISOString();
     const updated = allOrders.map(o => {
       if (o.id !== id) return o;
       return { ...o, status: 'Pago', paymentMethod, discount: totals.discount, deliveryFee: totals.fee, subtotal: totals.subtotal, total: totals.total, paidAt: now };
     });
-    localStorage.setItem('pedidos', JSON.stringify(updated));
+    STORE.set('pedidos', updated);
 
     // Gera transação de receita no financeiro
-    const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+    const transacoes = STORE.get('transacoes', [], ['transacoes']) || [];
     transacoes.push({
       id: String(Date.now()),
       descricao: `Pedido #${String(id).padStart(4, '0')} (Delivery)`,
@@ -352,7 +360,7 @@ document.addEventListener('DOMContentLoaded', function () {
       data: new Date().toISOString().slice(0, 10),
       status: 'pago'
     });
-    localStorage.setItem('transacoes', JSON.stringify(transacoes));
+    STORE.set('transacoes', transacoes);
 
     deliveries = updated.filter(o => (o.orderType || o.order_type) === 'Delivery');
     filterAndRender();

@@ -2,9 +2,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Dados (Simulação de Banco de Dados) ---
     const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
-    let menuItems = JSON.parse(localStorage.getItem('menuItems')) || [];
-    let mesas = JSON.parse(localStorage.getItem('tables')) || [];
-    let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
+    const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+        ? window.APP_STORAGE
+        : {
+            get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : (def ?? null); } catch { return def ?? null; } },
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+        };
+
+    let menuItems = STORE.get('menuItems', [], ['menuItems']) || [];
+    let mesas = STORE.get('tables', [], ['tables', 'mesas']) || [];
+    let pedidos = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
 
     // --- Elementos do DOM ---
     const ordersGrid = document.getElementById('orders-grid');
@@ -32,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function saveOrders() {
         if (!apiEnabled) {
-            localStorage.setItem('pedidos', JSON.stringify(pedidos));
+            STORE.set('pedidos', pedidos);
         }
     }
 
@@ -47,14 +54,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 ]);
             } catch (e) {
                 console.warn('Falha ao carregar via API, usando LocalStorage.', e);
-                menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
-                mesas = JSON.parse(localStorage.getItem('tables')) || mesas;
-                pedidos = (JSON.parse(localStorage.getItem('pedidos')) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
+                menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
+                mesas = STORE.get('tables', mesas, ['tables', 'mesas']) || mesas;
+                pedidos = (STORE.get('pedidos', pedidos, ['pedidos', 'orders']) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
             }
         } else {
-            menuItems = JSON.parse(localStorage.getItem('menuItems')) || menuItems;
-            mesas = JSON.parse(localStorage.getItem('tables')) || mesas;
-            pedidos = (JSON.parse(localStorage.getItem('pedidos')) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
+            menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
+            mesas = STORE.get('tables', mesas, ['tables', 'mesas']) || mesas;
+            pedidos = (STORE.get('pedidos', pedidos, ['pedidos', 'orders']) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
         }
     }
 
@@ -327,7 +334,7 @@ document.addEventListener('DOMContentLoaded', function () {
         saveOrders();
 
         // Gera transação de receita no financeiro (LocalStorage)
-        const transacoes = JSON.parse(localStorage.getItem('transacoes')) || [];
+        const transacoes = STORE.get('transacoes', [], ['transacoes']) || [];
         const orderTotal = updated.find(o => String(o.id) === String(id))?.total || 0;
         transacoes.push({
             id: String(Date.now()),
@@ -337,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function () {
             data: new Date().toISOString().slice(0, 10),
             status: 'pago'
         });
-        localStorage.setItem('transacoes', JSON.stringify(transacoes));
+        STORE.set('transacoes', transacoes);
 
         filterAndRenderOrders();
         closeModal();

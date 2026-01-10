@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
+    const STORE = (typeof window !== 'undefined' && window.APP_STORAGE)
+        ? window.APP_STORAGE
+        : {
+            get: (k, def) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : (def ?? null); } catch { return def ?? null; } },
+            set: (k, v) => localStorage.setItem(k, JSON.stringify(v)),
+        };
     const addProdutoBtn = document.getElementById('add-produto-btn');
     const modal = document.getElementById('produto-modal');
     const closeModalBtn = modal.querySelector('.close-btn');
@@ -8,12 +14,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const categoryFilter = document.getElementById('category-filter');
 
-    let estoque = JSON.parse(localStorage.getItem('estoque')) || [];
+    let estoque = STORE.get('estoque', [], ['estoque']) || [];
     let editingProdutoId = null;
 
     const saveEstoque = () => {
         if (!apiEnabled) {
-            localStorage.setItem('estoque', JSON.stringify(estoque));
+            STORE.set('estoque', estoque);
         }
     };
 
@@ -23,10 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 estoque = await window.API.stock.list();
             } catch (e) {
                 console.warn('Falha ao carregar estoque da API, usando LocalStorage.', e);
-                estoque = JSON.parse(localStorage.getItem('estoque')) || estoque;
+                estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
             }
         } else {
-            estoque = JSON.parse(localStorage.getItem('estoque')) || estoque;
+            estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
         }
     };
 

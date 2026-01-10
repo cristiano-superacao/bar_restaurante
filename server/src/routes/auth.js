@@ -9,6 +9,9 @@ router.post('/register', async (req, res) => {
   try {
     const { username, email, password, name, companyName } = req.body || {};
     if (!username || !password) return res.status(400).json({ error: 'Informe usuário e senha' });
+    if (!companyName || !String(companyName).trim()) {
+      return res.status(400).json({ error: 'Informe o nome da empresa' });
+    }
 
     const exists = await query(
       'SELECT 1 FROM users WHERE username=$1 OR email=$2 LIMIT 1',
@@ -16,15 +19,15 @@ router.post('/register', async (req, res) => {
     );
     if (exists.rowCount > 0) return res.status(409).json({ error: 'Usuário já existe' });
 
-    let companyId = null;
-    if (companyName && String(companyName).trim()) {
-      const c = await query('INSERT INTO companies(name) VALUES ($1) RETURNING id', [String(companyName).trim()]);
-      companyId = c.rows[0].id;
-    } else {
-      // fallback para empresa Default
-      const c = await query("SELECT id FROM companies WHERE name='Default' LIMIT 1", []);
-      if (c.rowCount > 0) companyId = c.rows[0].id;
+    const companyNameTrim = String(companyName).trim();
+
+    // Cada cadastro cria sua própria empresa (tenant)
+    const existingCompany = await query('SELECT 1 FROM companies WHERE name=$1 LIMIT 1', [companyNameTrim]);
+    if (existingCompany.rowCount > 0) {
+      return res.status(409).json({ error: 'Já existe uma empresa com esse nome' });
     }
+    const c = await query('INSERT INTO companies(name) VALUES ($1) RETURNING id', [companyNameTrim]);
+    const companyId = c.rows[0].id;
 
     const hash = await bcrypt.hash(password, 10);
     const ins = await query(
@@ -33,9 +36,23 @@ router.post('/register', async (req, res) => {
     );
 
     const user = ins.rows[0];
-    res.status(201).json({ ok: true, user: { id: user.id, username: user.username, email: user.email, role: user.role, companyId: user.company_id } });
+    res.status(201).json({
+      ok: true,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        companyId: user.company_id,
+        companyName: companyNameTrim,
+      }
+    });
   } catch (err) {
     console.error(err);
+    const msg = String(err?.message || 'Erro ao registrar');
+    if (msg.includes('duplicate key') || msg.includes('unique')) {
+      return res.status(409).json({ error: 'Usuário/email/empresa já existe' });
+    }
     res.status(500).json({ error: 'Erro ao registrar' });
   }
 });
@@ -47,7 +64,11 @@ router.post('/login', async (req, res) => {
     if (!identifier || !password) return res.status(400).json({ error: 'Credenciais inválidas' });
 
     const { rows } = await query(
-      'SELECT id, username, email, role, company_id, active, password_hash FROM users WHERE username = $1 OR email = $1 LIMIT 1',
+      `SELECT u.id, u.username, u.email, u.role, u.company_id, u.active, u.password_hash, c.name as company_name
+       FROM users u
+       LEFT JOIN companies c ON c.id = u.company_id
+       WHERE u.username = $1 OR u.email = $1
+       LIMIT 1`,
       [identifier]
     );
     const user = rows[0];
@@ -70,6 +91,7 @@ router.post('/login', async (req, res) => {
         email: user.email,
         role: user.role,
         companyId: user.company_id ?? null,
+        companyName: user.company_name ?? null,
       }
     });
   } catch (err) {
