@@ -210,3 +210,37 @@ UPDATE transactions SET company_id = (SELECT id FROM c) WHERE company_id IS NULL
 
 WITH c AS (SELECT id FROM companies WHERE name='Default' LIMIT 1)
 UPDATE reservations SET company_id = (SELECT id FROM c) WHERE company_id IS NULL;
+
+-- Índices para performance (idempotente)
+CREATE INDEX IF NOT EXISTS idx_users_company ON users(company_id);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+
+CREATE INDEX IF NOT EXISTS idx_menu_items_company ON menu_items(company_id);
+CREATE INDEX IF NOT EXISTS idx_menu_items_category ON menu_items(category);
+
+CREATE INDEX IF NOT EXISTS idx_tables_company ON tables(company_id);
+CREATE INDEX IF NOT EXISTS idx_tables_status ON tables(status);
+
+CREATE INDEX IF NOT EXISTS idx_orders_company ON orders(company_id);
+CREATE INDEX IF NOT EXISTS idx_orders_table ON orders(table_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_orders_type ON orders(order_type);
+CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);
+
+CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
+CREATE INDEX IF NOT EXISTS idx_order_items_menu ON order_items(menu_item_id);
+
+CREATE INDEX IF NOT EXISTS idx_stock_company ON stock(company_id);
+CREATE INDEX IF NOT EXISTS idx_stock_category ON stock(category);
+
+CREATE INDEX IF NOT EXISTS idx_customers_company ON customers(company_id);
+CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
+
+CREATE INDEX IF NOT EXISTS idx_reservations_company ON reservations(company_id);
+CREATE INDEX IF NOT EXISTS idx_reservations_date ON reservations(date);
+CREATE INDEX IF NOT EXISTS idx_reservations_status ON reservations(status);
+
+CREATE INDEX IF NOT EXISTS idx_transactions_company ON transactions(company_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_date ON transactions(data);
+CREATE INDEX IF NOT EXISTS idx_transactions_tipo ON transactions(tipo);

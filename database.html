@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Info - Sistema</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <style>
+        .db-table {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .db-table-header {
+            background: linear-gradient(135deg, #0b3b8c, #1a73e8);
+            color: #fff;
+            padding: 12px 16px;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .db-table-body {
+            padding: 16px;
+        }
+        .db-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 2fr;
+            gap: 12px;
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .db-row:last-child {
+            border-bottom: none;
+        }
+        .db-row-header {
+            font-weight: 700;
+            color: var(--text-color-dark);
+            background: #f3f6f9;
+            border-radius: 6px;
+            padding: 8px;
+        }
+        .version-info {
+            background: #f3f6f9;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: var(--text-color-dark);
+        }
+        .table-count {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 13px;
+        }
+        .api-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .api-status.online {
+            background: #e8f0fe;
+            color: var(--primary-green);
+        }
+        .api-status.offline {
+            background: #fdeaea;
+            color: var(--accent-red);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-utensils logo-icon"></i>
+                <h2>Sistema</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
+                    <li><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
+                    <li><a href="clientes.html"><i class="fas fa-user"></i> <span>Clientes</span></a></li>
+                    <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
+                    <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
+                    <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
+                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
+                    <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
+                    <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
+                    <li class="active"><a href="database.html"><i class="fas fa-database"></i> <span>Database</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <span id="username-display">Usuário</span>
+                        <small id="user-role-display">Cargo</small>
+                    </div>
+                </div>
+                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Database Info</h1>
+                </div>
+                <div class="header-actions">
+                    <div id="api-status-badge" class="api-status offline">
+                        <i class="fas fa-circle"></i>
+                        <span>API Offline</span>
+                    </div>
+                </div>
+            </header>
+            <section class="content-body">
+                <div class="version-info" id="version-info">
+                    <i class="fas fa-circle-notch fa-spin"></i> Carregando informações do banco de dados...
+                </div>
+
+                <div class="stat-cards">
+                    <div class="stat-card saldo">
+                        <div class="icon"><i class="fas fa-table"></i></div>
+                        <div class="content">
+                            <h4>Tabelas</h4>
+                            <div class="value" id="total-tables">-</div>
+                        </div>
+                    </div>
+                    <div class="stat-card receitas">
+                        <div class="icon"><i class="fas fa-building"></i></div>
+                        <div class="content">
+                            <h4>Empresas</h4>
+                            <div class="value" id="total-companies">-</div>
+                        </div>
+                    </div>
+                    <div class="stat-card despesas">
+                        <div class="icon"><i class="fas fa-users"></i></div>
+                        <div class="content">
+                            <h4>Usuários</h4>
+                            <div class="value" id="total-users">-</div>
+                        </div>
+                    </div>
+                    <div class="stat-card previsao">
+                        <div class="icon"><i class="fas fa-receipt"></i></div>
+                        <div class="content">
+                            <h4>Pedidos</h4>
+                            <div class="value" id="total-orders">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tables-container"></div>
+
+                <div class="empty-state" id="error-state" style="display:none;">
+                    <div class="icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <div>Erro ao carregar informações</div>
+                    <small>Verifique se a API está habilitada e você tem permissão de superadmin.</small>
+                </div>
+            </section>
+        </main>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth-neon.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
+        (function () {
+            const role = localStorage.getItem('userRole');
+            if (role !== 'superadmin') {
+                const body = document.querySelector('.content-body');
+                if (body) {
+                    body.innerHTML = '<div class="empty-state"><div class="icon"><i class="fas fa-lock"></i></div><div>Acesso restrito</div><small>Somente superadmin pode visualizar informações do banco de dados.</small></div>';
+                }
+                return;
+            }
+
+            async function loadDatabaseInfo() {
+                try {
+                    const apiEnabled = window.CONFIG && window.CONFIG.API && window.CONFIG.API.enabled;
+                    if (!apiEnabled) {
+                        throw new Error('API não habilitada');
+                    }
+
+                    const statusBadge = document.getElementById('api-status-badge');
+                    if (statusBadge) {
+                        statusBadge.className = 'api-status online';
+                        statusBadge.innerHTML = '<i class="fas fa-circle"></i><span>API Online</span>';
+                    }
+
+                    const token = localStorage.getItem('authToken');
+                    const baseUrl = window.CONFIG.API.baseUrl || '';
+                    
+                    const res = await fetch(baseUrl + '/api/database/info', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!res.ok) throw new Error('Erro ao buscar dados');
+
+                    const data = await res.json();
+
+                    // Versão do PostgreSQL
+                    const versionInfo = document.getElementById('version-info');
+                    if (versionInfo) {
+                        versionInfo.innerHTML = `<i class="fas fa-database"></i> ${data.version || 'PostgreSQL'}`;
+                    }
+
+                    // Stats
+                    document.getElementById('total-tables').textContent = data.tables.length;
+                    document.getElementById('total-companies').textContent = data.counts.companies || '0';
+                    document.getElementById('total-users').textContent = data.counts.users || '0';
+                    document.getElementById('total-orders').textContent = data.counts.orders || '0';
+
+                    // Tabelas
+                    const container = document.getElementById('tables-container');
+                    container.innerHTML = data.tables.map(table => `
+                        <div class="db-table">
+                            <div class="db-table-header">
+                                <span>${table}</span>
+                                <span class="table-count">${data.counts[table] || 0} registros</span>
+                            </div>
+                        </div>
+                    `).join('');
+
+                } catch (e) {
+                    console.error(e);
+                    const errorState = document.getElementById('error-state');
+                    if (errorState) errorState.style.display = '';
+                    
+                    const versionInfo = document.getElementById('version-info');
+                    if (versionInfo) {
+                        versionInfo.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Erro ao carregar informações do banco de dados.';
+                        versionInfo.style.background = '#fdeaea';
+                        versionInfo.style.color = '#dc2626';
+                    }
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', loadDatabaseInfo);
+        })();
+    </script>
+</body>
+</html>
