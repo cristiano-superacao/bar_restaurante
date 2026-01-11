@@ -99,6 +99,11 @@ UPDATE orders SET status = 'Cancelado' WHERE status IN ('Cancelada','Cancelado p
 UPDATE orders SET status = 'Pago' WHERE status IN ('Fechado','Finalizado Pago','Pago pelo cliente');
 UPDATE orders SET status = 'Saiu para Entrega' WHERE status IN ('Em Entrega','Saiu para entrega');
 
+-- Fallback: se ainda existir algum valor legado/desconhecido, força para um status válido
+UPDATE orders
+SET status = 'Pendente'
+WHERE status NOT IN ('Pendente', 'Em Preparo', 'Entregue', 'Saiu para Entrega', 'Pago', 'Cancelado');
+
 DO $$
 BEGIN
   -- Restrições idempotentes: adiciona como NOT VALID para não quebrar dados legados

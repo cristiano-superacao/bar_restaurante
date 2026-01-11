@@ -1,0 +1,13 @@
+{
+  "name": "restaurante-servidor-wrapper",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Wrapper de compatibilidade para deploy (servidor -> server)",
+  "scripts": {
+    "postinstall": "npm ci --omit=dev --prefix ../server",
+    "start": "npm start --prefix ../server"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
