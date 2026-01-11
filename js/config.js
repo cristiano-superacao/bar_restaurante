@@ -22,8 +22,8 @@ const CONFIG = {
 
     // API (opcional). Quando enabled=false, usa apenas LocalStorage
     API: {
-        enabled: false, // habilitar via tela Configurações → Conexão com API
-        baseUrl: '', // definido pelo client (LocalStorage) para evitar hardcode de produção
+        enabled: true, // API habilitada por padrão (Railway)
+        baseUrl: 'https://barestaurante.up.railway.app', // URL da API em produção
         timeoutMs: 8000
     },
 
