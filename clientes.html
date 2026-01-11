@@ -1,157 +1,289 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <base href="/">
-  <title>Clientes - Sistema de Gestão</title>
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/dashboard.css">
-  <link rel="stylesheet" href="css/clientes.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - Sistema de Gestão para Bar e Restaurante</title>
+    <meta name="description" content="Gerenciamento completo de clientes com histórico e informações de contato.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+    <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .app-container { display: flex; min-height: 100vh; background-color: var(--bg-body); }
+        .sidebar { width: 280px; background-color: var(--bg-card); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0; z-index: var(--z-fixed); transition: transform var(--transition); }
+        .sidebar.collapsed { transform: translateX(-100%); }
+        .sidebar-header { padding: var(--spacing-lg); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: var(--spacing); }
+        .sidebar-logo { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary-600), var(--primary-700)); color: var(--text-white); border-radius: var(--radius-md); font-size: 1.25rem; }
+        .sidebar-brand { flex: 1; }
+        .sidebar-brand-name { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--text-primary); line-height: 1.2; }
+        .sidebar-brand-subtitle { font-size: var(--font-size-xs); color: var(--text-muted); }
+        .sidebar-nav { flex: 1; overflow-y: auto; padding: var(--spacing); }
+        .nav-section { margin-bottom: var(--spacing-lg); }
+        .nav-section-title { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; padding: var(--spacing-sm) var(--spacing); margin-bottom: var(--spacing-xs); }
+        .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; }
+        .nav-item a { display: flex; align-items: center; gap: var(--spacing); padding: 0.75rem var(--spacing); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius); transition: all var(--transition-fast); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
+        .nav-item a:hover { background-color: var(--bg-hover); color: var(--text-primary); }
+        .nav-item.active a { background-color: var(--primary-50); color: var(--primary-700); }
+        .nav-item a i { width: 20px; text-align: center; font-size: 1.125rem; }
+        .sidebar-footer { padding: var(--spacing); border-top: 1px solid var(--border-color); }
+        .user-card { display: flex; align-items: center; gap: var(--spacing); padding: var(--spacing); background-color: var(--bg-hover); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); }
+        .user-card:hover { background-color: var(--bg-active); }
+        .user-avatar { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary-500), var(--primary-600)); color: var(--text-white); border-radius: var(--radius-full); font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
+        .user-info { flex: 1; min-width: 0; }
+        .user-name { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--text-primary); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-role { font-size: var(--font-size-xs); color: var(--text-muted); display: block; }
+        .logout-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none; background-color: transparent; color: var(--text-muted); border-radius: var(--radius); cursor: pointer; transition: all var(--transition-fast); }
+        .logout-btn:hover { background-color: var(--error-50); color: var(--error-600); }
+        .main-wrapper { flex: 1; margin-left: 280px; display: flex; flex-direction: column; transition: margin-left var(--transition); }
+        .sidebar.collapsed ~ .main-wrapper { margin-left: 0; }
+        .main-header { background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); padding: var(--spacing) var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-lg); position: sticky; top: 0; z-index: var(--z-sticky); }
+        .menu-toggle { width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border: none; background-color: transparent; color: var(--text-secondary); border-radius: var(--radius); cursor: pointer; transition: all var(--transition-fast); }
+        .menu-toggle:hover { background-color: var(--bg-hover); color: var(--text-primary); }
+        .header-title { flex: 1; }
+        .header-title h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
+        .header-title p { font-size: var(--font-size-sm); color: var(--text-muted); margin: 0.25rem 0 0; }
+        .main-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        .toolbar { display: flex; gap: var(--spacing); margin-bottom: var(--spacing-lg); flex-wrap: wrap; align-items: center; }
+        .search-box { position: relative; flex: 1; min-width: 250px; }
+        .search-box input { width: 100%; padding: 0.625rem 1rem 0.625rem 2.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-full); font-size: var(--font-size-sm); transition: all var(--transition-fast); }
+        .search-box input:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-lg); }
+        .stat-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing); position: relative; overflow: hidden; transition: all var(--transition); }
+        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0; transition: opacity var(--transition); }
+        .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .stat-card:hover::before { opacity: 1; }
+        .stat-card.total::before { background: linear-gradient(90deg, var(--primary-500), var(--primary-600)); }
+        .stat-card.email::before { background: linear-gradient(90deg, var(--success-500), var(--success-600)); }
+        .stat-card.phone::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+        .stat-icon { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-lg); font-size: 1.5rem; flex-shrink: 0; }
+        .stat-card.total .stat-icon { background-color: var(--primary-100); color: var(--primary-600); }
+        .stat-card.email .stat-icon { background-color: var(--success-50); color: var(--success-600); }
+        .stat-card.phone .stat-icon { background-color: #f3e8ff; color: #7c3aed; }
+        .stat-content { flex: 1; }
+        .stat-label { font-size: var(--font-size-sm); color: var(--text-muted); font-weight: var(--font-weight-medium); margin-bottom: 0.25rem; }
+        .stat-value { font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); color: var(--text-primary); line-height: 1; }
+        
+        /* Clients Grid */
+        .clients-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--spacing-lg); }
+        .client-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: var(--spacing-lg); transition: all var(--transition); position: relative; }
+        .client-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+        .client-header { display: flex; align-items: start; gap: var(--spacing); margin-bottom: var(--spacing); }
+        .client-avatar { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary-500), var(--primary-600)); color: var(--text-white); border-radius: var(--radius-full); font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); flex-shrink: 0; }
+        .client-info { flex: 1; min-width: 0; }
+        .client-name { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--text-primary); margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .client-id { font-size: var(--font-size-xs); color: var(--text-muted); }
+        .client-details { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: var(--spacing); }
+        .client-detail { display: flex; align-items: center; gap: 0.5rem; font-size: var(--font-size-sm); color: var(--text-secondary); }
+        .client-detail i { width: 16px; color: var(--text-muted); text-align: center; }
+        .client-detail.empty { color: var(--text-muted); font-style: italic; }
+        .client-notes { padding: var(--spacing); background-color: var(--bg-body); border-radius: var(--radius); font-size: var(--font-size-sm); color: var(--text-secondary); margin-bottom: var(--spacing); line-height: 1.5; max-height: 4.5em; overflow: hidden; }
+        .client-notes.empty { color: var(--text-muted); font-style: italic; text-align: center; }
+        .client-footer { display: flex; justify-content: space-between; align-items: center; padding-top: var(--spacing); border-top: 1px solid var(--border-color); }
+        .client-date { font-size: var(--font-size-xs); color: var(--text-muted); }
+        .client-actions { display: flex; gap: var(--spacing-xs); }
+        .client-action-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none; background-color: transparent; color: var(--text-secondary); border-radius: var(--radius); cursor: pointer; transition: all var(--transition-fast); }
+        .client-action-btn:hover { background-color: var(--bg-hover); color: var(--text-primary); }
+        .client-action-btn.edit:hover { background-color: var(--primary-50); color: var(--primary-600); }
+        .client-action-btn.delete:hover { background-color: var(--error-50); color: var(--error-600); }
+        .empty-state { text-align: center; padding: var(--spacing-2xl); }
+        .empty-state-icon { width: 80px; height: 80px; margin: 0 auto var(--spacing-lg); display: flex; align-items: center; justify-content: center; background-color: var(--bg-hover); border-radius: var(--radius-full); color: var(--text-muted); font-size: 2rem; }
+        .empty-state h3 { font-size: var(--font-size-xl); color: var(--text-primary); margin-bottom: 0.5rem; }
+        .empty-state p { font-size: var(--font-size-sm); color: var(--text-muted); }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); z-index: var(--z-modal); padding: var(--spacing); overflow-y: auto; }
+        .modal.show { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background-color: var(--bg-card); border-radius: var(--radius-xl); max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-2xl); }
+        .modal-header { padding: var(--spacing-lg); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
+        .close-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border: none; background-color: transparent; color: var(--text-muted); border-radius: var(--radius); cursor: pointer; font-size: 1.5rem; transition: all var(--transition-fast); }
+        .close-btn:hover { background-color: var(--error-50); color: var(--error-600); }
+        .modal-body { padding: var(--spacing-lg); }
+        .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing); margin-bottom: var(--spacing); }
+        .form-group { margin-bottom: var(--spacing); }
+        .form-group label { display: block; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--text-secondary); margin-bottom: 0.5rem; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 0.625rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius); font-size: var(--font-size-sm); transition: all var(--transition-fast); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        .form-group textarea { resize: vertical; font-family: inherit; }
+        .modal-footer { padding: var(--spacing-lg); border-top: 1px solid var(--border-color); display: flex; gap: var(--spacing); justify-content: flex-end; }
+        
+        @media (max-width: 1024px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .main-wrapper { margin-left: 0; }
+            .menu-toggle { display: flex; }
+            .clients-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+        }
+        @media (max-width: 640px) {
+            .main-header { padding: var(--spacing); }
+            .main-content { padding: var(--spacing); }
+            .header-title h1 { font-size: var(--font-size-xl); }
+            .toolbar { flex-direction: column; align-items: stretch; }
+            .search-box { min-width: 100%; }
+            .stats-row { grid-template-columns: 1fr; }
+            .clients-grid { grid-template-columns: 1fr; }
+        }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); z-index: calc(var(--z-fixed) - 1); display: none; }
+        .sidebar-overlay.show { display: block; }
+    </style>
 </head>
 <body>
-  <div class="dashboard-container">
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <i class="fas fa-utensils logo-icon"></i>
-        <h2>Sistema</h2>
-      </div>
-      <nav class="sidebar-nav">
-        <ul>
-          <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-          <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
-          <li><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
-          <li class="active"><a href="clientes.html"><i class="fas fa-user"></i> <span>Clientes</span></a></li>
-          <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
-          <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
-          <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
-          <li><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
-          <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
-          <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
-          <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
-          <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
-          <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
-          <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
-        </ul>
-      </nav>
-      <div class="sidebar-footer">
-        <div class="user-info">
-          <i class="fas fa-user-circle"></i>
-          <div>
-            <small id="user-role-display">Cargo</small>
-          </div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo"><i class="fas fa-utensils"></i></div>
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-name">Bar & Restaurante</div>
+                <div class="sidebar-brand-subtitle">Sistema de Gestão</div>
+            </div>
         </div>
-        <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
-      </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Principal</div>
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="dashboard.html"><i class="fas fa-chart-line"></i><span>Dashboard</span></a></li>
+                    <li class="nav-item"><a href="pedidos.html"><i class="fas fa-receipt"></i><span>Pedidos</span></a></li>
+                    <li class="nav-item"><a href="mesas.html"><i class="fas fa-chair"></i><span>Mesas</span></a></li>
+                    <li class="nav-item"><a href="cardapio.html"><i class="fas fa-book-open"></i><span>Cardápio</span></a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Operações</div>
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="delivery.html"><i class="fas fa-motorcycle"></i><span>Delivery</span></a></li>
+                    <li class="nav-item"><a href="reserva.html"><i class="fas fa-calendar-check"></i><span>Reservas</span></a></li>
+                    <li class="nav-item active"><a href="clientes.html"><i class="fas fa-users"></i><span>Clientes</span></a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Gestão</div>
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="estoque.html"><i class="fas fa-boxes"></i><span>Estoque</span></a></li>
+                    <li class="nav-item"><a href="financeiro.html"><i class="fas fa-dollar-sign"></i><span>Financeiro</span></a></li>
+                    <li class="nav-item"><a href="relatorios.html"><i class="fas fa-chart-bar"></i><span>Relatórios</span></a></li>
+                    <li class="nav-item"><a href="cupom.html"><i class="fas fa-ticket-alt"></i><span>Cupons</span></a></li>
+                </ul>
+            </div>
+            <div class="nav-section">
+                <div class="nav-section-title">Sistema</div>
+                <ul class="nav-list">
+                    <li class="nav-item"><a href="usuarios.html"><i class="fas fa-user-cog"></i><span>Usuários</span></a></li>
+                    <li class="nav-item"><a href="empresas.html"><i class="fas fa-building"></i><span>Empresas</span></a></li>
+                    <li class="nav-item"><a href="configuracoes.html"><i class="fas fa-cog"></i><span>Configurações</span></a></li>
+                    <li class="nav-item"><a href="manual.html"><i class="fas fa-book"></i><span>Manual</span></a></li>
+                </ul>
+            </div>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-card" id="user-menu">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="user-info">
+                    <span class="user-name" id="username-display">Usuário</span>
+                    <span class="user-role" id="user-role-display">Admin</span>
+                </div>
+                <button class="logout-btn" id="logout-btn" title="Sair" aria-label="Sair do sistema"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
     </aside>
-
-    <main class="main-content">
-      <header class="main-header">
-        <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
-          <i class="fas fa-bars"></i>
-        </button>
-        <div class="header-title">
-          <h1>Clientes</h1>
-          <p>Gerencie os clientes por empresa</p>
-        </div>
-        <div class="header-actions"></div>
-      </header>
-
-      <section class="content-area">
-        <div class="toolbar">
-          <div class="search-input">
-            <i class="fas fa-search"></i>
-            <input type="text" id="search-client-input" placeholder="Buscar por nome, e-mail ou telefone..." />
-          </div>
-          <button class="btn btn-primary" id="btn-new-client"><i class="fas fa-plus"></i> Novo Cliente</button>
-        </div>
-
-        <div class="stat-cards">
-          <div class="stat-card saldo">
-            <div class="icon"><i class="fas fa-users"></i></div>
-            <div class="content">
-              <h4>Total</h4>
-              <div class="value" id="clients-total">0</div>
-            </div>
-          </div>
-          <div class="stat-card receitas">
-            <div class="icon"><i class="fas fa-envelope"></i></div>
-            <div class="content">
-              <h4>Com e-mail</h4>
-              <div class="value" id="clients-email">0</div>
-            </div>
-          </div>
-          <div class="stat-card despesas">
-            <div class="icon"><i class="fas fa-phone"></i></div>
-            <div class="content">
-              <h4>Com telefone</h4>
-              <div class="value" id="clients-phone">0</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="clients-grid" class="clients-grid" aria-label="Lista de clientes"></div>
-
-        <div id="clients-empty" class="empty-state" style="display:none">
-          <div class="icon"><i class="fas fa-user"></i></div>
-          <p>Nenhum cliente encontrado.</p>
-        </div>
-      </section>
-    </main>
-
     <div class="sidebar-overlay" id="sidebar-overlay"></div>
-  </div>
-
-  <!-- Modal Cliente -->
-  <div id="client-modal" class="modal" role="dialog" aria-modal="true">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="client-modal-title">Novo Cliente</h2>
-        <span class="close-btn" id="close-client-modal">&times;</span>
-      </div>
-      <div class="modal-body">
-        <form id="client-form">
-          <input type="hidden" id="client-id">
-          <div class="form-group">
-            <label for="client-name">Nome</label>
-            <input type="text" id="client-name" required>
-          </div>
-          <div class="form-group">
-            <label for="client-email">E-mail</label>
-            <input type="email" id="client-email" placeholder="opcional">
-          </div>
-          <div class="form-group">
-            <label for="client-phone">Telefone</label>
-            <input type="text" id="client-phone" placeholder="(00) 00000-0000">
-          </div>
-          <div class="form-group">
-            <label for="client-address">Endereço</label>
-            <input type="text" id="client-address" placeholder="Rua, número, bairro">
-          </div>
-          <div class="form-group">
-            <label for="client-birthdate">Nascimento</label>
-            <input type="date" id="client-birthdate">
-          </div>
-          <div class="form-group">
-            <label for="client-notes">Observações</label>
-            <textarea id="client-notes" rows="3" placeholder="Preferências, referências etc."></textarea>
-          </div>
-          <div class="form-actions">
-            <button type="button" class="btn btn-secondary" id="cancel-client">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Salvar</button>
-          </div>
-        </form>
-      </div>
+    <div class="main-wrapper">
+        <header class="main-header">
+            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu"><i class="fas fa-bars"></i></button>
+            <div class="header-title">
+                <h1>Clientes</h1>
+                <p>Gerencie informações e histórico dos seus clientes</p>
+            </div>
+        </header>
+        <main class="main-content">
+            <div class="toolbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-client-input" placeholder="Buscar por nome, e-mail ou telefone..." aria-label="Buscar cliente">
+                </div>
+                <button class="btn btn-primary" id="btn-new-client"><i class="fas fa-plus"></i> Novo Cliente</button>
+            </div>
+            <div class="stats-row">
+                <div class="stat-card total">
+                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-label">Total de Clientes</div>
+                        <div class="stat-value" id="clients-total">0</div>
+                    </div>
+                </div>
+                <div class="stat-card email">
+                    <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-label">Com E-mail</div>
+                        <div class="stat-value" id="clients-email">0</div>
+                    </div>
+                </div>
+                <div class="stat-card phone">
+                    <div class="stat-icon"><i class="fas fa-phone"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-label">Com Telefone</div>
+                        <div class="stat-value" id="clients-phone">0</div>
+                    </div>
+                </div>
+            </div>
+            <div class="empty-state" id="clients-empty" style="display: none;">
+                <div class="empty-state-icon"><i class="fas fa-user"></i></div>
+                <h3>Nenhum cliente encontrado</h3>
+                <p>Cadastre clientes para começar a gerenciar seu relacionamento</p>
+            </div>
+            <div class="clients-grid" id="clients-grid"></div>
+        </main>
     </div>
-  </div>
-
-  <script src="js/config.js"></script>
-  <script src="js/utils.js"></script>
-  <script src="js/api.js"></script>
-  <script src="js/auth-neon.js"></script>
-  <script src="js/dashboard.js"></script>
-  <script src="js/clientes.js"></script>
+    <div id="client-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="client-modal-title">Novo Cliente</h2>
+                <button class="close-btn" id="close-client-modal" aria-label="Fechar modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="client-form">
+                    <input type="hidden" id="client-id">
+                    <div class="form-group">
+                        <label for="client-name">Nome *</label>
+                        <input type="text" id="client-name" placeholder="Nome completo do cliente" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="client-email">E-mail</label>
+                            <input type="email" id="client-email" placeholder="email@exemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="client-phone">Telefone</label>
+                            <input type="tel" id="client-phone" placeholder="(DDD) 9xxxx-xxxx">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="client-address">Endereço</label>
+                        <input type="text" id="client-address" placeholder="Rua, número, bairro">
+                    </div>
+                    <div class="form-group">
+                        <label for="client-birthdate">Data de Nascimento</label>
+                        <input type="date" id="client-birthdate">
+                    </div>
+                    <div class="form-group">
+                        <label for="client-notes">Observações</label>
+                        <textarea id="client-notes" rows="3" placeholder="Preferências, alergias, referências..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancel-client">Cancelar</button>
+                <button type="submit" form="client-form" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Cliente</button>
+            </div>
+        </div>
+    </div>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth-neon.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/clientes.js"></script>
+    <script>
+        const menuToggle=document.getElementById('menu-toggle');const sidebar=document.getElementById('sidebar');const sidebarOverlay=document.getElementById('sidebar-overlay');menuToggle?.addEventListener('click',()=>{sidebar.classList.toggle('open');sidebarOverlay.classList.toggle('show');});sidebarOverlay?.addEventListener('click',()=>{sidebar.classList.remove('open');sidebarOverlay.classList.remove('show');});const username=localStorage.getItem('username')||'Usuário';const userRole=localStorage.getItem('userRole')||'admin';const usernameDisplay=document.getElementById('username-display');const userRoleDisplay=document.getElementById('user-role-display');const userAvatar=document.getElementById('user-avatar');if(usernameDisplay)usernameDisplay.textContent=username;if(userRoleDisplay){const roleLabels={'superadmin':'Super Admin','admin':'Administrador','staff':'Atendente'};userRoleDisplay.textContent=roleLabels[userRole]||userRole;}if(userAvatar)userAvatar.textContent=username.charAt(0).toUpperCase();const logoutBtn=document.getElementById('logout-btn');logoutBtn?.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();if(confirm('Deseja realmente sair do sistema?')){localStorage.removeItem('authToken');localStorage.removeItem('username');localStorage.removeItem('userRole');window.location.href='index.html';}});
+    </script>
 </body>
 </html>
-
