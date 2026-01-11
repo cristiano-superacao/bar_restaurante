@@ -1,14 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const errorMessage = document.getElementById('error-message');
+    const errorText = document.getElementById('error-text');
     const cfg = (typeof window !== 'undefined' && window.CONFIG) ? window.CONFIG : { API: { enabled: false } };
-    // Impact overlay + modal de cadastro
-    const impactOverlay = document.getElementById('impact-overlay');
-    const impactSignupBtn = document.getElementById('impact-signup-btn');
-    const impactCloseBtn = document.getElementById('impact-close-btn');
-    const openSignupLink = document.getElementById('open-signup-link');
+    
+    // Modal de cadastro
+    const openSignupLink = document.getElementById('open-signup');
     const signupModal = document.getElementById('signup-modal');
     const signupClose = document.getElementById('signup-close');
+    const signupCancel = document.getElementById('signup-cancel');
     const signupForm = document.getElementById('signup-form');
     const signupError = document.getElementById('signup-error');
 
@@ -23,15 +23,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         return;
     }
-
-    // Exibe mensagem impactante uma vez na sessão
-    try {
-        const seen = sessionStorage.getItem('impactSeen');
-        if (!seen && impactOverlay) impactOverlay.classList.add('show');
-        const closeImpact = () => { impactOverlay && impactOverlay.classList.remove('show'); sessionStorage.setItem('impactSeen', '1'); };
-        if (impactCloseBtn) impactCloseBtn.addEventListener('click', closeImpact);
-        if (impactSignupBtn) impactSignupBtn.addEventListener('click', () => { closeImpact(); openSignup(); });
-    } catch {}
 
     // Gerenciamento do modal de cadastro com acessibilidade
     let lastFocusedElement = null;
@@ -93,8 +84,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    if (openSignupLink) openSignupLink.addEventListener('click', openSignup);
+    
+    if (openSignupLink) openSignupLink.addEventListener('click', (e) => { e.preventDefault(); openSignup(); });
     if (signupClose) signupClose.addEventListener('click', closeSignup);
+    if (signupCancel) signupCancel.addEventListener('click', closeSignup);
     window.addEventListener('click', (e) => { if (e.target === signupModal) closeSignup(); });
 
     // Ajusta rótulo da empresa conforme modo API
@@ -110,6 +103,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value;
+
+        // Função helper para mostrar erro
+        const showError = (message) => {
+            if (errorText) errorText.textContent = message;
+            if (errorMessage) errorMessage.classList.add('show');
+            setTimeout(() => {
+                if (errorMessage) errorMessage.classList.remove('show');
+            }, 5000);
+        };
 
         // Se API estiver habilitada, autentica via servidor; senão, usa simulação
         if (cfg.API && cfg.API.enabled && window.API && window.API.auth) {
@@ -128,12 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 throw new Error('Falha no login');
             } catch (err) {
-                errorMessage.textContent = 'Usuário ou senha inválidos.';
-                errorMessage.style.display = 'block';
-                setTimeout(() => {
-                    errorMessage.style.display = 'none';
-                    errorMessage.textContent = '';
-                }, 3000);
+                showError('Usuário ou senha inválidos.');
                 return;
             }
         }
@@ -159,12 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        errorMessage.textContent = 'Usuário ou senha inválidos.';
-        errorMessage.style.display = 'block';
-        setTimeout(() => {
-            errorMessage.style.display = 'none';
-            errorMessage.textContent = '';
-        }, 3000);
+        showError('Usuário ou senha inválidos.');
     });
 
     // Cadastro de conta

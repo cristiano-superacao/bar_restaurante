@@ -3,152 +3,607 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="/">
-    <title>Login - Sistema de Gestão</title>
-    <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="css/login.css">
+    <title>Login - Sistema de Gestão para Bar e Restaurante</title>
+    <meta name="description" content="Acesse o sistema de gestão completo para seu bar ou restaurante. Pedidos, mesas, delivery, estoque e muito mais.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+    <link rel="stylesheet" href="css/design-system.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Login Page Specific Styles */
+        .login-container {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background-color: var(--bg-body);
+        }
+        
+        /* Left Panel - Brand/Marketing */
+        .login-left {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-900) 100%);
+            color: var(--text-white);
+            overflow: hidden;
+        }
+        
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        
+        .login-left-content {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .brand-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            font-size: 1.5rem;
+        }
+        
+        .brand-text {
+            flex: 1;
+        }
+        
+        .brand-name {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            line-height: 1.2;
+        }
+        
+        .brand-subtitle {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+            font-weight: var(--font-weight-normal);
+        }
+        
+        .login-hero-title {
+            font-size: 2.5rem;
+            font-weight: var(--font-weight-bold);
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            color: var(--text-white);
+        }
+        
+        .login-hero-description {
+            font-size: var(--font-size-lg);
+            line-height: var(--line-height-relaxed);
+            opacity: 0.95;
+            margin-bottom: 2.5rem;
+            color: var(--text-white);
+        }
+        
+        .feature-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .feature-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1rem;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-pill i {
+            opacity: 0.9;
+        }
+        
+        .stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .stats-dots {
+            display: flex;
+            gap: 0.375rem;
+        }
+        
+        .stat-dot {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .stats-text {
+            flex: 1;
+        }
+        
+        .stats-number {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            margin-bottom: 0.25rem;
+            color: var(--text-white);
+        }
+        
+        .stats-label {
+            font-size: var(--font-size-sm);
+            opacity: 0.9;
+        }
+        
+        .login-footer {
+            position: absolute;
+            bottom: 2rem;
+            left: 3rem;
+            right: 3rem;
+            font-size: var(--font-size-sm);
+            opacity: 0.8;
+            text-align: center;
+        }
+        
+        /* Right Panel - Login Form */
+        .login-right {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem;
+            background-color: var(--bg-body);
+        }
+        
+        .login-form-container {
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .login-header h2 {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .login-header p {
+            color: var(--text-secondary);
+            font-size: var(--font-size);
+            margin-bottom: 0;
+        }
+        
+        .login-form {
+            background-color: var(--bg-card);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .forgot-link {
+            font-size: var(--font-size-sm);
+            color: var(--primary-600);
+            font-weight: var(--font-weight-medium);
+            text-decoration: none;
+            transition: color var(--transition-fast);
+        }
+        
+        .forgot-link:hover {
+            color: var(--primary-700);
+            text-decoration: underline;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-wrapper input {
+            padding-left: 3rem;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 1.125rem;
+        }
+        
+        .btn-login {
+            margin-top: 0.5rem;
+            height: 3rem;
+            font-size: var(--font-size);
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--text-muted);
+            font-size: var(--font-size-sm);
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--border-color);
+        }
+        
+        .divider span {
+            padding: 0 1rem;
+        }
+        
+        .signup-link {
+            text-align: center;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+        
+        .signup-link a {
+            color: var(--primary-600);
+            font-weight: var(--font-weight-semibold);
+            text-decoration: none;
+        }
+        
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .recaptcha-text {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            line-height: var(--line-height-relaxed);
+        }
+        
+        .error-message {
+            display: none;
+            padding: 0.875rem 1rem;
+            margin-bottom: 1.5rem;
+            background-color: var(--error-50);
+            border: 1px solid var(--error-200);
+            color: var(--error-700);
+            border-radius: var(--radius);
+            font-size: var(--font-size-sm);
+        }
+        
+        .error-message.show {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .error-message i {
+            font-size: 1rem;
+        }
+        
+        /* Modal de Cadastro */
+        .modal-content.signup-modal {
+            max-width: 600px;
+        }
+        
+        /* Responsividade */
+        @media (max-width: 1024px) {
+            .login-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .login-left {
+                display: none;
+            }
+            
+            .login-right {
+                padding: 2rem 1.5rem;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .login-form {
+                padding: 1.5rem;
+            }
+            
+            .login-hero-title {
+                font-size: 2rem;
+            }
+            
+            .feature-pills {
+                gap: 0.5rem;
+            }
+            
+            .feature-pill {
+                font-size: var(--font-size-xs);
+                padding: 0.5rem 0.875rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <main class="auth-shell">
-        <section class="auth-hero" aria-label="Apresentação do sistema">
-            <div class="auth-hero-content">
-                <div class="auth-hero-glass">
-                    <div class="brand">
-                        <div class="brand-mark" aria-hidden="true">
-                            <i class="fas fa-utensils"></i>
-                        </div>
-                        <div class="brand-text">
-                            <div class="brand-name">Sistema</div>
-                            <div class="brand-sub">Gestão de Bar e Restaurante</div>
-                        </div>
+    <div class="login-container">
+        <!-- Left Panel - Brand/Marketing -->
+        <div class="login-left">
+            <div class="login-left-content">
+                <div class="brand">
+                    <div class="brand-icon">
+                        <i class="fas fa-utensils"></i>
                     </div>
-
-                    <h1>Organize pedidos, delivery e financeiro em um só lugar.</h1>
-                    <p class="lead">Agilidade no atendimento, visão do caixa e relatórios simples para o dia a dia.</p>
-
-                    <div class="hero-highlights" role="list">
-                        <div class="pill" role="listitem"><i class="fas fa-receipt" aria-hidden="true"></i> Pedidos e mesas</div>
-                        <div class="pill" role="listitem"><i class="fas fa-motorcycle" aria-hidden="true"></i> Delivery integrado</div>
-                        <div class="pill" role="listitem"><i class="fas fa-chart-line" aria-hidden="true"></i> Relatórios rápidos</div>
-                    </div>
-
-                    <div class="hero-steps" aria-label="Fluxo do sistema">
-                        <div class="step-dots" aria-hidden="true">
-                            <span class="dot">1</span>
-                            <span class="dot">2</span>
-                            <span class="dot">3</span>
-                            <span class="dot">4</span>
-                        </div>
-                        <div class="step-text">
-                            <strong>Fluxo completo</strong>
-                            <span>Pedido → Entrega → Caixa → Relatórios</span>
-                        </div>
+                    <div class="brand-text">
+                        <div class="brand-name">Bar & Restaurante</div>
+                        <div class="brand-subtitle">Sistema de Gestão Completo</div>
                     </div>
                 </div>
-
-                <div class="hero-footnote">© 2026 • Layout responsivo e profissional</div>
+                
+                <h1 class="login-hero-title">
+                    Simplifique a gestão do seu estabelecimento.
+                </h1>
+                
+                <p class="login-hero-description">
+                    Controle total de pedidos, mesas, delivery, estoque e financeiro em um único lugar. Desenvolvido especialmente para bares e restaurantes modernos.
+                </p>
+                
+                <div class="feature-pills">
+                    <div class="feature-pill">
+                        <i class="fas fa-receipt"></i>
+                        <span>Pedidos e Mesas</span>
+                    </div>
+                    <div class="feature-pill">
+                        <i class="fas fa-motorcycle"></i>
+                        <span>Delivery Integrado</span>
+                    </div>
+                    <div class="feature-pill">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Relatórios em Tempo Real</span>
+                    </div>
+                    <div class="feature-pill">
+                        <i class="fas fa-box"></i>
+                        <span>Controle de Estoque</span>
+                    </div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stats-dots">
+                        <div class="stat-dot">1</div>
+                        <div class="stat-dot">2</div>
+                        <div class="stat-dot">3</div>
+                        <div class="stat-dot">4</div>
+                    </div>
+                    <div class="stats-text">
+                        <div class="stats-number">Gestão Completa</div>
+                        <div class="stats-label">Pedido → Entrega → Caixa → Relatórios</div>
+                    </div>
+                </div>
             </div>
-        </section>
-
-        <section class="auth-panel" aria-label="Acesso ao sistema">
-            <div class="auth-card">
-                <header class="auth-header">
-                    <div class="auth-icon" aria-hidden="true"><i class="fas fa-user-lock"></i></div>
+            
+            <div class="login-footer">
+                © 2026 Sistema de Gestão. Todos os direitos reservados.
+            </div>
+        </div>
+        
+        <!-- Right Panel - Login Form -->
+        <div class="login-right">
+            <div class="login-form-container">
+                <div class="login-header">
                     <h2>Bem-vindo de volta</h2>
-                    <p>Acesse sua conta para continuar.</p>
-                </header>
-
-                <form id="login-form" class="auth-form">
-                    <div class="field">
-                        <label class="field-label" for="username">Usuário</label>
-                        <div class="field-control">
-                            <i class="fas fa-user" aria-hidden="true"></i>
-                            <input type="text" id="username" placeholder="Digite seu usuário" required autocomplete="username">
+                    <p>Acesse sua conta para gerenciar seu estabelecimento.</p>
+                </div>
+                
+                <form id="login-form" class="login-form">
+                    <div id="error-message" class="error-message" role="alert" aria-live="polite">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span id="error-text"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="username" class="form-label">Email ou Usuário</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input 
+                                type="text" 
+                                id="username" 
+                                name="username"
+                                class="form-input" 
+                                placeholder="seu@email.com"
+                                autocomplete="username"
+                                required
+                                aria-required="true"
+                            >
                         </div>
                     </div>
-
-                    <div class="field">
-                        <div class="field-row">
-                            <label class="field-label" for="password">Senha</label>
-                            <a class="field-link" href="javascript:void(0)" aria-label="Recuperar senha" onclick="alert('Entre em contato com o administrador para redefinir a senha.'); return false;">Esqueceu a senha?</a>
+                    
+                    <div class="form-group">
+                        <div class="form-label-row">
+                            <label for="password" class="form-label">Senha</label>
+                            <a href="#" class="forgot-link">Esqueceu a senha?</a>
                         </div>
-                        <div class="field-control">
-                            <i class="fas fa-lock" aria-hidden="true"></i>
-                            <input type="password" id="password" placeholder="Digite sua senha" required autocomplete="current-password">
+                        <div class="input-wrapper">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password"
+                                class="form-input" 
+                                placeholder="••••••••"
+                                autocomplete="current-password"
+                                required
+                                aria-required="true"
+                            >
                         </div>
                     </div>
-
-                    <button type="submit" class="primary-btn">
+                    
+                    <button type="submit" class="btn btn-primary btn-full btn-login">
                         Entrar no Sistema
-                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        <i class="fas fa-arrow-right"></i>
                     </button>
-
-                    <div id="error-message" class="error-message" role="alert" aria-live="polite"></div>
+                    
+                    <div class="divider">
+                        <span>Não tem uma conta?</span>
+                    </div>
+                    
+                    <div class="signup-link">
+                        <a href="#" id="open-signup">Criar conta gratuitamente</a>
+                    </div>
                 </form>
-
-                <footer class="auth-footer">
-                    <small>Não tem conta? <a class="field-link" href="javascript:void(0)" id="open-signup-link">Criar conta</a></small>
-                </footer>
-            </div>
-        </section>
-    </main>
-
-    <!-- Mensagem Impactante Centralizada -->
-    <div id="impact-overlay" class="impact-overlay" aria-hidden="true">
-        <div class="impact-content" role="dialog" aria-label="Apresentação">
-            <h2>Transforme seu atendimento em minutos</h2>
-            <p>Crie sua conta gratuita e comece a registrar pedidos, delivery e caixa agora mesmo.</p>
-            <div class="impact-actions">
-                <button id="impact-signup-btn" class="primary-btn">Criar conta grátis</button>
-                <button id="impact-close-btn" class="ghost-btn" aria-label="Fechar">Depois</button>
+                
+                <p class="recaptcha-text">
+                    Protegido por reCAPTCHA e sujeito à<br>
+                    Política de Privacidade e Termos de Serviço.
+                </p>
             </div>
         </div>
     </div>
-
+    
     <!-- Modal de Cadastro -->
     <div id="signup-modal" class="modal" aria-hidden="true" aria-modal="true">
-        <div class="modal-content auth-card" role="dialog" aria-labelledby="signup-title" aria-describedby="signup-description">
+        <div class="modal-content signup-modal" role="dialog" aria-labelledby="signup-title" aria-describedby="signup-description">
             <div class="modal-header">
-                <h2 id="signup-title">Criar conta</h2>
-                <button class="close-btn" id="signup-close" aria-label="Fechar modal de cadastro">&times;</button>
+                <h3 id="signup-title" class="modal-title">Criar nova conta</h3>
+                <button type="button" class="modal-close" id="signup-close" aria-label="Fechar modal de cadastro">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <p id="signup-description" class="sr-only">Formulário para criar uma nova conta no sistema</p>
-            <form id="signup-form" class="auth-form">
-                <div class="field">
-                    <label class="field-label" for="su-company">Empresa (opcional)</label>
-                    <div class="field-control"><i class="fas fa-building"></i><input id="su-company" type="text" placeholder="Nome da sua empresa"></div>
-                </div>
-                <div class="field">
-                    <label class="field-label" for="su-name">Seu nome</label>
-                    <div class="field-control"><i class="fas fa-id-card"></i><input id="su-name" type="text" placeholder="Ex.: João Silva" required></div>
-                </div>
-                <div class="field">
-                    <label class="field-label" for="su-email">E-mail</label>
-                    <div class="field-control"><i class="fas fa-envelope"></i><input id="su-email" type="email" placeholder="voce@exemplo.com" required></div>
-                </div>
-                <div class="field">
-                    <label class="field-label" for="su-username">Usuário</label>
-                    <div class="field-control"><i class="fas fa-user"></i><input id="su-username" type="text" placeholder="Escolha um usuário" required></div>
-                </div>
-                <div class="field">
-                    <label class="field-label" for="su-password">Senha</label>
-                    <div class="field-control"><i class="fas fa-lock"></i><input id="su-password" type="password" placeholder="Crie uma senha" required></div>
-                </div>
-                <div class="field">
-                    <label class="field-label" for="su-password2">Confirmar senha</label>
-                    <div class="field-control"><i class="fas fa-lock"></i><input id="su-password2" type="password" placeholder="Repita a senha" required></div>
-                </div>
-                <button class="primary-btn" type="submit">Criar minha conta</button>
-                <div id="signup-error" class="error-message" role="alert" aria-live="polite"></div>
-            </form>
+            <div class="modal-body">
+                <form id="signup-form">
+                    <div class="form-group">
+                        <label for="su-company" class="form-label">Nome do Estabelecimento (opcional)</label>
+                        <input 
+                            type="text" 
+                            id="su-company" 
+                            class="form-input" 
+                            placeholder="Ex.: Restaurante Sabor & Cia"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="su-name" class="form-label">Seu Nome Completo</label>
+                        <input 
+                            type="text" 
+                            id="su-name" 
+                            class="form-input" 
+                            placeholder="Ex.: João Silva"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="su-email" class="form-label">E-mail</label>
+                        <input 
+                            type="email" 
+                            id="su-email" 
+                            class="form-input" 
+                            placeholder="seu@email.com"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="su-username" class="form-label">Nome de Usuário</label>
+                        <input 
+                            type="text" 
+                            id="su-username" 
+                            class="form-input" 
+                            placeholder="Escolha um nome de usuário"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="su-password" class="form-label">Senha</label>
+                        <input 
+                            type="password" 
+                            id="su-password" 
+                            class="form-input" 
+                            placeholder="Crie uma senha forte"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="su-password2" class="form-label">Confirmar Senha</label>
+                        <input 
+                            type="password" 
+                            id="su-password2" 
+                            class="form-input" 
+                            placeholder="Digite a senha novamente"
+                            required
+                            aria-required="true"
+                        >
+                    </div>
+                    
+                    <div id="signup-error" class="error-message" role="alert" aria-live="polite"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="signup-cancel">Cancelar</button>
+                <button type="submit" form="signup-form" class="btn btn-primary">
+                    Criar Conta
+                    <i class="fas fa-check"></i>
+                </button>
+            </div>
         </div>
     </div>
-
+    
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/api.js"></script>
     <script src="js/login.js"></script>
 </body>
 </html>
-
