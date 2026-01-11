@@ -302,6 +302,16 @@ app.get('/', (_req, res) => {
   </html>`);
 });
 
+// Health check simples para monitoramento e validação de deploy
+app.get('/api/health', async (_req, res) => {
+  try {
+    const dbStatus = await pool.query('SELECT NOW() as ts');
+    res.json({ status: 'ok', timestamp: dbStatus.rows[0].ts, database: 'connected' });
+  } catch (e) {
+    res.status(500).json({ status: 'error', database: 'unavailable' });
+  }
+});
+
 app.get('/health', async (_req, res) => {
   try {
     await pool.query('SELECT 1');
