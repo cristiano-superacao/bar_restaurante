@@ -1,11 +1,8 @@
-# Railway
-provider = "nixpacks"
+provider = "dockerfile"
 
 [build]
-builder = "NIXPACKS"
-
-[nixpacks]
-buildCommand = "cd server && npm ci --omit=dev"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "cd server && npm start"
+startCommand = "npm start"
