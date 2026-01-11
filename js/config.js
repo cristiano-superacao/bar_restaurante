@@ -3,6 +3,30 @@
  * Bar Restaurante Maria Flor
  */
 
+// Detecta automaticamente a URL da API conforme o ambiente
+function detectApiBaseUrl() {
+    const DEFAULT_RAILWAY = 'https://barestaurante.up.railway.app';
+    try {
+        if (typeof window === 'undefined') return DEFAULT_RAILWAY;
+        const { protocol, hostname } = window.location || {};
+
+        // Ambiente de desenvolvimento: frontend em 8000, backend em 3000
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+            return `${protocol || 'http:'}//localhost:3000`;
+        }
+
+        // Permite override manual via variável global (útil em testes)
+        if (window.__API_BASE_URL__ && typeof window.__API_BASE_URL__ === 'string') {
+            return window.__API_BASE_URL__;
+        }
+
+        // Produção: Railway
+        return DEFAULT_RAILWAY;
+    } catch {
+        return DEFAULT_RAILWAY;
+    }
+}
+
 const CONFIG = {
     // Informações do Sistema
     APP: {
@@ -23,7 +47,7 @@ const CONFIG = {
     // API (opcional). Quando enabled=false, usa apenas LocalStorage
     API: {
         enabled: true, // API habilitada por padrão (Railway)
-        baseUrl: 'https://barestaurante.up.railway.app', // URL da API em produção
+        baseUrl: detectApiBaseUrl(), // Detecta automaticamente (local x Railway)
         timeoutMs: 8000
     },
 
