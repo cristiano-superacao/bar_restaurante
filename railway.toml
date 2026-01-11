@@ -1,0 +1,11 @@
+# Railway
+provider = "nixpacks"
+
+[build]
+builder = "NIXPACKS"
+
+[nixpacks]
+buildCommand = "cd server && npm install"
+
+[deploy]
+startCommand = "cd server && npm start"

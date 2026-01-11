@@ -47,7 +47,7 @@ app.use(express.json({ limit: '1mb' }));
 // Rate limiting global leve
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 1000,
+  max: 100,
   standardHeaders: true,
   legacyHeaders: false,
 });
