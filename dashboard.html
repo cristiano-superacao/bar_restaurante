@@ -3,179 +3,1025 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="/">
-    <title>Dashboard - Sistema de Gestão</title>
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/dashboard.css">
+    <title>Dashboard - Sistema de Gestão para Bar e Restaurante</title>
+    <meta name="description" content="Painel de controle com visão geral de vendas, pedidos, mesas e estoque em tempo real.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+    <link rel="stylesheet" href="css/design-system.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        /* Dashboard Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--bg-body);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: var(--z-fixed);
+            transition: transform var(--transition);
+        }
+        
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        
+        .sidebar-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+        }
+        
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+            color: var(--text-white);
+            border-radius: var(--radius-md);
+            font-size: 1.25rem;
+        }
+        
+        .sidebar-brand {
+            flex: 1;
+        }
+        
+        .sidebar-brand-name {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        
+        .sidebar-brand-subtitle {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing);
+        }
+        
+        .nav-section {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .nav-section-title {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: var(--spacing-sm) var(--spacing);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+            padding: 0.75rem var(--spacing);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all var(--transition-fast);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .nav-item a:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active a {
+            background-color: var(--primary-50);
+            color: var(--primary-700);
+        }
+        
+        .nav-item a i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.125rem;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            font-size: var(--font-size-xs);
+            padding: 0.125rem 0.5rem;
+            background-color: var(--error-100);
+            color: var(--error-700);
+            border-radius: var(--radius-full);
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .sidebar-footer {
+            padding: var(--spacing);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+            padding: var(--spacing);
+            background-color: var(--bg-hover);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .user-card:hover {
+            background-color: var(--bg-active);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: var(--text-white);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-role {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            display: block;
+        }
+        
+        .logout-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+            color: var(--text-muted);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .logout-btn:hover {
+            background-color: var(--error-50);
+            color: var(--error-600);
+        }
+        
+        /* Main Content */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left var(--transition);
+        }
+        
+        .sidebar.collapsed ~ .main-wrapper {
+            margin-left: 0;
+        }
+        
+        .main-header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+        }
+        
+        .menu-toggle {
+            width: 40px;
+            height: 40px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .menu-toggle:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .header-title {
+            flex: 1;
+        }
+        
+        .header-title h1 {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .header-title p {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            margin: 0.25rem 0 0;
+        }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+        }
+        
+        .header-search {
+            position: relative;
+            width: 300px;
+        }
+        
+        .header-search input {
+            width: 100%;
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .header-search input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .header-search i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        
+        .header-icon-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            position: relative;
+            transition: all var(--transition-fast);
+        }
+        
+        .header-icon-btn:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .header-icon-btn .badge-dot {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--error-500);
+            border: 2px solid var(--bg-card);
+            border-radius: var(--radius-full);
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .stat-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+        
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+        
+        .stat-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            font-size: 1.25rem;
+        }
+        
+        .stat-icon.primary {
+            background-color: var(--primary-100);
+            color: var(--primary-600);
+        }
+        
+        .stat-icon.success {
+            background-color: var(--success-50);
+            color: var(--success-600);
+        }
+        
+        .stat-icon.warning {
+            background-color: var(--warning-50);
+            color: var(--warning-600);
+        }
+        
+        .stat-icon.error {
+            background-color: var(--error-50);
+            color: var(--error-600);
+        }
+        
+        .stat-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-full);
+        }
+        
+        .stat-trend.up {
+            background-color: var(--success-50);
+            color: var(--success-700);
+        }
+        
+        .stat-trend.down {
+            background-color: var(--error-50);
+            color: var(--error-700);
+        }
+        
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            font-weight: var(--font-weight-medium);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-description {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
+        
+        /* Charts Section */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .chart-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+        }
+        
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .chart-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .chart-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+        
+        .chart-filter {
+            padding: 0.375rem 0.75rem;
+            font-size: var(--font-size-xs);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .chart-filter:hover, .chart-filter.active {
+            background-color: var(--primary-50);
+            color: var(--primary-700);
+            border-color: var(--primary-200);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Recent Activity */
+        .activity-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+        }
+        
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing);
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: var(--spacing);
+            padding: var(--spacing);
+            border-radius: var(--radius);
+            transition: background-color var(--transition-fast);
+        }
+        
+        .activity-item:hover {
+            background-color: var(--bg-hover);
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-full);
+            flex-shrink: 0;
+        }
+        
+        .activity-icon.primary {
+            background-color: var(--primary-100);
+            color: var(--primary-600);
+        }
+        
+        .activity-icon.success {
+            background-color: var(--success-50);
+            color: var(--success-600);
+        }
+        
+        .activity-icon.warning {
+            background-color: var(--warning-50);
+            color: var(--warning-600);
+        }
+        
+        .activity-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .activity-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .activity-description {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
+        
+        .activity-time {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-wrapper {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .header-search {
+                display: none;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .main-header {
+                padding: var(--spacing);
+            }
+            
+            .main-content {
+                padding: var(--spacing);
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-title h1 {
+                font-size: var(--font-size-xl);
+            }
+            
+            .stat-value {
+                font-size: var(--font-size-2xl);
+            }
+        }
+        
+        /* Overlay para mobile */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: calc(var(--z-fixed) - 1);
+            display: none;
+        }
+        
+        .sidebar-overlay.show {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <i class="fas fa-utensils logo-icon"></i>
-                <h2>Sistema</h2>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-utensils"></i>
             </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li class="active"><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-                    <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
-                    <li><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
-                    <li><a href="clientes.html"><i class="fas fa-user"></i> <span>Clientes</span></a></li>
-                    <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
-                    <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
-                    <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
-                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
-                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
-                    <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
-                    <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
-                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
-                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
-                    <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-name">Bar & Restaurante</div>
+                <div class="sidebar-brand-subtitle">Sistema de Gestão</div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Principal</div>
+                <ul class="nav-list">
+                    <li class="nav-item active">
+                        <a href="dashboard.html">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="pedidos.html">
+                            <i class="fas fa-receipt"></i>
+                            <span>Pedidos</span>
+                            <span class="nav-badge">3</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="mesas.html">
+                            <i class="fas fa-chair"></i>
+                            <span>Mesas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="cardapio.html">
+                            <i class="fas fa-book-open"></i>
+                            <span>Cardápio</span>
+                        </a>
+                    </li>
                 </ul>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <div>
-                        <span id="username-display">Usuário</span>
-                        <small id="user-role-display">Cargo</small>
-                    </div>
-                </div>
-                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
             </div>
-        </aside>
-        <main class="main-content">
-            <header class="main-header">
-                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
-                    <i class="fas fa-bars"></i>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Operações</div>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="delivery.html">
+                            <i class="fas fa-motorcycle"></i>
+                            <span>Delivery</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="reserva.html">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Reservas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="clientes.html">
+                            <i class="fas fa-users"></i>
+                            <span>Clientes</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Gestão</div>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="estoque.html">
+                            <i class="fas fa-boxes"></i>
+                            <span>Estoque</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="financeiro.html">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>Financeiro</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="relatorios.html">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Relatórios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="cupom.html">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Cupons</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Sistema</div>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="usuarios.html">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Usuários</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="empresas.html">
+                            <i class="fas fa-building"></i>
+                            <span>Empresas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="configuracoes.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Configurações</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="manual.html">
+                            <i class="fas fa-book"></i>
+                            <span>Manual</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-card" id="user-menu">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="user-info">
+                    <span class="user-name" id="username-display">Usuário</span>
+                    <span class="user-role" id="user-role-display">Admin</span>
+                </div>
+                <button class="logout-btn" id="logout-btn" title="Sair" aria-label="Sair do sistema">
+                    <i class="fas fa-sign-out-alt"></i>
                 </button>
-                <div class="header-title">
-                    <h1>Dashboard</h1>
-                    <p>Visão geral do seu estabelecimento</p>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header class="main-header">
+            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="header-title">
+                <h1>Dashboard</h1>
+                <p>Visão geral do seu estabelecimento</p>
+            </div>
+            
+            <div class="header-actions">
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar...">
                 </div>
-                <div class="header-actions">
-                    <a class="company-pill" href="empresas.html" title="Trocar empresa">
-                        <i class="fas fa-building"></i>
-                        <span class="label">Empresa:</span>
-                        <span class="name" id="company-name">Maria Flor</span>
-                    </a>
+                
+                <button class="header-icon-btn" title="Notificações">
+                    <i class="fas fa-bell"></i>
+                    <span class="badge-dot"></span>
+                </button>
+                
+                <button class="header-icon-btn" title="Ajuda">
+                    <i class="fas fa-question-circle"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>12%</span>
+                        </div>
+                    </div>
+                    <div class="stat-label">Faturamento Hoje</div>
+                    <div class="stat-value" id="stat-revenue">R$ 0,00</div>
+                    <div class="stat-description">Comparado a ontem</div>
                 </div>
-            </header>
-            <section class="content-area">
-                <div class="toolbar">
-                    <div class="search-input" role="search">
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                        <input type="text" id="dashboard-search" placeholder="Buscar por módulo ou ação..." aria-label="Buscar" />
+                
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon success">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="stat-trend up">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>8%</span>
+                        </div>
                     </div>
-                    <div class="filter-pill">
-                        <i class="fas fa-filter" aria-hidden="true"></i>
-                        <select id="dashboard-filter" aria-label="Filtro de período">
-                            <option value="today">Hoje</option>
-                            <option value="7d">Últimos 7 dias</option>
-                            <option value="30d">Últimos 30 dias</option>
-                            <option value="all">Todos</option>
-                        </select>
-                    </div>
-                    <a class="btn btn-primary" href="relatorios.html"><i class="fas fa-chart-line"></i> Ver Relatórios</a>
+                    <div class="stat-label">Pedidos Hoje</div>
+                    <div class="stat-value" id="stat-orders">0</div>
+                    <div class="stat-description">3 pendentes</div>
                 </div>
-                <div class="stat-cards">
-                    <div class="stat-card receitas">
-                        <div class="icon"><i class="fas fa-chair"></i></div>
-                        <div class="content">
-                            <h4>Ocupação de Mesas</h4>
-                            <div class="value" id="mesas-ocupadas-valor">0 / 0</div>
+                
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-chair"></i>
+                        </div>
+                        <div class="stat-trend down">
+                            <i class="fas fa-arrow-down"></i>
+                            <span>5%</span>
                         </div>
                     </div>
-                    <div class="stat-card saldo">
-                        <div class="icon"><i class="fas fa-dollar-sign"></i></div>
-                        <div class="content">
-                            <h4>Vendas Hoje</h4>
-                            <div class="value" id="vendas-hoje-valor">R$ 0,00</div>
+                    <div class="stat-label">Mesas Ocupadas</div>
+                    <div class="stat-value"><span id="stat-tables-occupied">0</span>/<span id="stat-tables-total">0</span></div>
+                    <div class="stat-description">Taxa de ocupação</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon error">
+                            <i class="fas fa-boxes"></i>
+                        </div>
+                        <div class="stat-trend down">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span>Crítico</span>
                         </div>
                     </div>
-                    <div class="stat-card previsao">
-                        <div class="icon"><i class="fas fa-receipt"></i></div>
-                        <div class="content">
-                            <h4>Pedidos Pendentes</h4>
-                            <div class="value" id="pedidos-pendentes-valor">0</div>
+                    <div class="stat-label">Itens em Estoque Baixo</div>
+                    <div class="stat-value" id="stat-low-stock">0</div>
+                    <div class="stat-description">Requer atenção</div>
+                </div>
+            </div>
+            
+            <!-- Charts Grid -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Vendas por Período</h3>
+                        <div class="chart-actions">
+                            <button class="chart-filter active" data-period="7">7 dias</button>
+                            <button class="chart-filter" data-period="30">30 dias</button>
+                            <button class="chart-filter" data-period="90">90 dias</button>
                         </div>
                     </div>
-                    <div class="stat-card despesas">
-                        <div class="icon"><i class="fas fa-boxes"></i></div>
-                        <div class="content">
-                            <h4>Itens em Baixa</h4>
-                            <div class="value" id="estoque-baixo-valor">0</div>
-                        </div>
+                    <div class="chart-container">
+                        <canvas id="salesChart"></canvas>
                     </div>
                 </div>
-                <div class="summary-grid">
-                    <a class="summary-card slide-in" href="cardapio.html" aria-label="Ir para Cardápio">
-                        <div class="card-icon vendas"><i class="fas fa-book-open" aria-hidden="true"></i></div>
-                        <div class="card-info">
-                            <div class="card-title">Cardápio</div>
-                            <div class="card-value" id="cardapio-count">Itens e categorias</div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Produtos Mais Vendidos</h3>
+                        <div class="chart-actions">
+                            <button class="chart-filter active">Top 5</button>
                         </div>
-                    </a>
-                    <a class="summary-card slide-in" href="pedidos.html" aria-label="Ir para Pedidos">
-                        <div class="card-icon pedidos"><i class="fas fa-receipt" aria-hidden="true"></i></div>
-                        <div class="card-info">
-                            <div class="card-title">Pedidos</div>
-                            <div class="card-value" id="pedidos-count">Fluxo e status</div>
-                        </div>
-                    </a>
-                    <a class="summary-card slide-in" href="delivery.html" aria-label="Ir para Delivery">
-                        <div class="card-icon vendas"><i class="fas fa-motorcycle" aria-hidden="true"></i></div>
-                        <div class="card-info">
-                            <div class="card-title">Delivery</div>
-                            <div class="card-value">Endereços e taxas</div>
-                        </div>
-                    </a>
-                    <a class="summary-card slide-in" href="mesas.html" aria-label="Ir para Mesas">
-                        <div class="card-icon mesas"><i class="fas fa-chair" aria-hidden="true"></i></div>
-                        <div class="card-info">
-                            <div class="card-title">Mesas</div>
-                            <div class="card-value" id="mesas-count">Status e capacidade</div>
-                        </div>
-                    </a>
-                    <a class="summary-card slide-in" href="reserva.html" aria-label="Ir para Reservas">
-                        <div class="card-icon"><i class="fas fa-calendar-check" aria-hidden="true"></i></div>
-                        <div class="card-info">
-                            <div class="card-title">Reservas</div>
-                            <div class="card-value">Agendamentos</div>
-                        </div>
-                    </a>
-                    <a class="summary-card slide-in" href="estoque.html" aria-label="Ir para Estoque">
-                        <div class="card-icon estoque"><i class="fas fa-boxes" aria-hidden="true"></i></div>
-                        <div class="card-info">
-                            <div class="card-title">Estoque</div>
-                            <div class="card-value">Alertas e baixa</div>
-                        </div>
-                    </a>
-                    <a class="summary-card slide-in" href="financeiro.html" aria-label="Ir para Financeiro">
-                        <div class="card-icon vendas"><i class="fas fa-dollar-sign" aria-hidden="true"></i></div>
-                        <div class="card-info">
-                            <div class="card-title">Financeiro</div>
-                            <div class="card-value">Saldo e previsões</div>
-                        </div>
-                    </a>
-                    <a class="summary-card slide-in" href="relatorios.html" aria-label="Ir para Relatórios">
-                        <div class="card-icon vendas"><i class="fas fa-chart-line" aria-hidden="true"></i></div>
-                        <div class="card-info">
-                            <div class="card-title">Relatórios</div>
-                            <div class="card-value">Vendas e insights</div>
-                        </div>
-                    </a>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="productsChart"></canvas>
+                    </div>
                 </div>
-            </section>
+            </div>
+            
+            <!-- Recent Activity -->
+            <div class="chart-card activity-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">Atividades Recentes</h3>
+                    <a href="relatorios.html" class="btn btn-sm btn-ghost">Ver tudo</a>
+                </div>
+                <div class="activity-list" id="recent-activity">
+                    <div class="activity-item">
+                        <div class="activity-icon primary">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Novo pedido #1234</div>
+                            <div class="activity-description">Mesa 5 - 3 itens - R$ 89,90</div>
+                        </div>
+                        <div class="activity-time">há 2 min</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon success">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Pedido #1233 finalizado</div>
+                            <div class="activity-description">Delivery - Pagamento confirmado</div>
+                        </div>
+                        <div class="activity-time">há 5 min</div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-title">Estoque baixo</div>
+                            <div class="activity-description">Cerveja Heineken - 5 unidades restantes</div>
+                        </div>
+                        <div class="activity-time">há 15 min</div>
+                    </div>
+                </div>
+            </div>
         </main>
-        <div class="sidebar-overlay" id="sidebar-overlay"></div>
     </div>
+    
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth-neon.js"></script>
     <script src="js/dashboard.js"></script>
+    <script>
+        // Menu Toggle Mobile
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        menuToggle?.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show');
+        });
+        
+        sidebarOverlay?.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        });
+        
+        // User Info
+        const username = localStorage.getItem('username') || 'Usuário';
+        const userRole = localStorage.getItem('userRole') || 'admin';
+        const usernameDisplay = document.getElementById('username-display');
+        const userRoleDisplay = document.getElementById('user-role-display');
+        const userAvatar = document.getElementById('user-avatar');
+        
+        if (usernameDisplay) usernameDisplay.textContent = username;
+        if (userRoleDisplay) {
+            const roleLabels = {
+                'superadmin': 'Super Admin',
+                'admin': 'Administrador',
+                'staff': 'Atendente'
+            };
+            userRoleDisplay.textContent = roleLabels[userRole] || userRole;
+        }
+        if (userAvatar) userAvatar.textContent = username.charAt(0).toUpperCase();
+        
+        // Logout
+        const logoutBtn = document.getElementById('logout-btn');
+        logoutBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (confirm('Deseja realmente sair do sistema?')) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userRole');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
 </body>
 </html>
-
