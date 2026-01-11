@@ -1,39 +1,846 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/" />
-  <title>Cupom</title>
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/cupom.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <title>Cupom - Sistema de Gestão</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-50: #eff6ff;
+      --primary-100: #dbeafe;
+      --primary-200: #bfdbfe;
+      --primary-300: #93c5fd;
+      --primary-400: #60a5fa;
+      --primary-500: #3b82f6;
+      --primary-600: #2563eb;
+      --primary-700: #1d4ed8;
+      --primary-800: #1e40af;
+      --primary-900: #1e3a8a;
+      --primary-950: #172554;
+      
+      --neutral-50: #f8fafc;
+      --neutral-100: #f1f5f9;
+      --neutral-200: #e2e8f0;
+      --neutral-300: #cbd5e1;
+      --neutral-400: #94a3b8;
+      --neutral-500: #64748b;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1e293b;
+      --neutral-900: #0f172a;
+      
+      --success-50: #f0fdf4;
+      --success-600: #16a34a;
+      --error-600: #dc2626;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--neutral-50);
+      color: var(--neutral-900);
+      line-height: 1.6;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 280px;
+      background: white;
+      border-right: 1px solid var(--neutral-200);
+      padding: 24px 0;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-brand {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid var(--neutral-100);
+      margin-bottom: 24px;
+    }
+
+    .sidebar-brand h1 {
+      font-size: 24px;
+      color: var(--primary-600);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-brand h1 i {
+      font-size: 28px;
+    }
+
+    .sidebar-nav {
+      padding: 0 16px;
+    }
+
+    .nav-section {
+      margin-bottom: 32px;
+    }
+
+    .nav-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--neutral-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 8px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: var(--neutral-700);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.2s;
+      margin-bottom: 4px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .nav-item i {
+      width: 20px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .nav-item:hover {
+      background: var(--primary-50);
+      color: var(--primary-600);
+    }
+
+    .nav-item.active {
+      background: var(--primary-50);
+      color: var(--primary-600);
+      border-left: 3px solid var(--primary-600);
+      padding-left: 13px;
+    }
+
+    /* Main Wrapper */
+    .main-wrapper {
+      margin-left: 280px;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Header */
+    .header {
+      background: white;
+      border-bottom: 1px solid var(--neutral-200);
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--neutral-700);
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .header-title h2 {
+      font-size: 24px;
+      color: var(--neutral-900);
+      font-weight: 700;
+    }
+
+    .header-title p {
+      font-size: 14px;
+      color: var(--neutral-500);
+      margin-top: 2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: var(--neutral-50);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .user-info:hover {
+      background: var(--neutral-100);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .user-details span {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .btn-logout {
+      background: var(--error-600);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-logout:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 32px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    /* Receipt Container */
+    .receipt-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      padding: 48px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .receipt-header {
+      border-bottom: 2px solid var(--neutral-200);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+    }
+
+    .company {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .company h1 {
+      font-size: 28px;
+      color: var(--primary-600);
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .company-info {
+      font-size: 14px;
+      color: var(--neutral-600);
+      line-height: 1.8;
+    }
+
+    .order-meta {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--neutral-50);
+      border-radius: 8px;
+    }
+
+    .meta-item i {
+      font-size: 20px;
+      color: var(--primary-600);
+    }
+
+    .meta-content {
+      flex: 1;
+    }
+
+    .meta-label {
+      font-size: 12px;
+      color: var(--neutral-500);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .meta-value {
+      font-size: 14px;
+      color: var(--neutral-900);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* Items Table */
+    .receipt-items {
+      margin-bottom: 32px;
+    }
+
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .items-table thead {
+      background: var(--neutral-100);
+    }
+
+    .items-table th {
+      padding: 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--neutral-700);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .items-table td {
+      padding: 16px 12px;
+      border-bottom: 1px solid var(--neutral-100);
+      font-size: 14px;
+      color: var(--neutral-700);
+    }
+
+    .items-table tbody tr:hover {
+      background: var(--neutral-50);
+    }
+
+    .item-name {
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .item-qty {
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .item-price,
+    .item-total {
+      text-align: right;
+      font-weight: 600;
+    }
+
+    /* Totals */
+    .receipt-totals {
+      border-top: 2px solid var(--neutral-200);
+      padding-top: 24px;
+      margin-bottom: 32px;
+    }
+
+    .total-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      font-size: 14px;
+    }
+
+    .total-label {
+      color: var(--neutral-600);
+      font-weight: 500;
+    }
+
+    .total-value {
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .total-row.grand-total {
+      border-top: 2px solid var(--neutral-200);
+      margin-top: 12px;
+      padding-top: 16px;
+    }
+
+    .total-row.grand-total .total-label {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--neutral-900);
+    }
+
+    .total-row.grand-total .total-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-600);
+    }
+
+    /* Footer */
+    .receipt-footer {
+      border-top: 2px solid var(--neutral-200);
+      padding-top: 24px;
+    }
+
+    .receipt-actions {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .receipt-btn {
+      flex: 1;
+      padding: 14px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .receipt-btn.primary {
+      background: var(--primary-600);
+      color: white;
+    }
+
+    .receipt-btn.primary:hover {
+      background: var(--primary-700);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+
+    .receipt-btn.secondary {
+      background: white;
+      color: var(--neutral-700);
+      border: 2px solid var(--neutral-300);
+    }
+
+    .receipt-btn.secondary:hover {
+      background: var(--neutral-50);
+      border-color: var(--neutral-400);
+    }
+
+    .fineprint {
+      text-align: center;
+      font-size: 12px;
+      color: var(--neutral-500);
+      padding: 16px;
+      background: var(--neutral-50);
+      border-radius: 8px;
+    }
+
+    .fineprint strong {
+      color: var(--neutral-700);
+      font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 80px 32px;
+    }
+
+    .empty-state i {
+      font-size: 80px;
+      color: var(--neutral-300);
+      margin-bottom: 24px;
+    }
+
+    .empty-state h3 {
+      font-size: 20px;
+      color: var(--neutral-700);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: var(--neutral-500);
+      font-size: 14px;
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: white;
+      }
+
+      .sidebar,
+      .header,
+      .receipt-actions,
+      .sidebar-overlay {
+        display: none !important;
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+      }
+
+      .main-content {
+        padding: 0;
+      }
+
+      .receipt-container {
+        box-shadow: none;
+        padding: 20px;
+      }
+
+      .fineprint {
+        background: transparent;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header {
+        padding: 16px;
+      }
+
+      .header-title h2 {
+        font-size: 20px;
+      }
+
+      .user-details {
+        display: none;
+      }
+
+      .main-content {
+        padding: 16px;
+      }
+
+      .receipt-container {
+        padding: 24px 16px;
+      }
+
+      .order-meta {
+        grid-template-columns: 1fr;
+      }
+
+      .items-table {
+        font-size: 12px;
+      }
+
+      .items-table th,
+      .items-table td {
+        padding: 8px 4px;
+      }
+
+      .receipt-actions {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
-  <main class="receipt">
-    <header class="receipt-header">
-      <div class="company" id="company-block"></div>
-      <div class="meta" id="order-meta"></div>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <h1><i class="fas fa-utensils"></i> Bar & Restaurante</h1>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Principal</div>
+        <a href="dashboard.html" class="nav-item">
+          <i class="fas fa-chart-line"></i>
+          <span>Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Operacional</div>
+        <a href="pedidos.html" class="nav-item">
+          <i class="fas fa-shopping-cart"></i>
+          <span>Pedidos</span>
+        </a>
+        <a href="mesas.html" class="nav-item">
+          <i class="fas fa-chair"></i>
+          <span>Mesas</span>
+        </a>
+        <a href="cardapio.html" class="nav-item">
+          <i class="fas fa-book-open"></i>
+          <span>Cardápio</span>
+        </a>
+        <a href="delivery.html" class="nav-item">
+          <i class="fas fa-motorcycle"></i>
+          <span>Delivery</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Gestão</div>
+        <a href="clientes.html" class="nav-item">
+          <i class="fas fa-users"></i>
+          <span>Clientes</span>
+        </a>
+        <a href="reserva.html" class="nav-item">
+          <i class="fas fa-calendar-check"></i>
+          <span>Reservas</span>
+        </a>
+        <a href="estoque.html" class="nav-item">
+          <i class="fas fa-boxes"></i>
+          <span>Estoque</span>
+        </a>
+        <a href="financeiro.html" class="nav-item">
+          <i class="fas fa-dollar-sign"></i>
+          <span>Financeiro</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Análises</div>
+        <a href="relatorios.html" class="nav-item">
+          <i class="fas fa-chart-bar"></i>
+          <span>Relatórios</span>
+        </a>
+        <a href="cupom.html" class="nav-item active">
+          <i class="fas fa-receipt"></i>
+          <span>Cupom Fiscal</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-title">
+          <h2>Cupom Fiscal</h2>
+          <p>Visualize e imprima o cupom do pedido</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="user-info" id="user-info">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <div class="user-details">
+            <span id="user-name">Usuário</span>
+          </div>
+        </div>
+        <button class="btn-logout" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Sair</span>
+        </button>
+      </div>
     </header>
 
-    <section class="receipt-items" id="items"></section>
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="receipt-container">
+        <!-- Receipt Header -->
+        <div class="receipt-header">
+          <div class="company" id="company-block">
+            <h1>Bar & Restaurante</h1>
+            <div class="company-info">
+              <div>Rua Exemplo, 123 - Centro</div>
+              <div>Telefone: (11) 1234-5678</div>
+              <div>CNPJ: 00.000.000/0000-00</div>
+            </div>
+          </div>
+          <div class="order-meta" id="order-meta">
+            <div class="meta-item">
+              <i class="fas fa-hashtag"></i>
+              <div class="meta-content">
+                <div class="meta-label">Pedido</div>
+                <div class="meta-value" id="order-number">-</div>
+              </div>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-calendar"></i>
+              <div class="meta-content">
+                <div class="meta-label">Data</div>
+                <div class="meta-value" id="order-date">-</div>
+              </div>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-clock"></i>
+              <div class="meta-content">
+                <div class="meta-label">Hora</div>
+                <div class="meta-value" id="order-time">-</div>
+              </div>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-user"></i>
+              <div class="meta-content">
+                <div class="meta-label">Cliente</div>
+                <div class="meta-value" id="customer-name">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <section class="receipt-totals" id="totals"></section>
+        <!-- Receipt Items -->
+        <div class="receipt-items">
+          <table class="items-table" id="items">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th style="text-align: center;">Qtd</th>
+                <th style="text-align: right;">Preço Unit.</th>
+                <th style="text-align: right;">Total</th>
+              </tr>
+            </thead>
+            <tbody id="items-body">
+              <!-- Items will be inserted here -->
+            </tbody>
+          </table>
+        </div>
 
-    <footer class="receipt-footer">
-      <div class="actions no-print">
-        <button class="receipt-btn" id="print-btn" type="button">Imprimir</button>
-        <button class="receipt-btn secondary" id="close-btn" type="button">Fechar</button>
+        <!-- Receipt Totals -->
+        <div class="receipt-totals" id="totals">
+          <div class="total-row">
+            <span class="total-label">Subtotal</span>
+            <span class="total-value" id="subtotal">R$ 0,00</span>
+          </div>
+          <div class="total-row">
+            <span class="total-label">Taxa de Serviço (10%)</span>
+            <span class="total-value" id="service-fee">R$ 0,00</span>
+          </div>
+          <div class="total-row">
+            <span class="total-label">Desconto</span>
+            <span class="total-value" id="discount">R$ 0,00</span>
+          </div>
+          <div class="total-row grand-total">
+            <span class="total-label">Total</span>
+            <span class="total-value" id="grand-total">R$ 0,00</span>
+          </div>
+        </div>
+
+        <!-- Receipt Footer -->
+        <div class="receipt-footer">
+          <div class="receipt-actions">
+            <button class="receipt-btn primary" id="print-btn">
+              <i class="fas fa-print"></i>
+              Imprimir Cupom
+            </button>
+            <button class="receipt-btn secondary" id="close-btn">
+              <i class="fas fa-times"></i>
+              Fechar
+            </button>
+          </div>
+          <div class="fineprint">
+            <strong>Cupom não fiscal</strong> • Emitido para conferência
+          </div>
+        </div>
       </div>
-      <div class="fineprint">
-        <strong>Cupom não fiscal</strong> • Emitido para conferência
-      </div>
-    </footer>
-  </main>
+    </main>
+  </div>
 
   <script src="js/config.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/api.js"></script>
+  <script src="js/auth-neon.js"></script>
   <script src="js/cupom.js"></script>
+  <script>
+    // Menu Toggle
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebar-overlay').classList.toggle('active');
+    });
+
+    document.getElementById('sidebar-overlay').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('active');
+      document.getElementById('sidebar-overlay').classList.remove('active');
+    });
+
+    // User Display
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    if (userData.name) {
+      document.getElementById('user-name').textContent = userData.name;
+      const initials = userData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('user-avatar').textContent = initials;
+    }
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      if (confirm('Deseja realmente sair do sistema?')) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('userData');
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
 </body>
 </html>
-
