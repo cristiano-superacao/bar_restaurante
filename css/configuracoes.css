@@ -1,0 +1,105 @@
+/* Estilos para a página de Configurações */
+
+.settings-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.settings-card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+}
+
+.settings-card h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    font-size: 1.4rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #555;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    background-color: #f4f4f4;
+}
+
+.data-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.settings-help {
+    margin: -0.5rem 0 1rem;
+    color: #667085;
+}
+
+.api-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.toggle-row input[type="checkbox"] {
+    width: 44px;
+    height: 24px;
+    accent-color: #667eea;
+}
+
+.api-status {
+    margin-top: 1rem;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #475467;
+    min-height: 20px;
+}
+
+.api-status.ok {
+    border-color: #b7ebc6;
+    background: #eaf6ef;
+    color: #1f6f3d;
+}
+
+.api-status.err {
+    border-color: #f5c2c7;
+    background: #fdeaea;
+    color: #9b1c1c;
+}
+
+@media (max-width: 900px) {
+    .api-grid { grid-template-columns: 1fr; }
+}
+

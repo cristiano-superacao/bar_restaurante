@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual - Sistema</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-utensils logo-icon"></i>
+                <h2>Sistema</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
+                    <li><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
+                    <li><a href="clientes.html"><i class="fas fa-user"></i> <span>Clientes</span></a></li>
+                    <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
+                    <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
+                    <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
+                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
+                    <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
+                    <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
+                    <li class="active"><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <span id="username-display">Usuário</span>
+                        <small id="user-role-display">Cargo</small>
+                    </div>
+                </div>
+                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Manual</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="toolbar">
+                        <div class="search-input">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="manual-search" placeholder="Buscar no manual..." aria-label="Buscar no manual">
+                        </div>
+                        <div class="filter-pill">
+                            <i class="fas fa-filter"></i>
+                            <select id="manual-section-filter" aria-label="Filtrar por módulo">
+                                <option value="all">Todos os módulos</option>
+                                <option value="cardapio">Cardápio</option>
+                                <option value="pedidos">Pedidos</option>
+                                <option value="mesas">Mesas</option>
+                                <option value="reservas">Reservas</option>
+                                <option value="estoque">Estoque</option>
+                                <option value="financeiro">Financeiro</option>
+                                <option value="relatorios">Relatórios</option>
+                                <option value="configuracoes">Configurações</option>
+                                <option value="usuarios">Usuários</option>
+                                <option value="empresas">Empresas</option>
+                            </select>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <section class="content-body">
+                <div class="stat-cards">
+                    <a class="stat-card receitas" href="cardapio.html"><div class="icon"><i class="fas fa-book-open"></i></div><div class="content"><h4>Cardápio</h4><div class="value">Abrir</div></div></a>
+                    <a class="stat-card previsao" href="pedidos.html"><div class="icon"><i class="fas fa-receipt"></i></div><div class="content"><h4>Pedidos</h4><div class="value">Abrir</div></div></a>
+                    <a class="stat-card saldo" href="mesas.html"><div class="icon"><i class="fas fa-chair"></i></div><div class="content"><h4>Mesas</h4><div class="value">Abrir</div></div></a>
+                    <a class="stat-card despesas" href="financeiro.html"><div class="icon"><i class="fas fa-dollar-sign"></i></div><div class="content"><h4>Financeiro</h4><div class="value">Abrir</div></div></a>
+                </div>
+                <div class="empty-state" id="manual-empty" style="display:none;">
+                    <div class="icon"><i class="fas fa-inbox"></i></div>
+                    <div class="content">
+                        <h3>Nenhum conteúdo encontrado</h3>
+                        <p>Ajuste a busca ou o filtro de módulo.</p>
+                    </div>
+                </div>
+                <div class="manual-list" id="manual-list">
+                    <div class="manual-item" data-section="cardapio">
+                        <h3>Cardápio: cadastro e edição</h3>
+                        <p>Como criar itens, categorias e atualizar preços.</p>
+                    </div>
+                    <div class="manual-item" data-section="pedidos">
+                        <h3>Pedidos: fluxo de criação</h3>
+                        <p>Selecionar mesa, adicionar itens, acompanhar status.</p>
+                    </div>
+                    <div class="manual-item" data-section="mesas">
+                        <h3>Mesas: gerenciamento de status</h3>
+                        <p>Criar/editar mesas, marcar como livre/ocupada.</p>
+                    </div>
+                    <div class="manual-item" data-section="reservas">
+                        <h3>Reservas: agendamento</h3>
+                        <p>Adicionar reservas com data/hora, confirmar ou cancelar.</p>
+                    </div>
+                    <div class="manual-item" data-section="estoque">
+                        <h3>Estoque: níveis e alertas</h3>
+                        <p>Cadastrar itens, ajustar quantidade e identificar baixos/críticos.</p>
+                    </div>
+                    <div class="manual-item" data-section="financeiro">
+                        <h3>Financeiro: registros e filtros</h3>
+                        <p>Visualizar receitas/despesas, buscar por texto e status.</p>
+                    </div>
+                    <div class="manual-item" data-section="relatorios">
+                        <h3>Relatórios: análises</h3>
+                        <p>Top itens, vendas por categoria e filtros por período.</p>
+                    </div>
+                    <div class="manual-item" data-section="configuracoes">
+                        <h3>Configurações: perfil e dados</h3>
+                        <p>Exportar backup, limpar dados e ver perfil.</p>
+                    </div>
+                    <div class="manual-item" data-section="usuarios">
+                        <h3>Usuários: acesso</h3>
+                        <p>Gerenciar contas e permissões (quando disponível).</p>
+                    </div>
+                    <div class="manual-item" data-section="empresas">
+                        <h3>Empresas: organização</h3>
+                        <p>Cadastro e informações da empresa (quando disponível).</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth-neon.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/manual.js"></script>
+</body>
+</html>
+

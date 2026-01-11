@@ -1,0 +1,98 @@
+/* Estilos para a página de Mesas */
+
+.tables-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+
+#table-status-filter {
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
+    min-width: 180px;
+}
+
+
+.tables-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.table-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-top: 4px solid;
+    position: relative;
+}
+
+.table-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.table-card.Livre {
+    border-top-color: #2f6bb3; /* Azul para livre */
+}
+
+.table-card.Ocupada {
+    border-top-color: #e74c3c; /* Vermelho para ocupada */
+}
+
+.table-card .table-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+    transition: color 0.3s;
+}
+
+.table-card.Livre .table-icon {
+    color: #2f6bb3;
+}
+
+.table-card.Ocupada .table-icon {
+    color: #e74c3c;
+}
+
+.table-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color-dark);
+}
+
+.table-card p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.table-card .table-status-text {
+    font-weight: 600;
+    margin-top: 15px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+    background-color: #f0f2f5;
+}
+
+.table-card.Livre .table-status-text {
+    color: #2f6bb3;
+}
+
+.table-card.Ocupada .table-status-text {
+    color: #e74c3c;
+}
+

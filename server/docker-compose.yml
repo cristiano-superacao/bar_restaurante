@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: bar_restaurante_db
+    environment:
+      POSTGRES_USER: bar
+      POSTGRES_PASSWORD: bar
+      POSTGRES_DB: bar_restaurante
+    ports:
+      - "5432:5432"
+    volumes:
+      - bar_restaurante_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bar -d bar_restaurante"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  adminer:
+    image: adminer:4
+    container_name: bar_restaurante_adminer
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+volumes:
+  bar_restaurante_db_data:

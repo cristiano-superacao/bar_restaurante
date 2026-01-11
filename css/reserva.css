@@ -1,0 +1,86 @@
+:root {
+    --primary-color: #4a90e2;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+    --success-color: #2f6bb3;
+}
+
+.reservas-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.reservas-filters input,
+.reservas-filters select {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+/* Grid de reservas no padrão Mesas */
+.reservas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.reserva-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-top: 4px solid;
+}
+
+.reserva-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.reserva-icon {
+    font-size: 44px;
+    margin-bottom: 12px;
+    color: var(--primary-color);
+}
+
+.reserva-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color-dark);
+}
+
+.reserva-card p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.reserva-status-text {
+    font-weight: 600;
+    margin-top: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+    background-color: #f0f2f5;
+    color: var(--text-color-dark);
+}
+
+.reserva-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+/* Cores por status (faixa superior) */
+.reserva-card.Confirmada { border-top-color: var(--success-color); }
+.reserva-card.Pendente { border-top-color: var(--warning-color); }
+.reserva-card.Cancelada { border-top-color: var(--danger-color); }
+

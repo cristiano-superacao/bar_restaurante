@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema de Gestão</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="css/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <main class="auth-shell">
+        <section class="auth-hero" aria-label="Apresentação do sistema">
+            <div class="auth-hero-content">
+                <div class="auth-hero-glass">
+                    <div class="brand">
+                        <div class="brand-mark" aria-hidden="true">
+                            <i class="fas fa-utensils"></i>
+                        </div>
+                        <div class="brand-text">
+                            <div class="brand-name">Sistema</div>
+                            <div class="brand-sub">Gestão de Bar e Restaurante</div>
+                        </div>
+                    </div>
+
+                    <h1>Organize pedidos, delivery e financeiro em um só lugar.</h1>
+                    <p class="lead">Agilidade no atendimento, visão do caixa e relatórios simples para o dia a dia.</p>
+
+                    <div class="hero-highlights" role="list">
+                        <div class="pill" role="listitem"><i class="fas fa-receipt" aria-hidden="true"></i> Pedidos e mesas</div>
+                        <div class="pill" role="listitem"><i class="fas fa-motorcycle" aria-hidden="true"></i> Delivery integrado</div>
+                        <div class="pill" role="listitem"><i class="fas fa-chart-line" aria-hidden="true"></i> Relatórios rápidos</div>
+                    </div>
+
+                    <div class="hero-steps" aria-label="Fluxo do sistema">
+                        <div class="step-dots" aria-hidden="true">
+                            <span class="dot">1</span>
+                            <span class="dot">2</span>
+                            <span class="dot">3</span>
+                            <span class="dot">4</span>
+                        </div>
+                        <div class="step-text">
+                            <strong>Fluxo completo</strong>
+                            <span>Pedido → Entrega → Caixa → Relatórios</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-footnote">© 2026 • Layout responsivo e profissional</div>
+            </div>
+        </section>
+
+        <section class="auth-panel" aria-label="Acesso ao sistema">
+            <div class="auth-card">
+                <header class="auth-header">
+                    <div class="auth-icon" aria-hidden="true"><i class="fas fa-user-lock"></i></div>
+                    <h2>Bem-vindo de volta</h2>
+                    <p>Acesse sua conta para continuar.</p>
+                </header>
+
+                <form id="login-form" class="auth-form">
+                    <div class="field">
+                        <label class="field-label" for="username">Usuário</label>
+                        <div class="field-control">
+                            <i class="fas fa-user" aria-hidden="true"></i>
+                            <input type="text" id="username" placeholder="Digite seu usuário" required autocomplete="username">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="field-row">
+                            <label class="field-label" for="password">Senha</label>
+                            <a class="field-link" href="javascript:void(0)" aria-label="Recuperar senha" onclick="alert('Entre em contato com o administrador para redefinir a senha.'); return false;">Esqueceu a senha?</a>
+                        </div>
+                        <div class="field-control">
+                            <i class="fas fa-lock" aria-hidden="true"></i>
+                            <input type="password" id="password" placeholder="Digite sua senha" required autocomplete="current-password">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-btn">
+                        Entrar no Sistema
+                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                    </button>
+
+                    <div id="error-message" class="error-message" role="alert" aria-live="polite"></div>
+                </form>
+
+                <footer class="auth-footer">
+                    <small>Não tem conta? <a class="field-link" href="javascript:void(0)" id="open-signup-link">Criar conta</a></small>
+                </footer>
+            </div>
+        </section>
+    </main>
+
+    <!-- Mensagem Impactante Centralizada -->
+    <div id="impact-overlay" class="impact-overlay" aria-hidden="true">
+        <div class="impact-content" role="dialog" aria-label="Apresentação">
+            <h2>Transforme seu atendimento em minutos</h2>
+            <p>Crie sua conta gratuita e comece a registrar pedidos, delivery e caixa agora mesmo.</p>
+            <div class="impact-actions">
+                <button id="impact-signup-btn" class="primary-btn">Criar conta grátis</button>
+                <button id="impact-close-btn" class="ghost-btn" aria-label="Fechar">Depois</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro -->
+    <div id="signup-modal" class="modal" aria-hidden="true">
+        <div class="modal-content auth-card" role="dialog" aria-labelledby="signup-title">
+            <div class="modal-header">
+                <h2 id="signup-title">Criar conta</h2>
+                <button class="close-btn" id="signup-close" aria-label="Fechar">&times;</button>
+            </div>
+            <form id="signup-form" class="auth-form">
+                <div class="field">
+                    <label class="field-label" for="su-company">Empresa (opcional)</label>
+                    <div class="field-control"><i class="fas fa-building"></i><input id="su-company" type="text" placeholder="Nome da sua empresa"></div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="su-name">Seu nome</label>
+                    <div class="field-control"><i class="fas fa-id-card"></i><input id="su-name" type="text" placeholder="Ex.: João Silva" required></div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="su-email">E-mail</label>
+                    <div class="field-control"><i class="fas fa-envelope"></i><input id="su-email" type="email" placeholder="voce@exemplo.com" required></div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="su-username">Usuário</label>
+                    <div class="field-control"><i class="fas fa-user"></i><input id="su-username" type="text" placeholder="Escolha um usuário" required></div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="su-password">Senha</label>
+                    <div class="field-control"><i class="fas fa-lock"></i><input id="su-password" type="password" placeholder="Crie uma senha" required></div>
+                </div>
+                <div class="field">
+                    <label class="field-label" for="su-password2">Confirmar senha</label>
+                    <div class="field-control"><i class="fas fa-lock"></i><input id="su-password2" type="password" placeholder="Repita a senha" required></div>
+                </div>
+                <button class="primary-btn" type="submit">Criar minha conta</button>
+                <div id="signup-error" class="error-message" role="alert" aria-live="polite"></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>
+

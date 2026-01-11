@@ -1,0 +1,80 @@
+MIT License
+
+Copyright (c) 2025 Sistema Maria Flor - Gestão de Restaurante
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Sobre a Licença MIT
+
+A Licença MIT é uma licença de software livre permissiva que permite:
+
+✅ **Uso comercial** - Você pode usar este software comercialmente
+✅ **Distribuição** - Você pode distribuir o software
+✅ **Modificação** - Você pode modificar o software
+✅ **Uso privado** - Você pode usar o software para fins privados
+
+### Responsabilidades:
+
+📋 **Incluir aviso de copyright** - Você deve incluir o aviso de copyright e licença
+📋 **Incluir licença** - Você deve incluir o texto completo da licença
+
+### Limitações:
+
+❌ **Sem responsabilidade** - A licença não fornece garantia
+❌ **Sem garantia** - O software é fornecido "como está"
+
+### Em resumo:
+
+Você pode fazer quase tudo com este código, incluindo usá-lo em projetos comerciais,
+desde que inclua o aviso de copyright original.
+
+---
+
+## Créditos e Atribuições
+
+**Desenvolvido por**: Cristiano Superação  
+**Para**: Restaurante Maria Flor - Salvador, BA  
+**Ano**: 2025  
+
+### Tecnologias Utilizadas:
+
+- **Frontend**: HTML5, CSS3, JavaScript (Vanilla)
+- **Backend**: Node.js, Express.js
+- **Banco de Dados**: PostgreSQL (Neon)
+- **Hospedagem**: Netlify
+- **Gráficos**: Chart.js
+- **Ícones**: Font Awesome
+- **Autenticação**: JSON Web Tokens (JWT)
+- **Criptografia**: bcrypt
+
+### Inspirações e Agradecimentos:
+
+- **Comunidade Open Source** por fornecer ferramentas incríveis
+- **Netlify & Neon** por oferecer infraestrutura gratuita de qualidade
+- **Restaurante Maria Flor** por confiar no projeto
+- **Desenvolvedores da comunidade** por compartilhar conhecimento
+
+---
+
+Para mais informações sobre o projeto, visite:
+📧 Email: desenvolvimento@mariaflor.com
+🐙 GitHub: https://github.com/cristiano-superacao/bar_restaurante
+📖 Documentação: docs/DOCUMENTACAO_COMPLETA.md

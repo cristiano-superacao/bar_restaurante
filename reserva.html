@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reservas - Bar e Restaurante</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/reserva.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-utensils logo-icon"></i>
+                <h2>Sistema</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
+                    <li><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
+                    <li><a href="clientes.html"><i class="fas fa-user"></i> <span>Clientes</span></a></li>
+                    <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
+                    <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
+                    <li class="active"><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
+                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
+                    <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
+                    <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
+                    <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <span id="username-display">Usuário</span>
+                        <small id="user-role-display">Cargo</small>
+                    </div>
+                </div>
+                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Gerenciamento de Reservas</h1>
+                </div>
+                <div class="header-actions"></div>
+            </header>
+            <section class="content-body">
+                <div class="toolbar">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Buscar por nome ou telefone..." aria-label="Buscar reserva">
+                    </div>
+                    <div class="filter-pill">
+                        <i class="fas fa-calendar"></i>
+                        <input type="date" id="date-filter" aria-label="Filtrar por data">
+                    </div>
+                    <div class="filter-pill">
+                        <i class="fas fa-filter"></i>
+                        <select id="status-filter" aria-label="Filtrar por status">
+                            <option value="all">Todos</option>
+                            <option value="Confirmada">Confirmada</option>
+                            <option value="Pendente">Pendente</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </select>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <button class="btn btn-primary" id="add-reserva-btn"><i class="fas fa-plus"></i> Nova Reserva</button>
+                </div>
+                <div class="stat-cards">
+                    <div class="stat-card receitas"><div class="icon"><i class="fas fa-check-circle"></i></div><div class="content"><h4>Confirmadas</h4><div class="value" id="reservas-confirmadas">0</div></div></div>
+                    <div class="stat-card previsao"><div class="icon"><i class="fas fa-hourglass-half"></i></div><div class="content"><h4>Pendentes</h4><div class="value" id="reservas-pendentes">0</div></div></div>
+                    <div class="stat-card despesas"><div class="icon"><i class="fas fa-ban"></i></div><div class="content"><h4>Canceladas</h4><div class="value" id="reservas-canceladas">0</div></div></div>
+                    <div class="stat-card saldo"><div class="icon"><i class="fas fa-calendar-check"></i></div><div class="content"><h4>Total</h4><div class="value" id="reservas-total">0</div></div></div>
+                </div>
+                <div class="empty-state" id="reservas-empty" style="display:none;">
+                    <div class="icon"><i class="fas fa-inbox"></i></div>
+                    <div class="content">
+                        <h3>Nenhuma reserva encontrada</h3>
+                        <p>Ajuste filtros ou crie uma nova reserva.</p>
+                    </div>
+                </div>
+                <div class="reservas-grid" id="reservas-grid">
+                    <!-- Reservas serão inseridas aqui -->
+                </div>
+            </section>
+        </main>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    </div>
+
+    <!-- Modal para Adicionar/Editar Reserva -->
+    <div id="reserva-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="reserva-modal-title">Nova Reserva</h2>
+            <form id="reserva-form">
+                <input type="hidden" id="reserva-id">
+                <div class="form-group">
+                    <label for="reserva-name">Nome do Cliente</label>
+                    <input type="text" id="reserva-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="reserva-phone">Telefone</label>
+                    <input type="tel" id="reserva-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="reserva-date">Data</label>
+                    <input type="date" id="reserva-date" required>
+                </div>
+                <div class="form-group">
+                    <label for="reserva-time">Hora</label>
+                    <input type="time" id="reserva-time" required>
+                </div>
+                <div class="form-group">
+                    <label for="reserva-people">Nº de Pessoas</label>
+                    <input type="number" id="reserva-people" min="1" value="2" required>
+                </div>
+                <div class="form-group">
+                    <label for="reserva-status">Status</label>
+                    <select id="reserva-status" required>
+                        <option value="Confirmada">Confirmada</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth-neon.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/reserva.js"></script>
+</body>
+</html>
+

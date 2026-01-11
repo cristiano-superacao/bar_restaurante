@@ -1,0 +1,114 @@
+:root {
+  --receipt-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+body {
+  background: #f3f4f6;
+  margin: 0;
+  padding: 24px;
+}
+
+.receipt {
+  max-width: 380px;
+  margin: 0 auto;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 16px;
+  font-family: var(--receipt-font);
+  color: #111827;
+}
+
+.receipt-header {
+  border-bottom: 1px dashed #d1d5db;
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+}
+
+.company {
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.company .name {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.meta {
+  margin-top: 10px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.items-title {
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  font-size: 12px;
+}
+
+.receipt-items .item {
+  padding: 6px 0;
+  border-bottom: 1px dotted #e5e7eb;
+  font-size: 12px;
+}
+
+.receipt-items .item:last-child {
+  border-bottom: none;
+}
+
+.receipt-totals {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #d1d5db;
+  font-size: 12px;
+}
+
+.receipt-totals .grand {
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.receipt-btn {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #111827;
+  background: #111827;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--receipt-font);
+}
+
+.receipt-btn.secondary {
+  background: #fff;
+  color: #111827;
+}
+
+.fineprint {
+  margin-top: 12px;
+  text-align: center;
+  font-size: 11px;
+  color: #6b7280;
+}
+
+@media print {
+  body { background: #fff; padding: 0; }
+  .receipt { box-shadow: none; border: none; border-radius: 0; max-width: none; }
+  .no-print { display: none !important; }
+}
+
