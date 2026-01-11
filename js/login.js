@@ -123,22 +123,41 @@ document.addEventListener('DOMContentLoaded', () => {
             const pass2 = (document.getElementById('su-password2')?.value || '');
 
             if (!cfg.UTILS.validateEmail(email)) { if (signupError) signupError.textContent = 'E-mail inválido.'; return; }
-            // Em modo API, empresa é obrigatória para criar o tenant
-            if (cfg.API && cfg.API.enabled && !companyName) { if (signupError) signupError.textContent = 'Informe o nome da empresa.'; return; }
             if (pass1.length < 6) { if (signupError) signupError.textContent = 'Use ao menos 6 caracteres na senha.'; return; }
             if (pass1 !== pass2) { if (signupError) signupError.textContent = 'As senhas não conferem.'; return; }
 
+            function createLocalUser() {
+                const existing = JSON.parse(localStorage.getItem('users') || '[]');
+                const conflict = existing.some(u => String(u.username).toLowerCase() === username.toLowerCase()) ||
+                    Object.values(cfg.USERS || {}).some(u => String(u.username).toLowerCase() === username.toLowerCase());
+                if (conflict) {
+                    const e = new Error('Usuário já existe');
+                    e.code = 'CONFLICT';
+                    throw e;
+                }
+                existing.push({
+                    id: Date.now(),
+                    username,
+                    email,
+                    name,
+                    role: 'admin',
+                    password: pass1,
+                    companyName: companyName || (cfg.APP && cfg.APP.name ? cfg.APP.name : 'Empresa')
+                });
+                localStorage.setItem('users', JSON.stringify(existing));
+            }
+
             try {
                 if (window.API && typeof window.API.auth?.register === 'function') {
+                    // Em modo API, empresa é obrigatória para criar o tenant
+                    if (cfg.API && cfg.API.enabled && !companyName) {
+                        if (signupError) signupError.textContent = 'Informe o nome da empresa.';
+                        return;
+                    }
                     await window.API.auth.register({ username, email, password: pass1, name, companyName });
                 } else {
                     // Fallback direto para LocalStorage
-                    const existing = JSON.parse(localStorage.getItem('users') || '[]');
-                    const conflict = existing.some(u => String(u.username).toLowerCase() === username.toLowerCase()) ||
-                        Object.values(cfg.USERS || {}).some(u => String(u.username).toLowerCase() === username.toLowerCase());
-                    if (conflict) throw new Error('Usuário já existe');
-                    existing.push({ id: Date.now(), username, email, name, role: 'admin', password: pass1 });
-                    localStorage.setItem('users', JSON.stringify(existing));
+                    createLocalUser();
                 }
 
                 closeSignup();
@@ -146,10 +165,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userInput) userInput.value = username;
                 alert('Conta criada com sucesso! Faça login para continuar.');
             } catch (err) {
+                // Se a API estiver fora do ar (Railway 502), cria em modo local para não bloquear o usuário
+                const code = String(err && err.code || '').toUpperCase();
+                const msgUp = String(err && err.message || '').toUpperCase();
+                const isApiOffline = (code === 'NETWORK' || code === 'TIMEOUT' || /HTTP\s(502|503|504)/.test(msgUp));
+
+                if (cfg.API && cfg.API.enabled && isApiOffline) {
+                    try {
+                        createLocalUser();
+                        closeSignup();
+                        const userInput = document.getElementById('username');
+                        if (userInput) userInput.value = username;
+                        alert('API indisponível no momento. Conta criada em modo local (demo). Faça login para continuar.');
+                        return;
+                    } catch (e2) {
+                        err = e2;
+                    }
+                }
                 if (signupError) {
                     const msg = String(err && (err.code || err.message) || '').toUpperCase();
                     if (msg.includes('TIMEOUT') || msg.includes('ABORT')) {
                         signupError.textContent = 'Conexão com o servidor expirou. Tente novamente.';
+                    } else if (msg.includes('NETWORK') || msg.includes('HTTP 502') || msg.includes('HTTP 503') || msg.includes('HTTP 504')) {
+                        signupError.textContent = 'Servidor indisponível (API offline). Tente novamente em instantes.';
                     } else if (msg.includes('HTTP 409') || msg.includes('USUÁRIO JÁ EXISTE') || msg.includes('UNIQUE')) {
                         signupError.textContent = 'Usuário/email/empresa já existe.';
                     } else if (msg.includes('HTTP 400')) {

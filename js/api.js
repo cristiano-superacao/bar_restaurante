@@ -59,6 +59,15 @@
           e.code = 'TIMEOUT';
           throw e;
         }
+
+        // Falha de rede (Railway offline, DNS, CORS bloqueado, etc.)
+        const msg = String(err && err.message || '').toLowerCase();
+        if (err instanceof TypeError || msg.includes('failed to fetch') || msg.includes('network') || msg.includes('fetch')) {
+          const e = new Error('NETWORK');
+          e.code = 'NETWORK';
+          throw e;
+        }
+
         throw err;
       }
       if (!res.ok) {
@@ -73,7 +82,9 @@
             window.location.href = 'index.html';
           }
         }
-        throw new Error(`HTTP ${res.status}`);
+        const e = new Error(`HTTP ${res.status}`);
+        e.code = `HTTP_${res.status}`;
+        throw e;
       }
       const ct = res.headers.get('content-type') || '';
       return ct.includes('application/json') ? res.json() : res.text();
