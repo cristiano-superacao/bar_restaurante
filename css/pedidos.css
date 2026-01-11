@@ -1,0 +1,152 @@
+/* Estilos para a página de Pedidos, seguindo o layout de Mesas */
+
+/* Filtros específicos (mantém caso usados fora da base) */
+#status-filter {
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #fff;
+    min-width: 180px;
+}
+
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+.order-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-top: 4px solid;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Ícone central grande */
+.order-icon {
+    font-size: 44px;
+    margin-bottom: 12px;
+    color: var(--primary-color);
+}
+
+.order-card h3 {
+    margin: 0 0 8px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color-dark);
+}
+
+.order-card p {
+    margin: 0;
+    color: #777;
+    font-size: 14px;
+}
+
+.order-status-text {
+    font-weight: 600;
+    margin-top: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+    background-color: #f0f2f5;
+    color: var(--text-color-dark);
+}
+
+.order-total-price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: 8px;
+}
+
+/* Cores por status (faixa superior e ícone) */
+.order-card.Pendente { border-top-color: #fbbc05; }
+.order-card.Em-Preparo { border-top-color: #4a90e2; }
+.order-card.Entregue { border-top-color: #2f6bb3; }
+.order-card.Pago { border-top-color: #2f6bb3; }
+.order-card.Cancelado { border-top-color: #ea4335; }
+
+
+/* Estilos do Modal de Pedido */
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+.form-row .form-group {
+    flex: 1;
+}
+
+#order-items-container {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+    margin-top: 10px;
+    max-height: 180px;
+    overflow-y: auto;
+    background-color: #f9fafb;
+}
+
+.order-item-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 6px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.order-item-row:last-child {
+    margin-bottom: 0;
+}
+
+.order-item-row span {
+    flex: 1;
+}
+
+.btn-remove-item {
+    background: none;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 5px;
+}
+.btn-remove-item:hover {
+    color: #ea4335;
+}
+
+.add-item-form {
+    display: flex;
+    gap: 10px;
+}
+
+#menu-item-select {
+    flex-grow: 1;
+}
+
+#item-quantity {
+    width: 80px;
+}
+
+
+.order-total {
+    text-align: right;
+    font-size: 20px;
+    font-weight: 600;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+

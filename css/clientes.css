@@ -1,0 +1,63 @@
+/* Página de Clientes: grid e cards no padrão Mesas */
+
+.clients-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 25px;
+}
+
+.client-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  padding: 18px 16px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-top: 4px solid var(--primary-color);
+  position: relative;
+}
+
+.client-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+}
+
+.client-card .client-icon {
+  font-size: 42px;
+  margin-bottom: 10px;
+  color: var(--primary-color);
+}
+
+.client-card h3 {
+  margin: 0 0 6px 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-color-dark);
+}
+
+.client-card .client-sub {
+  margin: 0;
+  color: #777;
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.client-badge {
+  background: #e8f0fe;
+  color: #2f6bb3;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.client-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+

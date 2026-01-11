@@ -1,0 +1,105 @@
+{
+    "name": "Maria Flor - Sistema de Gestão",
+    "short_name": "Maria Flor",
+    "description": "Sistema completo de gestão para bares e restaurantes",
+    "version": "2.2.0",
+    "manifest_version": 2,
+    "start_url": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "theme_color": "#667eea",
+    "background_color": "#ffffff",
+    "scope": "/",
+    "lang": "pt-BR",
+    "categories": ["business", "productivity", "food"],
+    "icons": [
+        {
+            "src": "https://via.placeholder.com/72x72?text=MF",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/96x96?text=MF",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/128x128?text=MF",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/144x144?text=MF",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/152x152?text=MF",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/192x192?text=MF",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/384x384?text=MF",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "https://via.placeholder.com/512x512?text=MF",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Nova Venda",
+            "short_name": "Venda",
+            "description": "Registrar nova venda rapidamente",
+            "url": "/pages/dashboard.html#vendas",
+            "icons": [
+                {
+                    "src": "https://via.placeholder.com/96x96?text=$",
+                    "sizes": "96x96"
+                }
+            ]
+        },
+        {
+            "name": "Pedidos",
+            "short_name": "Pedidos",
+            "description": "Gerenciar pedidos da cozinha",
+            "url": "/pages/dashboard.html#pedidos",
+            "icons": [
+                {
+                    "src": "https://via.placeholder.com/96x96?text=P",
+                    "sizes": "96x96"
+                }
+            ]
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "https://via.placeholder.com/540x720?text=Dashboard",
+            "sizes": "540x720",
+            "type": "image/png",
+            "form_factor": "narrow"
+        },
+        {
+            "src": "https://via.placeholder.com/1280x720?text=Desktop+View",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
+        }
+    ]
+}

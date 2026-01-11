@@ -1,0 +1,237 @@
+# Changelog
+
+Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
+
+O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
+e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
+
+## [2.2.0] - 2026-01-11
+
+### 🔒 Segurança
+
+- **Backend**: Validação de entrada com `express-validator` em todas as rotas
+  - Validação em `menuItems`, `tables`, `stock`, `reservations`, `transactions`, `orders`
+  - Proteção contra SQL injection e dados malformados
+  - Mensagens de erro estruturadas com detalhes de validação
+- **Headers HTTP**: Helmet configurado para headers seguros
+- **Rate Limiting**: 
+  - Global: 100 req/15min
+  - Login: 5 tentativas/15min (anti-brute-force)
+- **CORS**: Configurável via variável `CORS_ORIGIN`
+- **JWT**: Tokens com expiração automática
+
+### ✨ Funcionalidades
+
+- **Documentação Completa**:
+  - README.md reformulado com badges, índice e exemplos
+  - INSTALL.md criado com guia passo-a-passo detalhado
+  - Troubleshooting e diagnóstico de problemas
+  - Documentação de API com exemplos curl
+- **Validações robustas**:
+  - Campos obrigatórios em todas as entidades
+  - Validação de tipos (números, datas ISO, strings)
+  - Validação de ranges (preços ≥0, capacidade ≥1)
+  - Validação de enums (status de pedidos, tipos de transação)
+
+### 🎨 Refatoração
+
+- **CSS**: Consolidação de estilos
+  - Remoção de duplicatas de `.form-group` em `configuracoes.css`
+  - Modais centralizados em `base.css`
+  - Toolbar e components compartilhados
+  - Redução de ~60% de duplicação CSS
+- **JS**: Utilitários centralizados
+  - `js/utils.js` como fonte única de helpers
+  - `CONSTANTS` e `populateSelect` compartilhados
+  - Storage multi-tenant padronizado
+  - Formatadores unificados (moeda, data, texto)
+
+### 🔧 Melhorias
+
+- **API**: Respostas padronizadas e consistentes
+- **Validação**: Scripts de validação UI e CSS (`scripts/`)
+- **Performance**: Queries otimizadas e índices no banco
+- **UX**: Empty states e feedback visual aprimorados
+
+### 📚 Documentação
+
+- README.md: Guia completo com badges, tecnologias e estrutura
+- INSTALL.md: Instalação detalhada (local, Railway, Docker)
+- CHANGELOG.md: Histórico completo de mudanças
+- API: Documentação de endpoints com exemplos
+
+### 🐛 Correções
+
+- Validação de company_id em rotas multi-tenant
+- Cálculo correto de totais em pedidos
+- Tratamento de erros em transações
+- Proteção contra dados inválidos
+
+## [2.1.0] - 2026-01-10
+
+### 🚀 Infraestrutura & Deploy
+
+- **CI/CD**: GitHub Actions para deploy automático no Railway
+- **Backend**: Auto-migrações aplicadas no startup
+- **Docker**: Suporte a containerização
+- **Railway**: Configuração completa com PostgreSQL gerenciado
+
+### 💾 Banco de Dados
+
+- **Seeds Idempotentes**:
+  - Empresas de teste (A e B)
+  - Usuários admin (adminA, adminB)
+  - Dados demo por módulo (mesas, cardápio, estoque, pedidos, transações, reservas)
+- **Índices de Performance**:
+  - Índices em `company_id` para todas as tabelas
+  - Backfills automáticos de `subtotal` e `total`
+- **Migrations**: Sistema robusto e idempotente
+
+### 🏢 Multi-empresa (Multi-tenant)
+
+- **Isolamento de Dados**: Escopo por `company_id`
+- **Header `X-Company-Id`**: Para superadmin trocar contexto
+- **Rotas Escopadas**: Todas as entidades respeitam empresa
+- **Gestão**: Módulo completo de empresas
+
+### 🎨 Frontend
+
+- **Configuração de API**: Via interface gráfica
+- **LocalStorage**: Persistência de configurações
+- **Modo Híbrido**: Offline (LocalStorage) ou Cloud (API)
+- **Layout Responsivo**: Mobile, tablet e desktop
+- **Design System**: Componentes padronizados
+
+### 📦 Módulos
+
+- Cardápio (menu_items)
+- Mesas (tables)
+- Pedidos (orders + order_items)
+- Estoque (stock)
+- Clientes (customers)
+- Reservas (reservations)
+- Financeiro (transactions)
+- Usuários (users)
+- Empresas (companies)
+
+### 📖 Documentação
+
+- DEPLOY_RAILWAY.md: Guia de deploy no Railway
+- MIGRACAO_API.md: Como ativar/desativar API
+- CONFIGURACAO_API.md: Configuração avançada
+- server/README.md: Documentação do backend
+
+## [2.0.0] - 2025-12-15
+
+### 💥 Breaking Changes
+
+- **Backend Completo**: Express + PostgreSQL
+- **Autenticação JWT**: Login obrigatório
+- **Multi-tenant**: Suporte a múltiplas empresas
+- **Migrações**: Schema SQL versionado
+
+### ✨ Novas Funcionalidades
+
+- **API REST**: Endpoints completos para todos os módulos
+- **Autenticação**: Login/registro com JWT
+- **Roles**: superadmin, admin, staff
+- **Segurança**: bcrypt, CORS, rate limiting
+- **Validações**: Input validation em rotas críticas
+
+### 🗄️ Banco de Dados
+
+- PostgreSQL como banco principal
+- Tabelas normalizadas
+- Foreign keys e constraints
+- Índices de performance
+- Seeds de dados iniciais
+
+### 🎨 UI/UX
+
+- Dashboard redesenhado
+- Sidebar responsiva
+- Stat cards em tempo real
+- Filtros e buscas padronizados
+- Empty states informativos
+
+## [1.5.0] - 2025-11-20
+
+### ✨ Novas Páginas
+
+- **Delivery**: Gestão de entregas com endereços
+- **Clientes**: Cadastro completo (CPF, telefone, email)
+- **Usuários**: Gestão de acessos e permissões
+- **Empresas**: Seleção de contexto multi-tenant
+- **Manual**: Documentação integrada no sistema
+
+### 🎨 Design
+
+- Tema azul profissional
+- Paleta de cores consistente
+- Variáveis CSS centralizadas
+- Componentes reutilizáveis
+- Layout totalmente responsivo
+
+### 🔧 Melhorias
+
+- Métricas em tempo real
+- Busca instantânea
+- Filtros avançados
+- Exportação de dados
+- Backup/restore
+
+## [1.0.0] - 2025-10-01
+
+### 🎉 Release Inicial
+
+- **Módulos Base**:
+  - Dashboard com visão geral
+  - Cardápio com categorias
+  - Pedidos (mesa)
+  - Mesas com capacidade
+  - Reservas
+  - Estoque com alertas
+  - Financeiro (receitas/despesas)
+  - Relatórios com gráficos
+  - Configurações
+
+- **Persistência**: LocalStorage do navegador
+- **Design**: Interface clean e intuitiva
+- **Responsivo**: Mobile e desktop
+- **Offline**: Funciona sem internet
+
+---
+
+## Tipos de Mudanças
+
+- `Added` (Adicionado): Para novas funcionalidades
+- `Changed` (Modificado): Para mudanças em funcionalidades existentes
+- `Deprecated` (Obsoleto): Para funcionalidades que serão removidas
+- `Removed` (Removido): Para funcionalidades removidas
+- `Fixed` (Corrigido): Para correções de bugs
+- `Security` (Segurança): Para vulnerabilidades corrigidas
+
+## v2.1.0 – 2026-01-10
+
+### Infra & Deploy
+- CI/CD: workflow GitHub Actions para deploy automático no Railway
+- Backend com auto-migrações aplicando schema.sql no startup
+
+### Banco & Seeds
+- Seeds idempotentes: empresas de teste (A e B) + admins (adminA, adminB)
+- Seeds por módulo: mesas, cardápio, estoque, pedidos demo, transações financeiras, reservas
+- Índices de performance e backfills de company_id, subtotal, total
+
+### Frontend & Configuração
+- Configuração de API via cliente (LocalStorage) em configuracoes.html
+- Remoção de baseUrl fixa de produção
+- Documentação atualizada para modo Cloud (Railway)
+
+### Multi-empresa
+- Rotas escopadas por company_id com X-Company-Id para superadmin
+- Módulos: cardápio, mesas, pedidos (+itens), estoque, clientes, reservas, financeiro
+- Gestão de usuários, empresas e diagnóstico de banco
+
+### UI
+- Layout responsivo e profissional preservado
+- Uso de componentes e estilos padronizados

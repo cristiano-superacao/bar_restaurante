@@ -1,0 +1,35 @@
+{
+  "name": "barestaurente-client",
+  "version": "2.1.0",
+  "description": "Sistema de Gestão para Bar e Restaurante - Cliente Estático",
+  "main": "index.html",
+  "scripts": {
+    "start": "npm run serve:node",
+    "dev": "npm run serve:node",
+    "serve": "npm run serve:node",
+    "serve:node": "npx http-server . -p 8000 -c-1 -o",
+    "build": "echo 'Site estático - Pronto para deploy'",
+    "deploy": "git add . && git commit -m 'Deploy automático' && git push origin main",
+    "test": "echo 'Abrindo página de testes...' && start http://localhost:8000/test",
+    "status": "echo 'Verificando status...' && start http://localhost:8000/status"
+  },
+  "keywords": [
+    "restaurant",
+    "management",
+    "system",
+    "frontend",
+    "static",
+    "spa"
+  ],
+  "author": "Cristiano Santos",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cristiano-superacao/bar_restaurante.git"
+  },
+  "homepage": "https://barestaurante.netlify.app",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
+

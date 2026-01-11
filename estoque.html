@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/">
+    <title>Estoque - Bar e Restaurante</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/estoque.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <i class="fas fa-utensils logo-icon"></i>
+                <h2>Sistema</h2>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
+                    <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
+                    <li><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
+                    <li><a href="clientes.html"><i class="fas fa-user"></i> <span>Clientes</span></a></li>
+                    <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
+                    <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
+                    <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
+                    <li class="active"><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
+                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
+                    <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
+                    <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
+                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
+                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
+                    <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <span id="username-display">Usuário</span>
+                        <small id="user-role-display">Cargo</small>
+                    </div>
+                </div>
+                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </aside>
+        <main class="main-content">
+            <header class="main-header">
+                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1>Controle de Estoque</h1>
+                </div>
+                <div class="header-actions"></div>
+            </header>
+            <section class="content-body">
+                <div class="toolbar">
+                    <div class="search-input">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="search-input" placeholder="Buscar produto..." aria-label="Buscar produto">
+                    </div>
+                    <div class="filter-pill">
+                        <i class="fas fa-filter"></i>
+                        <select id="category-filter" aria-label="Filtrar por categoria">
+                            <option value="all">Todas as Categorias</option>
+                            <option value="Bebidas">Bebidas</option>
+                            <option value="Ingredientes">Ingredientes</option>
+                            <option value="Limpeza">Limpeza</option>
+                        </select>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <button class="btn btn-primary" id="add-produto-btn"><i class="fas fa-plus"></i> Novo Produto</button>
+                </div>
+                <div class="stat-cards">
+                    <div class="stat-card previsao"><div class="icon"><i class="fas fa-box"></i></div><div class="content"><h4>Total Itens</h4><div class="value" id="estoque-total">0</div></div></div>
+                    <div class="stat-card despesas"><div class="icon"><i class="fas fa-exclamation-triangle"></i></div><div class="content"><h4>Baixo</h4><div class="value" id="estoque-baixo">0</div></div></div>
+                    <div class="stat-card saldo"><div class="icon"><i class="fas fa-times-circle"></i></div><div class="content"><h4>Crítico</h4><div class="value" id="estoque-critico">0</div></div></div>
+                    <div class="stat-card receitas"><div class="icon"><i class="fas fa-check-circle"></i></div><div class="content"><h4>OK</h4><div class="value" id="estoque-ok">0</div></div></div>
+                </div>
+                <div class="empty-state" id="estoque-empty" style="display:none;">
+                    <div class="icon"><i class="fas fa-inbox"></i></div>
+                    <div class="content">
+                        <h3>Nenhum produto encontrado</h3>
+                        <p>Ajuste filtros ou adicione um novo produto.</p>
+                    </div>
+                </div>
+                <div class="estoque-list" id="estoque-list">
+                    <!-- Produtos do estoque serão inseridos aqui -->
+                </div>
+            </section>
+        </main>
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    </div>
+
+    <!-- Modal para Adicionar/Editar Produto -->
+    <div id="produto-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="produto-modal-title">Novo Produto</h2>
+            <form id="produto-form">
+                <input type="hidden" id="produto-id">
+                <div class="form-group">
+                    <label for="produto-name">Nome do Produto</label>
+                    <input type="text" id="produto-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="produto-category">Categoria</label>
+                    <select id="produto-category" required>
+                        <option value="Bebidas">Bebidas</option>
+                        <option value="Ingredientes">Ingredientes</option>
+                        <option value="Limpeza">Limpeza</option>
+                        <option value="Outros">Outros</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="produto-quantity">Quantidade</label>
+                    <input type="number" id="produto-quantity" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="produto-unit">Unidade (Ex: un, kg, L)</label>
+                    <input type="text" id="produto-unit" required>
+                </div>
+                <div class="form-group">
+                    <label for="produto-min-quantity">Estoque Mínimo</label>
+                    <input type="number" id="produto-min-quantity" min="0">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/auth-neon.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/estoque.js"></script>
+</body>
+</html>
+

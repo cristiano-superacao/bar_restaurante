@@ -1,0 +1,43 @@
+/* Usa componentes compartilhados definidos em dashboard.css */
+.financeiro-summary {
+    margin-bottom: 16px;
+}
+
+.transacoes-list {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.transacao-header, .transacao-item {
+    display: grid;
+    grid-template-columns: 3fr 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.transacao-header {
+    font-weight: 600;
+    background-color: #f9fafb;
+}
+
+.transacao-item:last-child {
+    border-bottom: none;
+}
+
+.transacao-item .valor.receita { color: var(--success-color); }
+.transacao-item .valor.despesa { color: var(--danger-color); }
+
+.transacao-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.toolbar .btn {
+    border-radius: 12px;
+}
+
