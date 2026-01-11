@@ -161,7 +161,7 @@ function loadDashboardData() {
     const pedidos = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
     const hoje = new Date().toISOString().split('T')[0];
     const vendasHoje = pedidos
-        .filter(p => p.data && p.data.startsWith(hoje) && (p.status === 'Pago' || p.status === 'Entregue'))
+        .filter(p => p.data && p.data.startsWith(hoje) && p.status === 'Pago')
         .reduce((acc, p) => acc + (p.total || 0), 0);
     const vendasEl = document.getElementById('vendas-hoje-valor');
     if (vendasEl) {

@@ -52,6 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Funções ---
 
+    const formatBRL = window.CONFIG?.UTILS?.formatCurrency || ((v) => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+
     // Popula o filtro de categorias dinamicamente
     function populateCategoryFilter() {
         const categories = [...new Set(menuItems.map(item => item.category))];
@@ -102,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     <h3 class="card-title">${item.name}</h3>
                     <p class="card-description">${item.description}</p>
                     <div class="card-footer">
-                        <span class="card-price">R$ ${item.price.toFixed(2).replace('.', ',')}</span>
+                        <span class="card-price">${formatBRL(item.price)}</span>
                         <div class="card-actions">
                             <button class="btn btn-secondary btn-edit" data-id="${item.id}" title="Editar"><i class="fas fa-pen"></i> Editar</button>
                             <button class="btn btn-secondary btn-delete" data-id="${item.id}" title="Excluir"><i class="fas fa-trash"></i> Excluir</button>

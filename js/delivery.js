@@ -27,6 +27,32 @@ document.addEventListener('DOMContentLoaded', function () {
   const feeInput = document.getElementById('delivery-fee');
   const discountInput = document.getElementById('delivery-discount');
   const paymentSelect = document.getElementById('delivery-payment');
+  function populateStatusSelect() {
+    const sel = document.getElementById('delivery-status');
+    if (!sel) return;
+    const statuses = (window.CONFIG && window.CONFIG.CONSTS && Array.isArray(window.CONFIG.CONSTS.ORDER_STATUS_DELIVERY))
+      ? window.CONFIG.CONSTS.ORDER_STATUS_DELIVERY
+      : ['Pendente','Em Preparo','Saiu para Entrega','Entregue','Pago','Cancelado'];
+    const current = sel.value;
+    sel.innerHTML = '';
+    statuses.forEach(s => {
+      const opt = document.createElement('option'); opt.value = s; opt.textContent = s; sel.appendChild(opt);
+    });
+    if (current) sel.value = current;
+  }
+
+  function populatePaymentSelect() {
+    if (!paymentSelect) return;
+    const methods = (window.CONFIG && window.CONFIG.CONSTS && Array.isArray(window.CONFIG.CONSTS.PAYMENT_METHODS))
+      ? window.CONFIG.CONSTS.PAYMENT_METHODS
+      : ['Dinheiro','Cartão','PIX'];
+    const current = paymentSelect.value;
+    paymentSelect.innerHTML = '<option value="">Selecione...</option>';
+    methods.forEach(m => {
+      const opt = document.createElement('option'); opt.value = m; opt.textContent = m; paymentSelect.appendChild(opt);
+    });
+    if (current) paymentSelect.value = current;
+  }
 
   const menuItemSelect = document.getElementById('delivery-menu-item-select');
   const qtyInput = document.getElementById('delivery-item-quantity');
@@ -142,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (o.status === 'Pendente') stats.Pendentes++;
       else if (o.status === 'Em Preparo') stats['Em Preparo']++;
       else if (o.status === 'Saiu para Entrega') stats.Saiu++;
-      else if (o.status === 'Entregue') stats.Entregues++;
+      else if (o.status === 'Entregue' || o.status === 'Pago') stats.Entregues++;
     });
     const el = id => document.getElementById(id);
     if (el('delivery-pendentes')) el('delivery-pendentes').textContent = String(stats.Pendentes);
@@ -200,6 +226,8 @@ document.addEventListener('DOMContentLoaded', function () {
   function openModal(order = null) {
     form.reset();
     populateMenu();
+    populateStatusSelect();
+    populatePaymentSelect();
     currentItems = [];
 
     if (order) {

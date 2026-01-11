@@ -27,6 +27,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const orderDiscountInput = document.getElementById('order-discount');
     const orderPaymentSelect = document.getElementById('order-payment');
     const orderCloseBtn = document.getElementById('order-close-btn');
+    function populateStatusSelect() {
+        const sel = document.getElementById('order-status');
+        if (!sel) return;
+        const statuses = (window.CONFIG && window.CONFIG.CONSTS && Array.isArray(window.CONFIG.CONSTS.ORDER_STATUS_MESA))
+            ? window.CONFIG.CONSTS.ORDER_STATUS_MESA
+            : ['Pendente','Em Preparo','Entregue','Pago','Cancelado'];
+        const current = sel.value;
+        sel.innerHTML = '';
+        statuses.forEach(s => {
+            const opt = document.createElement('option');
+            opt.value = s; opt.textContent = s; sel.appendChild(opt);
+        });
+        if (current) sel.value = current;
+    }
+
+    function populatePaymentSelect() {
+        if (!orderPaymentSelect) return;
+        const methods = (window.CONFIG && window.CONFIG.CONSTS && Array.isArray(window.CONFIG.CONSTS.PAYMENT_METHODS))
+            ? window.CONFIG.CONSTS.PAYMENT_METHODS
+            : ['Dinheiro','Cartão','PIX'];
+        const current = orderPaymentSelect.value;
+        orderPaymentSelect.innerHTML = '<option value="">Selecione...</option>';
+        methods.forEach(m => {
+            const opt = document.createElement('option');
+            opt.value = m; opt.textContent = m; orderPaymentSelect.appendChild(opt);
+        });
+        if (current) orderPaymentSelect.value = current;
+    }
 
     let currentOrderItems = [];
 
@@ -203,6 +231,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function openModal(order = null) {
         orderForm.reset();
         populateTableSelect();
+        populateStatusSelect();
+        populatePaymentSelect();
         if (order) {
             modalTitle.textContent = 'Editar Pedido';
             orderIdInput.value = order.id;

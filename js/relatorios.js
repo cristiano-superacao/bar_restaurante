@@ -42,8 +42,8 @@ document.addEventListener('DOMContentLoaded', function () {
     function isPaidOrder(order) {
         const st = order && order.status ? String(order.status) : '';
         if (st === 'Pago') return true;
-        // Legado: alguns fluxos antigos marcavam como Entregue sem pagamento
-        if (st === 'Entregue' && !order.paidAt && !order.paid_at) return true;
+        // Entregue conta como pago somente se houver registro de pagamento
+        if (st === 'Entregue' && (order.paidAt || order.paid_at)) return true;
         return false;
     }
 

@@ -30,6 +30,10 @@ class AuthSystemNeon {
     // Fazer login - Sistema estático com credenciais fixas
     async login(username, senha) {
         try {
+            // Quando a API estiver habilitada, evitar login estático aqui
+            if (typeof CONFIG !== 'undefined' && CONFIG.API && CONFIG.API.enabled) {
+                return { success: false, message: 'Login via API habilitado (use a tela de login)' };
+            }
             console.log('🔄 Tentando login:', username);
 
             // Usar credenciais do arquivo de configuração
@@ -109,14 +113,23 @@ class AuthSystemNeon {
         console.log('✅ Logout realizado');
 
         // Redirecionar para login se não estiver na página de login
-        if (!window.location.pathname.includes('index.html') &&
-            window.location.pathname !== '/') {
-            window.location.href = '/index.html';
+        if (!window.location.pathname.includes('index.html')) {
+            window.location.href = 'index.html';
         }
     }
 
     // Verificar se está logado
     isAuthenticated() {
+        // Com API habilitada, considerar sessão válida com token da API
+        if (typeof CONFIG !== 'undefined' && CONFIG.API && CONFIG.API.enabled) {
+            try {
+                if (window.API && window.API.auth && typeof window.API.auth.isTokenValid === 'function') {
+                    return window.API.auth.isTokenValid();
+                }
+            } catch {}
+            return !!localStorage.getItem('authToken');
+        }
+        // Modo estático
         return this.token !== null && this.currentUser !== null;
     }
 
@@ -174,7 +187,7 @@ const auth = new AuthSystemNeon();
 function requireAuth() {
     if (!auth.isAuthenticated()) {
         console.warn('⚠️ Acesso negado - usuário não autenticado');
-        window.location.href = '/index.html';
+        window.location.href = 'index.html';
         return false;
     }
     return true;
