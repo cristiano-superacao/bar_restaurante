@@ -357,6 +357,22 @@ app.use('/api/customers', requireAuth, customerRoutes);
 app.use('/api/reservations', requireAuth, reservationRoutes);
 app.use('/api/database', requireAuth, databaseRoutes);
 
+// 404 amigável e padronizado
+app.use((req, res) => {
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Recurso não encontrado' });
+  }
+  return res.status(404).type('text/plain').send('Not Found');
+});
+
+// Middleware global de erro para capturar exceções não tratadas
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  if (res.headersSent) return;
+  res.status(500).json({ error: 'Erro interno do servidor' });
+});
+
 // Função para executar migrações automaticamente
 async function runMigrations() {
   try {
