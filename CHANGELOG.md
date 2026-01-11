@@ -7,31 +7,43 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ## [2.2.0] - 2026-01-11
 
+### � Adicionado
+
+- **Dockerfile**: Build otimizado com Node 18 Alpine + healthcheck automático
+- **Rota `/api/health`**: Endpoint para verificação de saúde (status + database connection)
+- **Script `check-env.js`**: Validação de variáveis de ambiente antes do start
+- **Railway configs**: `railway.json`, `railway.toml` para deploy determinístico
+- **Documentação completa**:
+  - README.md reformulado com badges, diagramas Mermaid e exemplos
+  - INSTALL.md com guia passo-a-passo detalhado
+  - RAILWAY_SETUP.md com checklist completo de configuração
+  - CORRIGIR_ERRO_RAILWAY.md com troubleshooting específico
+  - CONTRIBUTING.md com guia de contribuição
+- **Migrações resilientes**: Normalização de dados legados antes de aplicar constraints
+- **.dockerignore**: Otimização de contexto de build
+- **Engines em package.json**: Requer Node ≥18.0.0 e npm ≥9.0.0
+
 ### 🔒 Segurança
 
 - **Backend**: Validação de entrada com `express-validator` em todas as rotas
   - Validação em `menuItems`, `tables`, `stock`, `reservations`, `transactions`, `orders`
   - Proteção contra SQL injection e dados malformados
   - Mensagens de erro estruturadas com detalhes de validação
-- **Headers HTTP**: Helmet configurado para headers seguros
+- **Headers HTTP**: Helmet configurado para headers seguros (CSP, XSS, HSTS)
 - **Rate Limiting**: 
-  - Global: 100 req/15min
+  - Global: 100 req/15min (reduzido de 1000 para produção)
   - Login: 5 tentativas/15min (anti-brute-force)
 - **CORS**: Configurável via variável `CORS_ORIGIN`
 - **JWT**: Tokens com expiração automática
+- **Prepared Statements**: Todas as queries usam parametrização
 
-### ✨ Funcionalidades
+### 🐛 Corrigido
 
-- **Documentação Completa**:
-  - README.md reformulado com badges, índice e exemplos
-  - INSTALL.md criado com guia passo-a-passo detalhado
-  - Troubleshooting e diagnóstico de problemas
-  - Documentação de API com exemplos curl
-- **Validações robustas**:
-  - Campos obrigatórios em todas as entidades
-  - Validação de tipos (números, datas ISO, strings)
-  - Validação de ranges (preços ≥0, capacidade ≥1)
-  - Validação de enums (status de pedidos, tipos de transação)
+- **Erro de migração**: `orders_status_chk` violada por dados legados
+  - Normalização de status antigos (Aberto → Pendente, Fechado → Pago)
+  - Constraints adicionadas como `NOT VALID` com validação tolerante
+- **Erro de build Railway**: Root directory incorreto ("servidor" → "server")
+- **Falha ao aplicar constraints**: Migrações agora são idempotentes e resilientes
 
 ### 🎨 Refatoração
 
@@ -47,6 +59,13 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
   - Formatadores unificados (moeda, data, texto)
 
 ### 🔧 Melhorias
+
+- **Docker**: Build em duas etapas com alpine para imagem menor
+- **Healthcheck**: Container só fica "healthy" quando API responde
+- **Validação pré-start**: `prestart` script valida env antes de iniciar
+- **Error handling**: Mensagens de erro mais descritivas
+- **Logs estruturados**: Emojis e formatação consistente
+- **Deploy**: Suporte a múltiplos providers (Railway, Vercel, Netlify, Heroku)
 
 - **API**: Respostas padronizadas e consistentes
 - **Validação**: Scripts de validação UI e CSS (`scripts/`)
