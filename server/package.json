@@ -12,7 +12,9 @@
     "dev": "node --watch src/index.js",
     "start": "node src/index.js",
     "migrate": "node src/migrate.js",
-    "rebuild": "node src/rebuild.js"
+    "rebuild": "node src/rebuild.js",
+    "check-env": "node src/check-env.js",
+    "prestart": "npm run check-env || true"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
