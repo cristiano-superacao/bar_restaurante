@@ -13,6 +13,12 @@ function normalizeOrderType(v) {
   return null;
 }
 
+function allowedStatusesForType(type) {
+  return (type === 'Delivery')
+    ? ['Pendente', 'Em Preparo', 'Saiu para Entrega', 'Entregue', 'Pago', 'Cancelado']
+    : ['Pendente', 'Em Preparo', 'Entregue', 'Pago', 'Cancelado'];
+}
+
 function calcTotals({ items = [], discount = 0, deliveryFee = 0 }) {
   const subtotal = (items || []).reduce((acc, it) => acc + (Number(it.price) * Number(it.quantity)), 0);
   const d = Number(discount) || 0;
@@ -96,6 +102,10 @@ router.post('/', async (req, res) => {
     } = req.body;
 
     const normalizedType = normalizeOrderType(orderType) || 'Mesa';
+    const allowedStatuses = allowedStatusesForType(normalizedType);
+    if (status && !allowedStatuses.includes(String(status))) {
+      return res.status(400).json({ error: 'Status inválido para o tipo de pedido' });
+    }
     await client.query('BEGIN');
 
     // Valida mesa pertence à empresa
@@ -202,12 +212,18 @@ router.put('/:id', async (req, res) => {
     } = req.body || {};
 
     const current = await query(
-      'SELECT id, subtotal, discount, delivery_fee FROM orders WHERE company_id=$1 AND id=$2',
+      'SELECT id, subtotal, discount, delivery_fee, order_type FROM orders WHERE company_id=$1 AND id=$2',
       [req.companyId, id]
     );
     if (current.rowCount === 0) return res.status(404).json({ error: 'Pedido não encontrado' });
 
     const base = current.rows[0];
+    if (status) {
+      const allowedStatuses = allowedStatusesForType(base.order_type);
+      if (!allowedStatuses.includes(String(status))) {
+        return res.status(400).json({ error: 'Status inválido para o tipo de pedido' });
+      }
+    }
     const d = (discount === undefined) ? Number(base.discount) : (Number(discount) || 0);
     const f = (deliveryFee === undefined) ? Number(base.delivery_fee) : (Number(deliveryFee) || 0);
     const subtotal = Number(base.subtotal) || 0;

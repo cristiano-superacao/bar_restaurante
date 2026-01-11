@@ -21,7 +21,11 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, email, phone, address, birthdate, notes } = req.body;
-    if (!name) return res.status(400).json({ error: 'Nome é obrigatório' });
+    if (!String(name || '').trim()) return res.status(400).json({ error: 'Nome é obrigatório' });
+    if (email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(String(email))) return res.status(400).json({ error: 'E-mail inválido' });
+    }
     const { rows } = await query(
       'INSERT INTO customers(company_id, name, email, phone, address, birthdate, notes) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id, name, email, phone, address, birthdate, notes, created_at',
       [req.companyId, name, email || null, phone || null, address || null, birthdate || null, notes || null]
@@ -35,6 +39,10 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { name, email, phone, address, birthdate, notes } = req.body;
+    if (email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!re.test(String(email))) return res.status(400).json({ error: 'E-mail inválido' });
+    }
     const { rows } = await query(
       'UPDATE customers SET name=$1, email=$2, phone=$3, address=$4, birthdate=$5, notes=$6 WHERE company_id=$7 AND id=$8 RETURNING id, name, email, phone, address, birthdate, notes, created_at',
       [name, email || null, phone || null, address || null, birthdate || null, notes || null, req.companyId, id]

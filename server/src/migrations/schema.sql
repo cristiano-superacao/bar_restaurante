@@ -88,6 +88,25 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_fee NUMERIC(12,2) NOT NULL 
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS subtotal NUMERIC(12,2) NOT NULL DEFAULT 0;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS paid_at TIMESTAMP WITHOUT TIME ZONE;
 
+-- Restrições idempotentes de domínio para padronizar valores
+DO $$
+BEGIN
+  -- status permitido: inclui estados de Mesa/Delivery
+  ALTER TABLE orders
+    ADD CONSTRAINT orders_status_chk
+    CHECK (status IN (
+      'Pendente', 'Em Preparo', 'Entregue', 'Saiu para Entrega', 'Pago', 'Cancelado'
+    ));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+DO $$
+BEGIN
+  -- tipos de pedido permitidos
+  ALTER TABLE orders
+    ADD CONSTRAINT orders_type_chk
+    CHECK (order_type IN ('Mesa','Delivery'));
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
 CREATE TABLE IF NOT EXISTS order_items (
   id SERIAL PRIMARY KEY,
   order_id INT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -432,7 +451,7 @@ WHERE EXISTS (SELECT 1 FROM c) AND NOT EXISTS (
 WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste A' LIMIT 1),
      t AS (SELECT id FROM tables WHERE company_id=(SELECT id FROM c) AND name='Mesa 01' LIMIT 1)
 INSERT INTO orders (company_id, table_id, status, order_type, customer_name, payment_method, discount, delivery_fee, subtotal, total, paid_at)
-SELECT (SELECT id FROM c), (SELECT id FROM t), 'Concluído', 'Mesa', 'Pedido Demo A', 'Dinheiro', 0, 0, 28.90, 28.90, NOW()
+SELECT (SELECT id FROM c), (SELECT id FROM t), 'Pago', 'Mesa', 'Pedido Demo A', 'Dinheiro', 0, 0, 28.90, 28.90, NOW()
 WHERE EXISTS (SELECT 1 FROM c) AND EXISTS (SELECT 1 FROM t)
 AND NOT EXISTS (SELECT 1 FROM orders WHERE company_id=(SELECT id FROM c) AND customer_name='Pedido Demo A');
 
@@ -460,7 +479,7 @@ AND NOT EXISTS (
 WITH c AS (SELECT id FROM companies WHERE name='Empresa Teste B' LIMIT 1),
      t AS (SELECT id FROM tables WHERE company_id=(SELECT id FROM c) AND name='Mesa 01' LIMIT 1)
 INSERT INTO orders (company_id, table_id, status, order_type, customer_name, payment_method, discount, delivery_fee, subtotal, total, paid_at)
-SELECT (SELECT id FROM c), (SELECT id FROM t), 'Concluído', 'Mesa', 'Pedido Demo B', 'Cartão', 0, 0, 28.90, 28.90, NOW()
+SELECT (SELECT id FROM c), (SELECT id FROM t), 'Pago', 'Mesa', 'Pedido Demo B', 'Cartão', 0, 0, 28.90, 28.90, NOW()
 WHERE EXISTS (SELECT 1 FROM c) AND EXISTS (SELECT 1 FROM t)
 AND NOT EXISTS (SELECT 1 FROM orders WHERE company_id=(SELECT id FROM c) AND customer_name='Pedido Demo B');
 

@@ -6,6 +6,8 @@ const router = express.Router();
 
 router.use(requireCompanyContext);
 
+const ALLOWED_TABLE_STATUS = ['Livre', 'Ocupada'];
+
 router.get('/', async (req, res) => {
   try {
     const { rows } = await query(
@@ -19,6 +21,9 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, capacity, status } = req.body;
+    if (status && !ALLOWED_TABLE_STATUS.includes(String(status))) {
+      return res.status(400).json({ error: 'Status de mesa inválido' });
+    }
     const { rows } = await query(
       'INSERT INTO tables(company_id, name, capacity, status) VALUES ($1,$2,$3,$4) RETURNING *',
       [req.companyId, name, capacity, status]
@@ -31,6 +36,9 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { name, capacity, status } = req.body;
+    if (status && !ALLOWED_TABLE_STATUS.includes(String(status))) {
+      return res.status(400).json({ error: 'Status de mesa inválido' });
+    }
     const { rows } = await query(
       'UPDATE tables SET name=$1, capacity=$2, status=$3 WHERE company_id=$4 AND id=$5 RETURNING *',
       [name, capacity, status, req.companyId, id]

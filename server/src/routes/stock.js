@@ -19,9 +19,16 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { name, category, quantity, unit, minQuantity } = req.body;
+    if (!String(name || '').trim()) return res.status(400).json({ error: 'Nome é obrigatório' });
+    if (!String(category || '').trim()) return res.status(400).json({ error: 'Categoria é obrigatória' });
+    const q = Number.isFinite(Number(quantity)) ? Number(quantity) : NaN;
+    const minQ = Number.isFinite(Number(minQuantity)) ? Number(minQuantity) : NaN;
+    if (!Number.isFinite(q) || q < 0) return res.status(400).json({ error: 'Quantidade deve ser um número >= 0' });
+    if (!Number.isFinite(minQ) || minQ < 0) return res.status(400).json({ error: 'Estoque mínimo deve ser um número >= 0' });
+    const u = String(unit || 'un');
     const { rows } = await query(
       'INSERT INTO stock(company_id, name, category, quantity, unit, min_quantity) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *',
-      [req.companyId, name, category, quantity, unit, minQuantity]
+      [req.companyId, name, category, q, u, minQ]
     );
     res.status(201).json(rows[0]);
   } catch (e) { res.status(500).json({ error: 'Erro ao criar' }); }
@@ -31,9 +38,16 @@ router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { name, category, quantity, unit, minQuantity } = req.body;
+    if (name !== undefined && !String(name || '').trim()) return res.status(400).json({ error: 'Nome inválido' });
+    if (category !== undefined && !String(category || '').trim()) return res.status(400).json({ error: 'Categoria inválida' });
+    const q = (quantity === undefined) ? undefined : Number(quantity);
+    const minQ = (minQuantity === undefined) ? undefined : Number(minQuantity);
+    if (q !== undefined && (!Number.isFinite(q) || q < 0)) return res.status(400).json({ error: 'Quantidade deve ser um número >= 0' });
+    if (minQ !== undefined && (!Number.isFinite(minQ) || minQ < 0)) return res.status(400).json({ error: 'Estoque mínimo deve ser um número >= 0' });
+    const u = (unit === undefined) ? undefined : String(unit || 'un');
     const { rows } = await query(
       'UPDATE stock SET name=$1, category=$2, quantity=$3, unit=$4, min_quantity=$5 WHERE company_id=$6 AND id=$7 RETURNING *',
-      [name, category, quantity, unit, minQuantity, req.companyId, id]
+      [name, category, q, u, minQ, req.companyId, id]
     );
     res.json(rows[0] || null);
   } catch (e) { res.status(500).json({ error: 'Erro ao atualizar' }); }
