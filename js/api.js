@@ -40,16 +40,27 @@
         throw err;
       }
 
-      const res = await fetch(baseUrl + url, {
-        ...options,
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-          ...companyHeader,
-          ...(options.headers || {})
+      let res;
+      try {
+        res = await fetch(baseUrl + url, {
+          ...options,
+          signal: controller.signal,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            ...companyHeader,
+            ...(options.headers || {})
+          }
+        });
+      } catch (err) {
+        // Tratamento amigável de timeout/abort
+        if (controller.signal.aborted || (err && (err.name === 'AbortError' || String(err.message).toLowerCase().includes('aborted')))) {
+          const e = new Error('TIMEOUT');
+          e.code = 'TIMEOUT';
+          throw e;
         }
-      });
+        throw err;
+      }
       if (!res.ok) {
         if (res.status === 401) {
           try {

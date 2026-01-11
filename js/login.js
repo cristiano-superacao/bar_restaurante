@@ -39,6 +39,14 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signupClose) signupClose.addEventListener('click', closeSignup);
     window.addEventListener('click', (e) => { if (e.target === signupModal) closeSignup(); });
 
+    // Ajusta rótulo da empresa conforme modo API
+    try {
+        const companyLabel = document.querySelector('label[for="su-company"]');
+        if (companyLabel && cfg.API && cfg.API.enabled) {
+            companyLabel.textContent = 'Empresa (obrigatória)';
+        }
+    } catch {}
+
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -115,6 +123,8 @@ document.addEventListener('DOMContentLoaded', () => {
             const pass2 = (document.getElementById('su-password2')?.value || '');
 
             if (!cfg.UTILS.validateEmail(email)) { if (signupError) signupError.textContent = 'E-mail inválido.'; return; }
+            // Em modo API, empresa é obrigatória para criar o tenant
+            if (cfg.API && cfg.API.enabled && !companyName) { if (signupError) signupError.textContent = 'Informe o nome da empresa.'; return; }
             if (pass1.length < 6) { if (signupError) signupError.textContent = 'Use ao menos 6 caracteres na senha.'; return; }
             if (pass1 !== pass2) { if (signupError) signupError.textContent = 'As senhas não conferem.'; return; }
 
@@ -136,7 +146,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (userInput) userInput.value = username;
                 alert('Conta criada com sucesso! Faça login para continuar.');
             } catch (err) {
-                if (signupError) signupError.textContent = (err && err.message) ? err.message : 'Falha ao criar conta.';
+                if (signupError) {
+                    const msg = String(err && (err.code || err.message) || '').toUpperCase();
+                    if (msg.includes('TIMEOUT') || msg.includes('ABORT')) {
+                        signupError.textContent = 'Conexão com o servidor expirou. Tente novamente.';
+                    } else if (msg.includes('HTTP 409') || msg.includes('USUÁRIO JÁ EXISTE') || msg.includes('UNIQUE')) {
+                        signupError.textContent = 'Usuário/email/empresa já existe.';
+                    } else if (msg.includes('HTTP 400')) {
+                        signupError.textContent = 'Dados inválidos. Verifique os campos informados.';
+                    } else {
+                        signupError.textContent = (err && err.message) ? err.message : 'Falha ao criar conta.';
+                    }
+                }
             }
         });
     }
