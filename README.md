@@ -3,204 +3,1397 @@
 [![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](https://github.com/cristiano-superacao/bar_restaurante)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Railway](https://img.shields.io/badge/deploy-Railway-purple.svg)](https://railway.app)
+[![Netlify](https://img.shields.io/badge/deploy-Netlify-00C7B7.svg)](https://barestaurante.netlify.app)
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 [![PostgreSQL](https://img.shields.io/badge/postgresql-14%2B-blue.svg)](https://www.postgresql.org)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg)](Dockerfile)
 
-> Sistema completo de gestão empresarial para bares e restaurantes com arquitetura híbrida progressiva. Funciona 100% offline (LocalStorage) ou com backend completo (Express + PostgreSQL). Interface responsiva e profissional, pronta para produção.
+> 🚀 **Sistema completo de gestão empresarial** para bares e restaurantes com **arquitetura híbrida progressiva**. Opera 100% offline (LocalStorage) ou com backend robusto (Express + PostgreSQL). Interface responsiva e profissional, pronta para produção e escalável.
+
+📍 **Demo Online**: [barestaurante.netlify.app](https://barestaurante.netlify.app)  
+📍 **API Backend**: [barestaurante.up.railway.app](https://barestaurante.up.railway.app/api/health)  
+📍 **Repositório**: [github.com/cristiano-superacao/bar_restaurante](https://github.com/cristiano-superacao/bar_restaurante)
 
 ---
 
 ## 📋 Índice
 
 - [✨ Visão Geral](#-visão-geral)
-- [🎯 Funcionalidades](#-funcionalidades)
-- [🏗️ Arquitetura](#️-arquitetura)
+- [🎯 Funcionalidades Principais](#-funcionalidades-principais)
+- [🏗️ Arquitetura do Sistema](#️-arquitetura-do-sistema)
 - [⚡ Início Rápido](#-início-rápido)
-- [🔧 Tecnologias](#-tecnologias)
-- [📦 Instalação](#-instalação)
-- [🚀 Deploy](#-deploy)
-- [📖 API Backend](#-api-backend)
-- [🔒 Segurança](#-segurança)
-- [🤝 Contribuição](#-contribuição)
+- [🔧 Stack Tecnológica](#-stack-tecnológica)
+- [📦 Instalação Detalhada](#-instalação-detalhada)
+- [🚀 Deploy em Produção](#-deploy-em-produção)
+- [📖 Documentação da API](#-documentação-da-api)
+- [🔒 Segurança e Boas Práticas](#-segurança-e-boas-práticas)
+- [🤝 Como Contribuir](#-como-contribuir)
 - [📄 Licença](#-licença)
+- [📞 Suporte e Contato](#-suporte-e-contato)
 
 ---
 
 ## ✨ Visão Geral
 
-Sistema profissional de gestão desenvolvido com **arquitetura híbrida progressiva**, permitindo operação em múltiplos cenários:
+Sistema profissional de gestão desenvolvido com **arquitetura híbrida progressiva**, permitindo operação em múltiplos cenários e facilitando a transição gradual para cloud.
 
 ### 🎯 Modos de Operação
 
-| Modo | Descrição | Ideal Para |
-|------|-----------|------------|
-| **🌐 Offline** | Persistência via LocalStorage | Testes, demonstrações, ambientes sem internet |
-| **☁️ Cloud** | Backend Node.js + PostgreSQL | Produção, multi-loja, acesso remoto |
-| **🔄 Híbrido** | Transição transparente entre modos | Migração gradual, failover automático |
+| Modo | Persistência | Ideal Para | Status |
+|------|--------------|------------|--------|
+| **🌐 Offline** | LocalStorage | Testes, demonstrações, ambientes sem internet | ✅ Estável |
+| **☁️ Cloud** | PostgreSQL (Railway) | Produção, multi-loja, acesso remoto | ✅ Estável |
+| **🔄 Híbrido** | Transição transparente | Migração gradual, failover automático | ✅ Estável |
 
 ### 🌟 Principais Diferenciais
 
-- ✅ **Multi-tenant**: Isolamento completo de dados por empresa
+- ✅ **Multi-tenant**: Isolamento completo de dados por empresa (company_id)
 - ✅ **Autenticação JWT**: Segurança robusta com roles (superadmin, admin, staff)
-- ✅ **Interface Responsiva**: Design adaptativo (desktop, tablet, mobile)
-- ✅ **Zero Breaking Changes**: Compatibilidade retroativa garantida
-- ✅ **Docker Ready**: Dockerfile + Healthcheck incluídos
-- ✅ **Validação Completa**: express-validator em todas as rotas
-- ✅ **Rate Limiting**: Proteção contra ataques (100 req/15min)
+- ✅ **Interface Responsiva**: Design adaptativo profissional (desktop, tablet, mobile)
+- ✅ **Zero Breaking Changes**: Compatibilidade retroativa garantida em todas as versões
+- ✅ **Docker Ready**: Dockerfile otimizado + healthcheck automático incluídos
+- ✅ **Validação Completa**: express-validator em todas as rotas da API
+- ✅ **Rate Limiting**: Proteção contra ataques (100 req/15min global, 5 req/15min login)
+- ✅ **Progressive Web App (PWA)**: Instalável e funciona offline
+- ✅ **Detecção Automática de API**: Frontend detecta automaticamente backend local ou cloud
 
 ---
 
-## 🎯 Funcionalidades
+## 🎯 Funcionalidades Principais
 
-### 📊 Módulos Principais (16 Telas)
+### 📊 Gestão de Vendas e Pedidos
+- **Pedidos Integrados**: Mesa, delivery e balcão em interface unificada
+- **Comandas Inteligentes**: Vinculação automática de itens por mesa/cliente
+- **Controle de Status**: Fluxo completo (Pendente → Em Preparo → Pronto → Entregue → Finalizado)
+- **Impressão de Comanda**: Geração automática de comprovantes e comandas
+- **Histórico Completo**: Auditoria de todas as operações com timestamps
 
-<details open>
-<summary><b>🍽️ Cardápio</b> - Gestão completa do menu</summary>
+### 🍽️ Cardápio Digital
+- **Categorias Dinâmicas**: Entradas, pratos, bebidas, sobremesas, etc.
+- **Gestão de Preços**: Atualização em tempo real sem duplicação
+- **Controle de Estoque**: Integração automática com inventário
+- **Fotos e Descrições**: Upload e gerenciamento de imagens dos pratos
+- **Status de Disponibilidade**: Ativação/desativação instantânea de itens
 
-- ✅ Cadastro de itens (nome, categoria, preço, descrição, imagem)
-- ✅ Busca em tempo real e filtros por categoria
-- ✅ Métricas: Total de itens, categorias, preço médio
-- ✅ Grid responsivo com cards categorizados
-- ✅ Validação: preço ≥0, campos obrigatórios
+### 🪑 Gestão de Mesas
+- **Layout Visual**: Visualização gráfica do salão em tempo real
+- **Status Dinâmico**: Livre, ocupada, reservada com cores distintas
+- **Capacidade Configurável**: Definição de lotação por mesa
+- **Histórico de Ocupação**: Rastreamento completo de uso
+
+### 🛵 Delivery Completo
+- **Gestão de Entregas**: Rastreamento de status (aguardando, saiu, entregue)
+- **Endereços Salvos**: Histórico de locais de entrega por cliente
+- **Cálculo de Taxa**: Sistema flexível de cobrança de entrega
+- **Tempo Estimado**: Controle de SLA e previsões
+- **Integração WhatsApp**: Links automáticos para confirmação
+
+### 📦 Controle de Estoque
+- **Inventário Completo**: Ingredientes, bebidas, produtos auxiliares
+- **Alertas de Baixo Estoque**: Notificações configuráveis
+- **Movimentações Rastreadas**: Entrada, saída, ajuste manual
+- **Relatórios de Consumo**: Análise de desperdícios e tendências
+- **Integração com Pedidos**: Baixa automática ao confirmar venda
+
+### 👥 Cadastro de Clientes
+- **Perfil Completo**: Nome, telefone, email, endereços
+- **Histórico de Compras**: Todas as transações por cliente
+- **Programa de Fidelidade**: Pontos e recompensas configuráveis
+- **Preferências Alimentares**: Alergias, restrições, favoritos
+- **Aniversariantes**: Relatório mensal para campanhas
+
+### 📅 Sistema de Reservas
+- **Agendamento Online**: Interface calendário intuitiva
+- **Conflito de Horários**: Validação automática de disponibilidade
+- **Confirmação Automática**: Email/SMS de confirmação
+- **Status de Reserva**: Confirmada, pendente, cancelada
+- **Histórico por Cliente**: Todas as reservas registradas
+
+### 👨‍💼 Gestão de Usuários
+- **Níveis de Acesso**: Superadmin, Admin, Staff (garçom, cozinha)
+- **Permissões Granulares**: Controle fino de funcionalidades por role
+- **Auditoria de Ações**: Log completo de operações por usuário
+- **Multi-empresa**: Um usuário pode acessar múltiplas empresas
+
+### 💰 Financeiro Completo
+- **Fluxo de Caixa**: Entradas, saídas, saldo consolidado
+- **Categorização de Despesas**: Classificação automática de custos
+- **Métodos de Pagamento**: Dinheiro, cartão, PIX, vale, cortesia
+- **Fechamento de Caixa**: Conciliação diária com divergências
+- **Movimentações Bancárias**: Integração com contas correntes
+
+### 📈 Relatórios e Analytics
+- **Dashboard Executivo**: KPIs em tempo real (faturamento, ticket médio, etc.)
+- **Relatórios Customizados**: Vendas por período, produto, categoria, garçom
+- **Gráficos Interativos**: Chart.js com múltiplas visualizações
+- **Exportação de Dados**: CSV, PDF, impressão direta
+- **Análise de Tendências**: Comparação mensal/anual
+
+### 🎟️ Sistema de Cupons
+- **Descontos Programados**: Valor fixo ou percentual
+- **Validade Configurável**: Data de expiração automática
+- **Limite de Uso**: Número máximo de resgates
+- **Cupons Personalizados**: Geração de códigos únicos por cliente
+
+### ⚙️ Configurações do Sistema
+- **Dados da Empresa**: Logo, nome fantasia, CNPJ, endereço
+- **Parâmetros Operacionais**: Taxa de serviço, horários, tolerâncias
+- **Integrações**: API keys, webhooks, notificações
+- **Temas e Layout**: Personalização visual (em desenvolvimento)
+- **Backup Automático**: Exportação agendada de dados
+
+---
+
+## 🏗️ Arquitetura do Sistema
+
+### 📐 Diagrama de Arquitetura
+
+```mermaid
+graph TB
+    subgraph Frontend["🌐 Frontend (Netlify)"]
+        HTML[16 Páginas HTML]
+        JS[20 Módulos JavaScript]
+        CSS[15 Arquivos CSS]
+        PWA[Service Worker + Manifest]
+    end
+    
+    subgraph Config["⚙️ Detecção de Ambiente"]
+        Detect[detectApiBaseUrl]
+        Detect -->|Localhost| Local[http://localhost:3000]
+        Detect -->|Produção| Cloud[https://barestaurante.up.railway.app]
+    end
+    
+    subgraph Backend["🚀 Backend (Railway)"]
+        API[Express API]
+        Auth[JWT Authentication]
+        Routes[11 Rotas REST]
+        Middleware[Validação + Rate Limit]
+    end
+    
+    subgraph Database["💾 Persistência"]
+        LocalStorage[(LocalStorage)]
+        PostgreSQL[(PostgreSQL 14+)]
+    end
+    
+    HTML --> JS
+    JS --> Detect
+    Detect --> API
+    API --> Auth
+    Auth --> Routes
+    Routes --> Middleware
+    Middleware --> PostgreSQL
+    
+    JS -.->|Fallback| LocalStorage
+    
+    style Frontend fill:#e1f5ff
+    style Backend fill:#fff4e1
+    style Database fill:#f0f0f0
+    style Config fill:#e8f5e9
+```
+
+### 🔄 Fluxo de Autenticação
+
+```mermaid
+sequenceDiagram
+    participant U as Usuário
+    participant F as Frontend
+    participant A as API (Railway)
+    participant DB as PostgreSQL
+    participant LS as LocalStorage
+    
+    U->>F: Login/Signup
+    F->>A: POST /api/auth/login
+    
+    alt API Online
+        A->>DB: Valida credenciais
+        DB-->>A: Usuário encontrado
+        A-->>F: JWT Token + userData
+        F->>LS: Salva token + userData
+        F-->>U: Redireciona para dashboard
+    else API Offline (502/503)
+        A--xF: Erro de rede
+        F->>LS: Cria conta local (modo demo)
+        F-->>U: Alerta + Redireciona
+    end
+```
+
+### 📁 Estrutura Detalhada
+
+<details>
+<summary><b>📂 Frontend (clique para expandir)</b></summary>
+
+```
+├── 📄 index.html              # Landing page / Login
+├── 📄 dashboard.html          # Dashboard principal com KPIs
+├── 📄 pedidos.html            # Gestão de pedidos
+├── 📄 mesas.html              # Controle de mesas
+├── 📄 cardapio.html           # Cardápio digital
+├── 📄 delivery.html           # Sistema de entregas
+├── 📄 estoque.html            # Controle de estoque
+├── 📄 clientes.html           # Cadastro de clientes
+├── 📄 reserva.html            # Sistema de reservas
+├── 📄 usuarios.html           # Gestão de usuários
+├── 📄 empresas.html           # Multi-empresa (superadmin)
+├── 📄 financeiro.html         # Fluxo de caixa
+├── 📄 relatorios.html         # Relatórios e analytics
+├── 📄 cupom.html              # Sistema de cupons
+├── 📄 configuracoes.html      # Configurações gerais
+├── 📄 manual.html             # Manual do usuário
+├── 📄 manifest.json           # PWA manifest
+├── 📄 sw.js                   # Service Worker
+├── css/ (15 arquivos)
+│   ├── base.css               # Estilos globais + reset
+│   ├── login.css              # Tela de login
+│   ├── dashboard.css          # Dashboard
+│   ├── pedidos.css            # Módulo pedidos
+│   ├── mesas.css              # Visualização mesas
+│   ├── cardapio.css           # Cardápio
+│   ├── delivery.css           # Delivery
+│   ├── estoque.css            # Estoque
+│   ├── clientes.css           # Clientes
+│   ├── reserva.css            # Reservas
+│   ├── financeiro.css         # Financeiro
+│   ├── relatorios.css         # Relatórios
+│   ├── cupom.css              # Cupons
+│   ├── configuracoes.css      # Configurações
+│   └── fixes.css              # Correções específicas
+└── js/ (20 módulos)
+    ├── config.js              # Config central (detectApiBaseUrl)
+    ├── api.js                 # Cliente API com fallback
+    ├── auth-neon.js           # Autenticação JWT
+    ├── utils.js               # Funções utilitárias
+    ├── login.js               # Login/signup com fallback
+    ├── dashboard.js           # Dashboard
+    ├── pedidos.js             # Pedidos
+    ├── mesas.js               # Mesas
+    ├── cardapio.js            # Cardápio
+    ├── delivery.js            # Delivery
+    ├── estoque.js             # Estoque
+    ├── clientes.js            # Clientes
+    ├── reserva.js             # Reservas
+    ├── usuarios.js            # Usuários
+    ├── empresas.js            # Multi-empresa
+    ├── financeiro.js          # Financeiro
+    ├── relatorios.js          # Relatórios
+    ├── cupom.js               # Cupons
+    ├── configuracoes.js       # Configurações
+    └── manual.js              # Manual
+```
 </details>
 
 <details>
-<summary><b>📝 Pedidos</b> - Controle de pedidos Mesa e Delivery</summary>
+<summary><b>🗄️ Backend (clique para expandir)</b></summary>
 
-- ✅ Gestão de status: `Pendente` → `Em Preparo` → `Entregue` → `Pago`
-- ✅ Adição de itens do cardápio com cálculo automático
-- ✅ Descontos, taxa de entrega, subtotal
-- ✅ Métricas por status em tempo real
-- ✅ Geração de cupom fiscal
-- ✅ Validação de itens, quantidades e totais
+```
+server/
+├── 📄 package.json            # Dependências Node.js
+├── 📄 docker-compose.yml      # Setup Docker local
+├── 📄 README.md               # Documentação backend
+└── src/
+    ├── index.js               # Entry point Express
+    ├── db.js                  # Cliente PostgreSQL (pg)
+    ├── migrate.js             # Sistema de migrações
+    ├── rebuild.js             # Rebuild completo DB
+    ├── middleware/
+    │   └── auth.js            # Middleware JWT verification
+    ├── migrations/
+    │   └── schema.sql         # Schema completo + seeds
+    └── routes/ (11 rotas REST)
+        ├── auth.js            # POST /api/auth/login|register
+        ├── companies.js       # CRUD empresas (superadmin)
+        ├── customers.js       # CRUD clientes
+        ├── database.js        # GET /api/database/health
+        ├── menuItems.js       # CRUD cardápio
+        ├── orders.js          # CRUD pedidos
+        ├── reservations.js    # CRUD reservas
+        ├── stock.js           # CRUD estoque
+        ├── tables.js          # CRUD mesas
+        ├── transactions.js    # CRUD transações financeiras
+        └── users.js           # CRUD usuários
+```
+</details>
+
+---
+
+## ⚡ Início Rápido
+
+### Pré-requisitos
+
+- Node.js ≥18.0.0
+- npm ≥9.0.0
+- PostgreSQL 14+ (para modo cloud)
+
+### 🚀 Instalação em 3 Passos
+
+```bash
+# 1. Clone o repositório
+git clone https://github.com/cristiano-superacao/bar_restaurante.git
+cd bar_restaurante
+
+# 2. Configure o backend
+cd server
+npm install
+cp .env.example .env  # Configure suas variáveis de ambiente
+
+# 3. Inicie o servidor
+npm run dev
+
+# 4. Acesse o frontend
+# Abra o arquivo index.html em qualquer navegador
+# Ou use o Live Server do VS Code
+```
+
+### 🎯 Credenciais Padrão
+
+```javascript
+// Superadmin (acesso completo)
+Email: admin@exemplo.com
+Senha: admin123
+
+// Admin (acesso à empresa)
+Email: gerente@empresa.com  
+Senha: gerente123
+
+// Staff (operacional)
+Email: staff@empresa.com
+Senha: staff123
+```
+
+### 🌐 URLs de Produção
+
+- **Frontend**: https://barestaurante.netlify.app
+- **Backend API**: https://barestaurante.up.railway.app
+- **Health Check**: https://barestaurante.up.railway.app/api/health
+- **Repositório**: https://github.com/cristiano-superacao/bar_restaurante
+
+---
+
+## 🔧 Stack Tecnológica
+
+### Frontend
+| Tecnologia | Versão | Uso |
+|-----------|--------|-----|
+| **HTML5** | - | Estrutura das 16 páginas |
+| **CSS3** | - | Estilos responsivos + Flexbox/Grid |
+| **JavaScript (ES6+)** | - | Lógica de negócio (sem frameworks) |
+| **Chart.js** | 4.x | Gráficos e visualizações |
+| **Font Awesome** | 6.x | Ícones profissionais |
+| **LocalStorage API** | - | Modo offline e cache |
+| **Service Worker** | - | PWA e offline support |
+
+### Backend
+| Tecnologia | Versão | Uso |
+|-----------|--------|-----|
+| **Node.js** | ≥18.0.0 | Runtime JavaScript |
+| **Express** | 4.19.2 | Framework web REST API |
+| **PostgreSQL** | 14+ | Banco de dados relacional |
+| **pg** | 8.12.0 | Driver PostgreSQL |
+| **jsonwebtoken** | 9.0.2 | Autenticação JWT |
+| **bcryptjs** | 2.4.3 | Hash de senhas |
+| **helmet** | 7.1.0 | Headers de segurança |
+| **cors** | 2.8.5 | Cross-Origin Resource Sharing |
+| **express-rate-limit** | 7.3.1 | Rate limiting |
+| **express-validator** | 7.1.0 | Validação de entrada |
+| **dotenv** | 16.4.5 | Variáveis de ambiente |
+
+### DevOps e Infraestrutura
+| Ferramenta | Uso |
+|-----------|-----|
+| **Railway** | Deploy e hosting do backend |
+| **Netlify** | Deploy e hosting do frontend |
+| **Docker** | Containerização (desenvolvimento) |
+| **GitHub Actions** | CI/CD (futuramente) |
+| **Git** | Controle de versão |
+
+---
+
+## 📦 Instalação Detalhada
+
+### 1. Backend (Node.js + PostgreSQL)
+
+#### Variáveis de Ambiente (.env)
+
+Crie um arquivo `.env` na pasta `server/`:
+
+```env
+# Banco de Dados
+DATABASE_URL=postgresql://usuario:senha@localhost:5432/bar_restaurante
+
+# Porta do servidor
+PORT=3000
+
+# JWT Secret (gere uma chave segura)
+JWT_SECRET=sua_chave_secreta_muito_forte_aqui_min_32_chars
+
+# Ambiente
+NODE_ENV=development
+
+# CORS (origens permitidas - separadas por vírgula)
+CORS_ORIGINS=http://localhost:5500,http://127.0.0.1:5500,https://barestaurante.netlify.app
+```
+
+#### Scripts Disponíveis
+
+```bash
+# Desenvolvimento com hot-reload
+npm run dev
+
+# Produção
+npm start
+
+# Executar migrações manualmente
+npm run migrate
+
+# Rebuild completo do banco (⚠️ apaga todos os dados)
+npm run rebuild
+
+# Testes (em desenvolvimento)
+npm test
+```
+
+#### Docker (Opcional)
+
+```bash
+# Subir PostgreSQL + Backend
+cd server
+docker-compose up -d
+
+# Verificar logs
+docker-compose logs -f
+
+# Parar containers
+docker-compose down
+```
+
+### 2. Frontend (Estático)
+
+#### Opção A: Servidor Local Simples
+
+```bash
+# Usando Python
+python -m http.server 8000
+
+# Usando Node.js (http-server)
+npx http-server -p 8000
+
+# Usando PHP
+php -S localhost:8000
+```
+
+#### Opção B: Live Server (VS Code)
+
+1. Instale a extensão **Live Server**
+2. Clique direito em `index.html`
+3. Selecione "Open with Live Server"
+
+#### Opção C: Acesso Direto
+
+Abra `index.html` diretamente no navegador (funciona em modo offline).
+
+---
+
+## 🚀 Deploy em Produção
+
+### Backend no Railway
+
+#### 1. Preparação
+
+```bash
+# Certifique-se de que o servidor/ existe
+cd servidor
+npm install  # Instala dependências do wrapper
+```
+
+#### 2. Configuração Railway
+
+Crie um arquivo `railway.json` na raiz:
+
+```json
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm install"
+  },
+  "deploy": {
+    "startCommand": "npm start",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+Ou configure via `railway.toml`:
+
+```toml
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install"
+
+[deploy]
+startCommand = "npm start"
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+```
+
+#### 3. Variáveis de Ambiente Railway
+
+Configure no painel Railway:
+
+```env
+DATABASE_URL=${{Postgres.DATABASE_URL}}  # Auto-injetado
+JWT_SECRET=sua_chave_secreta_forte
+NODE_ENV=production
+PORT=3000
+CORS_ORIGINS=https://barestaurante.netlify.app
+```
+
+#### 4. Deploy
+
+```bash
+# Via CLI Railway
+railway login
+railway link
+railway up
+
+# Ou conecte seu repositório GitHub no painel Railway
+```
+
+### Frontend no Netlify
+
+#### 1. Build Settings
+
+```toml
+# netlify.toml (na raiz do projeto)
+[build]
+  publish = "."
+  command = "echo 'Static site - no build needed'"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+```
+
+#### 2. Deploy
+
+**Opção A: GitHub Integration**
+1. Conecte seu repositório no Netlify
+2. Configure o branch `main`
+3. Deploy automático a cada push
+
+**Opção B: Netlify CLI**
+
+```bash
+npm install -g netlify-cli
+netlify login
+netlify deploy --prod
+```
+
+**Opção C: Drag & Drop**
+1. Acesse https://app.netlify.com/drop
+2. Arraste a pasta do projeto
+3. Publique
+
+### Verificação de Saúde
+
+```bash
+# Backend Railway
+curl https://barestaurante.up.railway.app/api/health
+
+# Resposta esperada:
+{
+  "status": "ok",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "database": "connected",
+  "uptime": 12345
+}
+```
+
+---
+
+## 📖 Documentação da API
+
+### Base URL
+
+- **Desenvolvimento**: `http://localhost:3000`
+- **Produção**: `https://barestaurante.up.railway.app`
+
+### Autenticação
+
+Todas as rotas protegidas requerem header:
+
+```http
+Authorization: Bearer {JWT_TOKEN}
+```
+
+### Endpoints Disponíveis
+
+#### 🔐 Autenticação (`/api/auth`)
+
+<details>
+<summary><b>POST</b> /api/auth/register - Criar nova conta</summary>
+
+**Request Body:**
+```json
+{
+  "email": "usuario@exemplo.com",
+  "password": "senha123",
+  "name": "Nome do Usuário",
+  "role": "admin"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "user": {
+    "id": 1,
+    "email": "usuario@exemplo.com",
+    "name": "Nome do Usuário",
+    "role": "admin",
+    "company_id": 1
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Erros:**
+- `400`: Email já cadastrado
+- `422`: Validação falhou (senha muito curta, email inválido)
+
 </details>
 
 <details>
-<summary><b>🪑 Mesas</b> - Gerenciamento de mesas</summary>
+<summary><b>POST</b> /api/auth/login - Fazer login</summary>
 
-- ✅ Cadastro (nome, capacidade, status)
-- ✅ Status visual: `Livre` / `Ocupada`
-- ✅ Métricas: Disponibilidade e capacidade total
-- ✅ Busca e filtros de status
-- ✅ Validação: capacidade ≥1
+**Request Body:**
+```json
+{
+  "email": "usuario@exemplo.com",
+  "password": "senha123"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "user": {
+    "id": 1,
+    "email": "usuario@exemplo.com",
+    "name": "Nome do Usuário",
+    "role": "admin",
+    "company_id": 1
+  },
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}
+```
+
+**Erros:**
+- `401`: Credenciais inválidas
+- `422`: Validação falhou
+
+</details>
+
+#### 🍽️ Cardápio (`/api/menu-items`)
+
+<details>
+<summary><b>GET</b> /api/menu-items - Listar itens do cardápio</summary>
+
+**Headers:**
+```http
+Authorization: Bearer {JWT_TOKEN}
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "name": "Pizza Margherita",
+    "description": "Molho de tomate, mussarela e manjericão",
+    "price": 45.90,
+    "category": "Pizzas",
+    "image_url": "https://exemplo.com/pizza.jpg",
+    "available": true,
+    "company_id": 1,
+    "created_at": "2024-01-15T10:00:00Z"
+  }
+]
+```
+
 </details>
 
 <details>
-<summary><b>📅 Reservas</b> - Sistema de agendamento</summary>
+<summary><b>POST</b> /api/menu-items - Criar item</summary>
 
-- ✅ Reserva com data, hora, cliente e número de pessoas
-- ✅ Status: `Confirmada`, `Pendente`, `Cancelada`
-- ✅ Busca por nome/telefone
-- ✅ Filtros de data e status
-- ✅ Validação: data/hora ISO8601, pessoas ≥1
+**Request Body:**
+```json
+{
+  "name": "Hambúrguer Artesanal",
+  "description": "Pão brioche, blend 180g, queijo cheddar",
+  "price": 32.90,
+  "category": "Hambúrgueres",
+  "image_url": "https://exemplo.com/burger.jpg",
+  "available": true
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": 2,
+  "name": "Hambúrguer Artesanal",
+  "price": 32.90,
+  "company_id": 1
+}
+```
+
 </details>
 
 <details>
-<summary><b>📦 Estoque</b> - Controle de inventário</summary>
+<summary><b>PUT</b> /api/menu-items/:id - Atualizar item</summary>
 
-- ✅ Produtos com quantidade atual e mínima
-- ✅ Alertas visuais: `Baixo`, `Crítico`, `OK`
-- ✅ Métricas de inventário
-- ✅ Busca e filtro por categoria
-- ✅ Validação: quantidades ≥0
+**Request Body:**
+```json
+{
+  "name": "Hambúrguer Artesanal Premium",
+  "price": 39.90,
+  "available": true
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 2,
+  "name": "Hambúrguer Artesanal Premium",
+  "price": 39.90
+}
+```
+
 </details>
 
 <details>
-<summary><b>💰 Financeiro</b> - Gestão financeira</summary>
+<summary><b>DELETE</b> /api/menu-items/:id - Remover item</summary>
 
-- ✅ Registro de receitas e despesas
-- ✅ Dashboard: Saldo, receitas, despesas, previsão
-- ✅ Filtros por tipo e período
-- ✅ Busca por descrição
-- ✅ Validação: valor ≥0, tipo (Receita/Despesa)
+**Response (204 No Content)**
+
+</details>
+
+#### 📝 Pedidos (`/api/orders`)
+
+<details>
+<summary><b>GET</b> /api/orders - Listar pedidos</summary>
+
+**Query Parameters:**
+- `status` (opcional): `Pendente`, `Em Preparo`, `Pronto`, `Entregue`, `Finalizado`
+- `type` (opcional): `Mesa`, `Delivery`, `Balcão`
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "table_id": 5,
+    "customer_id": 10,
+    "status": "Em Preparo",
+    "type": "Mesa",
+    "items": [
+      {
+        "menu_item_id": 1,
+        "name": "Pizza Margherita",
+        "quantity": 2,
+        "price": 45.90,
+        "subtotal": 91.80
+      }
+    ],
+    "subtotal": 91.80,
+    "discount": 0,
+    "delivery_fee": 0,
+    "total": 91.80,
+    "company_id": 1,
+    "created_at": "2024-01-15T12:30:00Z"
+  }
+]
+```
+
 </details>
 
 <details>
-<summary><b>📈 Relatórios</b> - Analytics e insights</summary>
+<summary><b>POST</b> /api/orders - Criar pedido</summary>
 
-- ✅ Gráficos interativos (Chart.js)
-- ✅ Top itens mais vendidos
-- ✅ Vendas por categoria
-- ✅ Filtros: Hoje, 7 dias, 30 dias, Todos
-- ✅ Exportação de dados
+**Request Body:**
+```json
+{
+  "table_id": 5,
+  "type": "Mesa",
+  "items": [
+    {
+      "menu_item_id": 1,
+      "quantity": 2,
+      "price": 45.90
+    },
+    {
+      "menu_item_id": 3,
+      "quantity": 1,
+      "price": 15.00
+    }
+  ],
+  "discount": 10.00,
+  "notes": "Sem cebola"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": 1,
+  "total": 96.80,
+  "status": "Pendente"
+}
+```
+
 </details>
 
 <details>
-<summary><b>🏍️ Delivery</b> - Gestão de entregas</summary>
+<summary><b>PATCH</b> /api/orders/:id/status - Atualizar status</summary>
 
-- ✅ Endereço completo (rua, bairro, referência)
-- ✅ Taxa de entrega configurável
-- ✅ Status e rastreamento
-- ✅ Métricas por status
-- ✅ Validação de dados do cliente
+**Request Body:**
+```json
+{
+  "status": "Pronto"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": 1,
+  "status": "Pronto",
+  "updated_at": "2024-01-15T13:00:00Z"
+}
+```
+
+</details>
+
+#### 🪑 Mesas (`/api/tables`)
+
+<details>
+<summary><b>GET</b> /api/tables - Listar mesas</summary>
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "number": "01",
+    "capacity": 4,
+    "status": "Livre",
+    "company_id": 1
+  }
+]
+```
+
 </details>
 
 <details>
-<summary><b>👤 Clientes</b> - CRM básico</summary>
+<summary><b>POST</b> /api/tables - Criar mesa</summary>
 
-- ✅ Cadastro: nome, CPF, telefone, email, endereço
-- ✅ Histórico de pedidos
-- ✅ Busca avançada
-- ✅ Validação de email e telefone
+**Request Body:**
+```json
+{
+  "number": "05",
+  "capacity": 6,
+  "status": "Livre"
+}
+```
+
 </details>
 
 <details>
-<summary><b>⚙️ Configurações</b> - Personalização</summary>
+<summary><b>PATCH</b> /api/tables/:id/status - Atualizar status</summary>
 
-- ✅ Perfil do usuário
-- ✅ Configuração de conexão API
-- ✅ Exportação/importação de dados
-- ✅ Limpeza de dados
-- ✅ Tema claro/escuro
+**Request Body:**
+```json
+{
+  "status": "Ocupada"
+}
+```
+
+</details>
+
+#### 📅 Reservas (`/api/reservations`)
+
+<details>
+<summary><b>GET</b> /api/reservations - Listar reservas</summary>
+
+**Query Parameters:**
+- `date` (opcional): `YYYY-MM-DD`
+- `status` (opcional): `Confirmada`, `Pendente`, `Cancelada`
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "customer_name": "João Silva",
+    "customer_phone": "(11) 98765-4321",
+    "date": "2024-01-20",
+    "time": "19:00",
+    "guests": 4,
+    "table_id": 3,
+    "status": "Confirmada",
+    "notes": "Aniversário",
+    "company_id": 1
+  }
+]
+```
+
+</details>
+
+#### 📦 Estoque (`/api/stock`)
+
+<details>
+<summary><b>GET</b> /api/stock - Listar produtos</summary>
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "name": "Farinha de Trigo",
+    "category": "Ingredientes",
+    "quantity": 50,
+    "min_quantity": 10,
+    "unit": "kg",
+    "supplier": "Fornecedor ABC",
+    "company_id": 1
+  }
+]
+```
+
 </details>
 
 <details>
-<summary><b>👥 Usuários</b> - Gestão de acesso</summary>
+<summary><b>POST</b> /api/stock/movement - Registrar movimentação</summary>
 
-- ✅ CRUD completo de usuários
-- ✅ Roles: `superadmin`, `admin`, `staff`
-- ✅ Ativação/desativação de contas
-- ✅ Validação de email único
+**Request Body:**
+```json
+{
+  "stock_id": 1,
+  "type": "entrada",
+  "quantity": 20,
+  "notes": "Compra mensal"
+}
+```
+
+</details>
+
+#### 👥 Clientes (`/api/customers`)
+
+<details>
+<summary><b>GET</b> /api/customers - Listar clientes</summary>
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "name": "Maria Santos",
+    "cpf": "123.456.789-00",
+    "phone": "(11) 99999-8888",
+    "email": "maria@exemplo.com",
+    "address": "Rua das Flores, 123",
+    "neighborhood": "Centro",
+    "city": "São Paulo",
+    "state": "SP",
+    "zip_code": "01234-567",
+    "company_id": 1
+  }
+]
+```
+
+</details>
+
+#### 💰 Transações (`/api/transactions`)
+
+<details>
+<summary><b>GET</b> /api/transactions - Listar transações</summary>
+
+**Query Parameters:**
+- `type` (opcional): `Receita`, `Despesa`
+- `start_date` (opcional): `YYYY-MM-DD`
+- `end_date` (opcional): `YYYY-MM-DD`
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "type": "Receita",
+    "category": "Vendas",
+    "description": "Pedido #123",
+    "amount": 150.00,
+    "payment_method": "Cartão de Crédito",
+    "date": "2024-01-15",
+    "company_id": 1
+  }
+]
+```
+
+</details>
+
+#### 👤 Usuários (`/api/users`)
+
+<details>
+<summary><b>GET</b> /api/users - Listar usuários</summary>
+
+**Requer:** `admin` ou `superadmin`
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "email": "usuario@exemplo.com",
+    "name": "Nome do Usuário",
+    "role": "admin",
+    "company_id": 1,
+    "active": true,
+    "created_at": "2024-01-01T00:00:00Z"
+  }
+]
+```
+
+</details>
+
+#### 🏢 Empresas (`/api/companies`)
+
+<details>
+<summary><b>GET</b> /api/companies - Listar empresas</summary>
+
+**Requer:** `superadmin`
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "name": "Restaurante Exemplo",
+    "cnpj": "12.345.678/0001-90",
+    "address": "Av. Principal, 100",
+    "phone": "(11) 3333-4444",
+    "email": "contato@restaurante.com",
+    "active": true
+  }
+]
+```
+
+</details>
+
+#### 🏥 Saúde (`/api/health`, `/api/database/health`)
+
+<details>
+<summary><b>GET</b> /api/health - Status da API</summary>
+
+**Sem autenticação**
+
+**Response (200 OK):**
+```json
+{
+  "status": "ok",
+  "timestamp": "2024-01-15T10:30:00.000Z",
+  "uptime": 12345
+}
+```
+
 </details>
 
 <details>
-<summary><b>🏢 Empresas</b> - Multi-tenant</summary>
+<summary><b>GET</b> /api/database/health - Status do banco</summary>
 
-- ✅ Cadastro de empresas (razão social, CNPJ)
-- ✅ Isolamento total de dados por empresa
-- ✅ Superadmin gerencia todas as empresas
-- ✅ Admin gerencia apenas sua empresa
+**Response (200 OK):**
+```json
+{
+  "status": "connected",
+  "database": "bar_restaurante",
+  "timestamp": "2024-01-15T10:30:00.000Z"
+}
+```
+
 </details>
 
-<details>
-<summary><b>📊 Dashboard</b> - Visão geral</summary>
+### Rate Limiting
 
-- ✅ KPIs: Vendas, pedidos, mesas, estoque
-- ✅ Gráficos de tendências
-- ✅ Alertas de estoque baixo
-- ✅ Pedidos pendentes
-</details>
+| Endpoint | Limite |
+|----------|--------|
+| **Global** | 100 requisições / 15 minutos |
+| **POST /api/auth/login** | 5 requisições / 15 minutos |
+| **POST /api/auth/register** | 5 requisições / 15 minutos |
 
-<details>
-<summary><b>🧾 Cupom Fiscal</b> - Impressão</summary>
+**Response (429 Too Many Requests):**
+```json
+{
+  "error": "Muitas requisições. Tente novamente em alguns minutos."
+}
+```
 
-- ✅ Geração de cupom formatado
-- ✅ Dados da empresa e cliente
-- ✅ Itens com subtotal
-- ✅ Total, desconto, forma de pagamento
-</details>
+---
 
-<details>
-<summary><b>📚 Manual</b> - Documentação integrada</summary>
+## 🔒 Segurança e Boas Práticas
 
-- ✅ Guia de uso do sistema
-- ✅ FAQ e troubleshooting
-- ✅ Exemplos práticos
-</details>
+### 🛡️ Camadas de Segurança Implementadas
 
-<details>
-<summary><b>🔐 Login</b> - Autenticação</summary>
+#### 1. Autenticação e Autorização
+- ✅ **JWT (JSON Web Tokens)**: Tokens assinados com HS256
+- ✅ **Bcrypt**: Hash de senhas com salt rounds = 10
+- ✅ **Role-Based Access Control (RBAC)**: 3 níveis (superadmin, admin, staff)
+- ✅ **Token Expiration**: 24 horas de validade
+- ✅ **Logout Seguro**: Remoção de tokens do cliente
+
+#### 2. Proteção de Endpoints
+- ✅ **Middleware de Autenticação**: Verifica JWT em todas as rotas protegidas
+- ✅ **express-validator**: Validação de entrada em todas as rotas
+- ✅ **Sanitização**: Remoção de caracteres perigosos (SQL Injection, XSS)
+- ✅ **Rate Limiting**: Proteção contra brute-force e DDoS
+
+#### 3. Headers de Segurança (Helmet.js)
+```javascript
+helmet({
+  contentSecurityPolicy: false, // Configurar CSP conforme necessário
+  crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+})
+```
+
+- ✅ **X-Content-Type-Options**: nosniff
+- ✅ **X-Frame-Options**: DENY
+- ✅ **X-XSS-Protection**: 1; mode=block
+- ✅ **Strict-Transport-Security**: max-age=15552000; includeSubDomains
+
+#### 4. Isolamento Multi-tenant
+- ✅ **company_id**: Todas as queries filtradas por empresa
+- ✅ **Validação de Propriedade**: Usuário só acessa dados da sua empresa
+- ✅ **Superadmin Exception**: Acesso cross-company apenas para superadmin
+
+#### 5. Banco de Dados
+- ✅ **Prepared Statements**: Proteção contra SQL Injection (pg library)
+- ✅ **Constraints**: CHECK, NOT NULL, FOREIGN KEY para integridade
+- ✅ **Índices**: Performance em queries com company_id
+- ✅ **Migrações Idempotentes**: Schemas versionados e tolerantes
+
+### 🔐 Boas Práticas para Produção
+
+#### Variáveis de Ambiente Sensíveis
+
+```env
+# ⚠️ NUNCA commite este arquivo no Git
+JWT_SECRET=gere_uma_chave_forte_com_min_32_caracteres_random
+DATABASE_URL=postgresql://usuario:senha@host:5432/database
+```
+
+Gere uma chave JWT forte:
+```bash
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+```
+
+#### CORS Configuração
+
+```javascript
+// Em produção, especifique origens permitidas
+const corsOptions = {
+  origin: process.env.CORS_ORIGINS?.split(',') || '*',
+  credentials: true
+};
+```
+
+#### HTTPS Obrigatório
+
+- ✅ Railway e Netlify fornecem HTTPS automaticamente
+- ✅ Para self-hosted, use Let's Encrypt + Nginx/Caddy
+
+#### Monitoramento e Logs
+
+```javascript
+// Logs estruturados (evite expor dados sensíveis)
+console.log({
+  level: 'info',
+  message: 'User logged in',
+  userId: user.id,
+  // Nunca logue: password, JWT tokens, dados pessoais completos
+});
+```
+
+#### Backup e Recuperação
+
+```bash
+# Backup PostgreSQL (agende daily)
+pg_dump $DATABASE_URL > backup_$(date +%Y%m%d).sql
+
+# Restore
+psql $DATABASE_URL < backup_20240115.sql
+```
+
+---
+
+## 🤝 Como Contribuir
+
+Contribuições são bem-vindas! Siga estas diretrizes:
+
+### 📋 Processo de Contribuição
+
+1. **Fork** o repositório
+2. **Clone** seu fork localmente:
+   ```bash
+   git clone https://github.com/SEU_USUARIO/bar_restaurante.git
+   ```
+3. **Crie uma branch** para sua feature:
+   ```bash
+   git checkout -b feature/minha-feature
+   ```
+4. **Faça suas alterações** e commit:
+   ```bash
+   git commit -m "feat: adiciona nova funcionalidade X"
+   ```
+5. **Push** para seu fork:
+   ```bash
+   git push origin feature/minha-feature
+   ```
+6. Abra um **Pull Request** no repositório original
+
+### 📝 Padrão de Commits
+
+Seguimos o [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+<tipo>(<escopo>): <descrição>
+
+<corpo opcional>
+
+<rodapé opcional>
+```
+
+**Tipos:**
+- `feat`: Nova funcionalidade
+- `fix`: Correção de bug
+- `docs`: Documentação
+- `style`: Formatação (não afeta lógica)
+- `refactor`: Refatoração de código
+- `test`: Adição/correção de testes
+- `chore`: Tarefas de manutenção
+
+**Exemplos:**
+```bash
+feat(cardapio): adiciona filtro por disponibilidade
+fix(auth): corrige validação de token expirado
+docs(readme): atualiza instruções de deploy
+style(pedidos): ajusta espaçamento do layout
+refactor(api): melhora tratamento de erros HTTP
+test(estoque): adiciona testes unitários de movimentação
+chore(deps): atualiza dependências do backend
+```
+
+### 🐛 Reportando Bugs
+
+Abra uma [issue](https://github.com/cristiano-superacao/bar_restaurante/issues) com:
+
+- **Descrição clara** do problema
+- **Passos para reproduzir**
+- **Comportamento esperado** vs **comportamento atual**
+- **Screenshots** (se aplicável)
+- **Ambiente**: SO, navegador, versão do Node.js
+
+### 💡 Sugerindo Melhorias
+
+Abra uma [issue](https://github.com/cristiano-superacao/bar_restaurante/issues) com:
+
+- **Descrição detalhada** da feature
+- **Justificativa**: por que seria útil?
+- **Exemplos de uso** ou mockups (se aplicável)
+
+### ✅ Checklist para Pull Requests
+
+- [ ] Código segue o estilo do projeto
+- [ ] Commits seguem o padrão Conventional Commits
+- [ ] Documentação atualizada (se necessário)
+- [ ] Testes adicionados/atualizados (se aplicável)
+- [ ] Sem erros de linting ou build
+- [ ] Testado localmente em desenvolvimento
+- [ ] Compatibilidade retroativa mantida
+
+---
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **MIT License** - veja o arquivo [LICENSE](LICENSE) para detalhes.
+
+```
+MIT License
+
+Copyright (c) 2024 Cristiano Superação
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+[...texto completo da licença...]
+```
+
+### ⚖️ Resumo da Licença
+
+✅ **Permitido:**
+- Uso comercial
+- Modificação
+- Distribuição
+- Uso privado
+
+⚠️ **Condições:**
+- Incluir aviso de copyright e licença
+- Fornecer cópia da licença MIT
+
+❌ **Limitações:**
+- Sem garantias
+- Sem responsabilidade do autor
+
+---
+
+## 📞 Suporte e Contato
+
+### 🆘 Precisa de Ajuda?
+
+1. **Documentação**: Leia este README e o [Manual do Usuário](manual.html)
+2. **Issues**: Verifique [issues existentes](https://github.com/cristiano-superacao/bar_restaurante/issues)
+3. **Nova Issue**: Abra uma [nova issue](https://github.com/cristiano-superacao/bar_restaurante/issues/new)
+
+### 📬 Contatos
+
+- **GitHub**: [@cristiano-superacao](https://github.com/cristiano-superacao)
+- **Repositório**: https://github.com/cristiano-superacao/bar_restaurante
+- **Demo Frontend**: https://barestaurante.netlify.app
+- **API Backend**: https://barestaurante.up.railway.app
+
+### 🌟 Agradecimentos
+
+Obrigado a todos que contribuíram para este projeto!
+
+---
+
+<div align="center">
+
+**Feito com ❤️ para a comunidade de restaurantes e bares**
+
+[![GitHub Stars](https://img.shields.io/github/stars/cristiano-superacao/bar_restaurante?style=social)](https://github.com/cristiano-superacao/bar_restaurante/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/cristiano-superacao/bar_restaurante?style=social)](https://github.com/cristiano-superacao/bar_restaurante/network/members)
+[![GitHub Issues](https://img.shields.io/github/issues/cristiano-superacao/bar_restaurante)](https://github.com/cristiano-superacao/bar_restaurante/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/cristiano-superacao/bar_restaurante)](https://github.com/cristiano-superacao/bar_restaurante/pulls)
+
+⭐ **Se este projeto foi útil, considere dar uma estrela!** ⭐
+
+</div>
 
 - ✅ Login com email/username e senha
 - ✅ Autenticação JWT

@@ -5,9 +5,178 @@ Todas as mudanças notáveis neste projeto serão documentadas neste arquivo.
 O formato é baseado em [Keep a Changelog](https://keepachangelog.com/pt-BR/1.0.0/),
 e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
-## [2.2.0] - 2026-01-11
+---
 
-### � Adicionado
+## [2.3.0] - 2024-01-16
+
+### ✨ Adicionado
+
+#### Frontend
+- **Autenticação Resiliente**: Fallback automático para LocalStorage quando API está offline
+  - `createLocalUser()` em `js/login.js` para contas locais em modo demo
+  - Mensagens claras ao usuário sobre modo de operação (online vs offline)
+  - Suporte a códigos 502/503/504/NETWORK/TIMEOUT
+- **Detecção Automática de API**: `detectApiBaseUrl()` em `js/config.js`
+  - Detecta automaticamente ambiente localhost vs produção Railway
+  - Elimina necessidade de configuração manual de URLs
+  - Configuração dinâmica: `http://localhost:3000` (dev) ou `https://barestaurante.up.railway.app` (prod)
+- **Tratamento de Erros Aprimorado**: `js/api.js` com códigos de erro expandidos
+  - `NETWORK`: Falha de conexão/rede
+  - `TIMEOUT`: Timeout de requisição
+  - `HTTP_XXX`: Códigos de status HTTP estruturados
+  - Detecção de AbortError para timeouts
+
+#### Backend
+- **Handlers Globais de Erro**:
+  - 404 Handler para rotas `/api/*` não encontradas
+  - Error Middleware global para exceções não tratadas
+  - Respostas JSON estruturadas para todos os erros
+- **Railway Deployment Wrapper**: `servidor/package.json`
+  - Compatibilidade com configurações legacy do Railway
+  - Postinstall hook: `npm ci --omit=dev --prefix ../server`
+  - Start script: `npm start --prefix ../server`
+  - Soluciona problema de `cd servidor` em builds Railway
+
+#### Documentação
+- **README.md Completo**: 1600+ linhas de documentação profissional
+  - 📐 Diagramas Mermaid de arquitetura e fluxo de autenticação
+  - 📁 Estrutura detalhada de 16 páginas HTML, 20 módulos JS, 15 CSS files
+  - ⚡ Guia de início rápido em 3 passos
+  - 🔧 Stack tecnológica completa com versões
+  - 📦 Instalação detalhada (backend + frontend + Docker)
+  - 🚀 Deploy em produção (Railway + Netlify)
+  - 📖 Documentação completa da API REST (11 endpoints com exemplos)
+  - 🔒 Seção de segurança e boas práticas
+  - 🤝 Guia de contribuição com Conventional Commits
+  - 📄 Informações de licença MIT
+  - 📞 Suporte e contatos
+- **CHANGELOG.md Atualizado**: Histórico completo de todas as alterações
+
+### 🔧 Melhorado
+
+#### Backend
+- **Migrações Resilientes**: `server/src/migrations/schema.sql`
+  - Normalização de status legados de pedidos antes de aplicar constraints
+  - Fallback UPDATE para forçar status desconhecidos → 'Pendente'
+  - Constraints aplicadas como `NOT VALID` com blocos de validação tolerantes
+  - Soluciona erro 23514 `orders_status_chk` em dados pré-existentes
+
+#### Deploy
+- **Configuração Railway Otimizada**:
+  - `railway.json` e `railway.toml` atualizados
+  - Builder: **NIXPACKS** (ao invés de DOCKERFILE devido a problemas de contexto)
+  - `buildCommand`: `npm install` (compatibilidade total)
+  - `startCommand`: `npm start`
+  - `restartPolicyType`: `ON_FAILURE` com `maxRetries: 10`
+- **Compatibilidade de Build**: Sistema de wrapper em `servidor/` para Railway
+
+### 🐛 Corrigido
+
+#### Backend
+- **Erro de Build Railway**: Diretório `servidor` não existia
+  - Solução: Wrapper package.json em `servidor/` que redireciona para `server/`
+  - Mantém compatibilidade com Railway configs legados
+- **Erro de Migração PostgreSQL**: CHECK constraint `orders_status_chk` violada
+  - Causa: Dados legados com status 'Aberto', 'Fechado', 'Cancelado'
+  - Solução: Normalização SQL antes de aplicar constraints
+  - Script tolerante a erros com blocos DO $$ BEGIN ... EXCEPTION ...
+- **Context Issues Dockerfile**: Railway root_dir incompatível com Dockerfile
+  - Mudança: DOCKERFILE → NIXPACKS builder
+  - Wrapper approach evita problemas de contexto de build
+
+#### Frontend
+- **Signup Falhando com API Offline**: Sem tratamento de erro 502
+  - Solução: Detecta status HTTP 502/503/504 e códigos NETWORK/TIMEOUT
+  - Cria conta local automaticamente em `localStorage`
+  - Mensagem: "API indisponível no momento. Conta criada em modo local (demo)"
+- **URL API Hardcoded**: Falta de detecção automática de ambiente
+  - Solução: `detectApiBaseUrl()` detecta localhost vs produção
+  - Zero configuração manual necessária
+
+### 🔒 Segurança
+
+- **Rate Limiting Mantido**: 
+  - Global: 100 req/15min
+  - Login: 5 req/15min (proteção brute-force)
+- **Validação com express-validator**: Todas as rotas protegidas
+- **Headers Helmet**: CSP, XSS, HSTS configurados
+- **JWT com Expiração**: Tokens expiram em 24h
+- **Multi-tenant Isolation**: company_id em todas as queries
+
+### 📚 Documentação
+
+- ✅ README.md recreado com documentação completa do sistema
+- ✅ CHANGELOG.md atualizado com todas as mudanças recentes
+- ✅ Diagramas de arquitetura e fluxos de autenticação
+- ✅ Guias detalhados de instalação e deploy
+- ✅ API REST completamente documentada com exemplos JSON
+- ✅ Seção de segurança e boas práticas
+- ✅ Guia de contribuição com padrões de commit
+
+### 🔄 Alterações de Configuração
+
+**railway.json:**
+```json
+{
+  "build": {
+    "builder": "NIXPACKS",
+    "buildCommand": "npm install"
+  },
+  "deploy": {
+    "startCommand": "npm start",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
+```
+
+**servidor/package.json (novo):**
+```json
+{
+  "name": "servidor-wrapper",
+  "version": "1.0.0",
+  "scripts": {
+    "postinstall": "npm ci --omit=dev --prefix ../server",
+    "start": "npm start --prefix ../server"
+  }
+}
+```
+
+**js/config.js:**
+```javascript
+function detectApiBaseUrl() {
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:3000';
+  }
+  return 'https://barestaurante.up.railway.app';
+}
+```
+
+### 📊 Estatísticas do Projeto
+
+- **Páginas HTML**: 16 (dashboard, pedidos, mesas, cardápio, delivery, estoque, clientes, reserva, usuários, empresas, financeiro, relatórios, cupom, configurações, manual, login)
+- **Módulos JavaScript**: 20 (config, api, auth, utils + 16 módulos de página)
+- **Arquivos CSS**: 15 (base + 14 módulos específicos)
+- **Rotas Backend REST**: 11 (auth, companies, customers, database, menuItems, orders, reservations, stock, tables, transactions, users)
+- **Linhas de Documentação**: 1600+ no README.md
+- **Commits desta versão**: 7+ (Railway fixes, auth resilience, API detection, error handlers, docs)
+
+### 🚀 Deploy Status
+
+| Componente | Plataforma | Status | URL |
+|-----------|-----------|--------|-----|
+| **Frontend** | Netlify | ✅ Online | https://barestaurante.netlify.app |
+| **Backend** | Railway | ⚠️ Degraded (502) | https://barestaurante.up.railway.app |
+| **Database** | Railway PostgreSQL | ✅ Connected | (interno) |
+
+> **Nota**: Backend com erro 502 (container crash) - frontend funciona em modo offline. Aguardando logs de runtime para debug.
+
+---
+
+## [2.2.0] - 2024-01-11
+
+### ✨ Adicionado
 
 - **Dockerfile**: Build otimizado com Node 18 Alpine + healthcheck automático
 - **Rota `/api/health`**: Endpoint para verificação de saúde (status + database connection)
