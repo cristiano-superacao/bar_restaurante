@@ -1,0 +1,23 @@
+# Ignore geral
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Git
+.git
+.gitignore
+
+# Ambiente
+server/.env
+server/.env.local
+
+# Build cache
+server/node_modules
+
+# Arquivos de documentação não necessários na imagem
+RAILWAY_SETUP.md
+DEPLOY_RAILWAY_COMPLETO.md
+CORRIGIR_ERRO_RAILWAY.md
+railway.json
+railway.toml
