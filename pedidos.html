@@ -3,170 +3,1290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="/">
-    <title>Pedidos - Bar e Restaurante</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/pedidos.css">
+    <title>Pedidos - Sistema de Gestão para Bar e Restaurante</title>
+    <meta name="description" content="Gerenciamento completo de pedidos com controle de status, mesas e pagamentos.">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
+    <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Layout Base */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--bg-body);
+        }
+        
+        /* Sidebar - Reutilizando do dashboard */
+        .sidebar {
+            width: 280px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: var(--z-fixed);
+            transition: transform var(--transition);
+        }
+        
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+        
+        .sidebar-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+        }
+        
+        .sidebar-logo {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
+            color: var(--text-white);
+            border-radius: var(--radius-md);
+            font-size: 1.25rem;
+        }
+        
+        .sidebar-brand {
+            flex: 1;
+        }
+        
+        .sidebar-brand-name {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        
+        .sidebar-brand-subtitle {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+        }
+        
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing);
+        }
+        
+        .nav-section {
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .nav-section-title {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: var(--spacing-sm) var(--spacing);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .nav-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+            padding: 0.75rem var(--spacing);
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: var(--radius);
+            transition: all var(--transition-fast);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+        
+        .nav-item a:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .nav-item.active a {
+            background-color: var(--primary-50);
+            color: var(--primary-700);
+        }
+        
+        .nav-item a i {
+            width: 20px;
+            text-align: center;
+            font-size: 1.125rem;
+        }
+        
+        .nav-badge {
+            margin-left: auto;
+            font-size: var(--font-size-xs);
+            padding: 0.125rem 0.5rem;
+            background-color: var(--error-100);
+            color: var(--error-700);
+            border-radius: var(--radius-full);
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .sidebar-footer {
+            padding: var(--spacing);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .user-card {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+            padding: var(--spacing);
+            background-color: var(--bg-hover);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .user-card:hover {
+            background-color: var(--bg-active);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: var(--text-white);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .user-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-role {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            display: block;
+        }
+        
+        .logout-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+            color: var(--text-muted);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .logout-btn:hover {
+            background-color: var(--error-50);
+            color: var(--error-600);
+        }
+        
+        /* Main Wrapper */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 280px;
+            display: flex;
+            flex-direction: column;
+            transition: margin-left var(--transition);
+        }
+        
+        .sidebar.collapsed ~ .main-wrapper {
+            margin-left: 0;
+        }
+        
+        .main-header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+        }
+        
+        .menu-toggle {
+            width: 40px;
+            height: 40px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .menu-toggle:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .header-title {
+            flex: 1;
+        }
+        
+        .header-title h1 {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .header-title p {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            margin: 0.25rem 0 0;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+        }
+        
+        /* Toolbar */
+        .toolbar {
+            display: flex;
+            gap: var(--spacing);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-box {
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            align-items: center;
+        }
+        
+        .filter-select {
+            padding: 0.625rem 2.5rem 0.625rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            background-color: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            transition: all var(--transition-fast);
+        }
+        
+        .filter-select:hover {
+            border-color: var(--primary-300);
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Stats Cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .stat-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing);
+            position: relative;
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+        
+        .stat-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+        
+        .stat-card.pending::before {
+            background: linear-gradient(90deg, var(--warning-500), var(--warning-600));
+        }
+        
+        .stat-card.preparing::before {
+            background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+        }
+        
+        .stat-card.delivered::before {
+            background: linear-gradient(90deg, var(--success-500), var(--success-600));
+        }
+        
+        .stat-card.canceled::before {
+            background: linear-gradient(90deg, var(--error-500), var(--error-600));
+        }
+        
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-lg);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .stat-card.pending .stat-icon {
+            background-color: var(--warning-50);
+            color: var(--warning-600);
+        }
+        
+        .stat-card.preparing .stat-icon {
+            background-color: var(--primary-100);
+            color: var(--primary-600);
+        }
+        
+        .stat-card.delivered .stat-icon {
+            background-color: var(--success-50);
+            color: var(--success-600);
+        }
+        
+        .stat-card.canceled .stat-icon {
+            background-color: var(--error-50);
+            color: var(--error-600);
+        }
+        
+        .stat-content {
+            flex: 1;
+        }
+        
+        .stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            font-weight: var(--font-weight-medium);
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-value {
+            font-size: var(--font-size-3xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            line-height: 1;
+        }
+        
+        /* Orders Grid */
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+        }
+        
+        .order-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            transition: all var(--transition);
+            position: relative;
+        }
+        
+        .order-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+        
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing);
+            padding-bottom: var(--spacing);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .order-info {
+            flex: 1;
+        }
+        
+        .order-id {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .order-table {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .order-status-badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+        }
+        
+        .order-status-badge.pendente {
+            background-color: var(--warning-50);
+            color: var(--warning-700);
+        }
+        
+        .order-status-badge.em-preparo {
+            background-color: var(--primary-100);
+            color: var(--primary-700);
+        }
+        
+        .order-status-badge.entregue {
+            background-color: var(--success-50);
+            color: var(--success-700);
+        }
+        
+        .order-status-badge.pago {
+            background-color: var(--success-100);
+            color: var(--success-800);
+        }
+        
+        .order-status-badge.cancelado {
+            background-color: var(--error-50);
+            color: var(--error-700);
+        }
+        
+        .order-items {
+            margin-bottom: var(--spacing);
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            font-size: var(--font-size-sm);
+        }
+        
+        .order-item-name {
+            color: var(--text-secondary);
+            flex: 1;
+        }
+        
+        .order-item-qty {
+            color: var(--text-muted);
+            margin: 0 var(--spacing-sm);
+        }
+        
+        .order-item-price {
+            color: var(--text-primary);
+            font-weight: var(--font-weight-semibold);
+        }
+        
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: var(--spacing);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .order-total {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+        }
+        
+        .order-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+        
+        .order-action-btn {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .order-action-btn:hover {
+            background-color: var(--bg-hover);
+            color: var(--text-primary);
+        }
+        
+        .order-action-btn.edit:hover {
+            background-color: var(--primary-50);
+            color: var(--primary-600);
+        }
+        
+        .order-action-btn.delete:hover {
+            background-color: var(--error-50);
+            color: var(--error-600);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+        }
+        
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-hover);
+            border-radius: var(--radius-full);
+            color: var(--text-muted);
+            font-size: 2rem;
+        }
+        
+        .empty-state h3 {
+            font-size: var(--font-size-xl);
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .empty-state p {
+            font-size: var(--font-size-sm);
+            color: var(--text-muted);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: var(--z-modal);
+            padding: var(--spacing);
+            overflow-y: auto;
+        }
+        
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-card);
+            border-radius: var(--radius-xl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-2xl);
+        }
+        
+        .modal-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            margin: 0;
+        }
+        
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+            color: var(--text-muted);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all var(--transition-fast);
+        }
+        
+        .close-btn:hover {
+            background-color: var(--error-50);
+            color: var(--error-600);
+        }
+        
+        .modal-body {
+            padding: var(--spacing-lg);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing);
+            margin-bottom: var(--spacing);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing);
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: var(--font-size-sm);
+            transition: all var(--transition-fast);
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-500);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .add-item-row {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing);
+        }
+        
+        .add-item-row select {
+            flex: 1;
+        }
+        
+        .add-item-row input {
+            width: 80px;
+        }
+        
+        .order-items-list {
+            background-color: var(--bg-body);
+            border-radius: var(--radius);
+            padding: var(--spacing);
+            margin-bottom: var(--spacing);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .order-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            background-color: var(--bg-card);
+            border-radius: var(--radius);
+            font-size: var(--font-size-sm);
+        }
+        
+        .order-item-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .order-item-remove {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: transparent;
+            color: var(--text-muted);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+        
+        .order-item-remove:hover {
+            background-color: var(--error-50);
+            color: var(--error-600);
+        }
+        
+        .order-total-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing);
+            background-color: var(--primary-50);
+            border-radius: var(--radius);
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .order-total-display strong {
+            font-size: var(--font-size-lg);
+            color: var(--text-primary);
+        }
+        
+        .order-total-display span {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-700);
+        }
+        
+        .modal-footer {
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: var(--spacing);
+            justify-content: flex-end;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-wrapper {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .orders-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 640px) {
+            .main-header {
+                padding: var(--spacing);
+            }
+            
+            .main-content {
+                padding: var(--spacing);
+            }
+            
+            .header-title h1 {
+                font-size: var(--font-size-xl);
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+            
+            .filter-group {
+                flex-wrap: wrap;
+            }
+            
+            .stats-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-value {
+                font-size: var(--font-size-2xl);
+            }
+        }
+        
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: calc(var(--z-fixed) - 1);
+            display: none;
+        }
+        
+        .sidebar-overlay.show {
+            display: block;
+        }
+    </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <i class="fas fa-utensils logo-icon"></i>
-                <h2>Sistema</h2>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <i class="fas fa-utensils"></i>
             </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-                    <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
-                    <li class="active"><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
-                    <li><a href="clientes.html"><i class="fas fa-user"></i> <span>Clientes</span></a></li>
-                    <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
-                    <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
-                    <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
-                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
-                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
-                    <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
-                    <li><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
-                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
-                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
-                    <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
+            <div class="sidebar-brand">
+                <div class="sidebar-brand-name">Bar & Restaurante</div>
+                <div class="sidebar-brand-subtitle">Sistema de Gestão</div>
+            </div>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-section">
+                <div class="nav-section-title">Principal</div>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="dashboard.html">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item active">
+                        <a href="pedidos.html">
+                            <i class="fas fa-receipt"></i>
+                            <span>Pedidos</span>
+                            <span class="nav-badge" id="pending-badge">0</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="mesas.html">
+                            <i class="fas fa-chair"></i>
+                            <span>Mesas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="cardapio.html">
+                            <i class="fas fa-book-open"></i>
+                            <span>Cardápio</span>
+                        </a>
+                    </li>
                 </ul>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                    <div>
-                        <span id="username-display">Usuário</span>
-                        <small id="user-role-display">Cargo</small>
-                    </div>
-                </div>
-                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
             </div>
-        </aside>
-        <main class="main-content">
-            <header class="main-header">
-                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
-                    <i class="fas fa-bars"></i>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Operações</div>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="delivery.html">
+                            <i class="fas fa-motorcycle"></i>
+                            <span>Delivery</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="reserva.html">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>Reservas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="clientes.html">
+                            <i class="fas fa-users"></i>
+                            <span>Clientes</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Gestão</div>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="estoque.html">
+                            <i class="fas fa-boxes"></i>
+                            <span>Estoque</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="financeiro.html">
+                            <i class="fas fa-dollar-sign"></i>
+                            <span>Financeiro</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="relatorios.html">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Relatórios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="cupom.html">
+                            <i class="fas fa-ticket-alt"></i>
+                            <span>Cupons</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-section-title">Sistema</div>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="usuarios.html">
+                            <i class="fas fa-user-cog"></i>
+                            <span>Usuários</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="empresas.html">
+                            <i class="fas fa-building"></i>
+                            <span>Empresas</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="configuracoes.html">
+                            <i class="fas fa-cog"></i>
+                            <span>Configurações</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="manual.html">
+                            <i class="fas fa-book"></i>
+                            <span>Manual</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-card" id="user-menu">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <div class="user-info">
+                    <span class="user-name" id="username-display">Usuário</span>
+                    <span class="user-role" id="user-role-display">Admin</span>
+                </div>
+                <button class="logout-btn" id="logout-btn" title="Sair" aria-label="Sair do sistema">
+                    <i class="fas fa-sign-out-alt"></i>
                 </button>
-                <div class="header-title">
-                    <h1>Gerenciamento de Pedidos</h1>
-                    <p>Acompanhe e gerencie todos os pedidos</p>
+            </div>
+        </div>
+    </aside>
+    
+    <!-- Sidebar Overlay (Mobile) -->
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+        <!-- Header -->
+        <header class="main-header">
+            <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <div class="header-title">
+                <h1>Gerenciamento de Pedidos</h1>
+                <p>Acompanhe e gerencie todos os pedidos em tempo real</p>
+            </div>
+        </header>
+        
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Toolbar -->
+            <div class="toolbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-order-input" placeholder="Buscar por mesa ou ID do pedido..." aria-label="Buscar pedido">
                 </div>
-                <div class="header-actions"></div>
-            </header>
-            <section class="content-area">
-                <div class="toolbar">
-                    <div class="search-input">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="search-order-input" placeholder="Buscar por mesa ou ID..." aria-label="Buscar pedido">
+                
+                <div class="filter-group">
+                    <select id="status-filter" class="filter-select" aria-label="Filtrar por status">
+                        <option value="all">Todos os Status</option>
+                        <option value="Pendente">Pendente</option>
+                        <option value="Em Preparo">Em Preparo</option>
+                        <option value="Entregue">Entregue</option>
+                        <option value="Pago">Pago</option>
+                        <option value="Cancelado">Cancelado</option>
+                    </select>
+                    
+                    <button class="btn btn-primary" id="add-order-btn">
+                        <i class="fas fa-plus"></i> Novo Pedido
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Stats Row -->
+            <div class="stats-row">
+                <div class="stat-card pending">
+                    <div class="stat-icon">
+                        <i class="fas fa-hourglass-start"></i>
                     </div>
-                    <div class="filter-pill">
-                        <i class="fas fa-filter"></i>
-                        <select id="status-filter" aria-label="Filtrar por status">
-                            <option value="all">Todos os Status</option>
-                            <option value="Pendente">Pendente</option>
-                            <option value="Em Preparo">Em Preparo</option>
-                            <option value="Entregue">Entregue</option>
-                            <option value="Pago">Pago</option>
-                            <option value="Cancelado">Cancelado</option>
-                        </select>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                    <button class="btn btn-primary" id="add-order-btn"><i class="fas fa-plus"></i> Novo Pedido</button>
-                </div>
-                <div class="stat-cards">
-                    <div class="stat-card saldo"><div class="icon"><i class="fas fa-hourglass-start"></i></div><div class="content"><h4>Pendentes</h4><div class="value" id="pedidos-pendentes">0</div></div></div>
-                    <div class="stat-card receitas"><div class="icon"><i class="fas fa-fire"></i></div><div class="content"><h4>Em Preparo</h4><div class="value" id="pedidos-preparo">0</div></div></div>
-                    <div class="stat-card previsao"><div class="icon"><i class="fas fa-check-circle"></i></div><div class="content"><h4>Entregues</h4><div class="value" id="pedidos-entregues">0</div></div></div>
-                    <div class="stat-card despesas"><div class="icon"><i class="fas fa-ban"></i></div><div class="content"><h4>Cancelados</h4><div class="value" id="pedidos-cancelados">0</div></div></div>
-                </div>
-                <div class="empty-state" id="orders-empty" style="display:none;">
-                    <div class="icon"><i class="fas fa-inbox"></i></div>
-                    <div class="content">
-                        <h3>Nenhum pedido encontrado</h3>
-                        <p>Ajuste filtros ou crie um novo pedido.</p>
+                    <div class="stat-content">
+                        <div class="stat-label">Pendentes</div>
+                        <div class="stat-value" id="pedidos-pendentes">0</div>
                     </div>
                 </div>
-                <div class="orders-grid" id="orders-grid">
-                    <!-- Pedidos serão inseridos aqui -->
+                
+                <div class="stat-card preparing">
+                    <div class="stat-icon">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Em Preparo</div>
+                        <div class="stat-value" id="pedidos-preparo">0</div>
+                    </div>
                 </div>
-            </section>
+                
+                <div class="stat-card delivered">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Entregues</div>
+                        <div class="stat-value" id="pedidos-entregues">0</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card canceled">
+                    <div class="stat-icon">
+                        <i class="fas fa-ban"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">Cancelados</div>
+                        <div class="stat-value" id="pedidos-cancelados">0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Empty State -->
+            <div class="empty-state" id="orders-empty" style="display: none;">
+                <div class="empty-state-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3>Nenhum pedido encontrado</h3>
+                <p>Ajuste os filtros ou crie um novo pedido para começar</p>
+            </div>
+            
+            <!-- Orders Grid -->
+            <div class="orders-grid" id="orders-grid">
+                <!-- Pedidos serão inseridos aqui via JavaScript -->
+            </div>
         </main>
-        <div class="sidebar-overlay" id="sidebar-overlay"></div>
     </div>
-
-    <!-- Modal para Adicionar/Editar Pedido -->
+    
+    <!-- Modal Adicionar/Editar Pedido -->
     <div id="order-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="order-modal-title">Novo Pedido</h2>
-                <span class="close-btn">&times;</span>
+                <button class="close-btn" aria-label="Fechar modal">&times;</button>
             </div>
-            <form id="order-form">
-                <input type="hidden" id="order-id">
-                <div class="form-row">
+            <div class="modal-body">
+                <form id="order-form">
+                    <input type="hidden" id="order-id">
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="order-table">Mesa *</label>
+                            <select id="order-table" required>
+                                <option value="">Selecione uma mesa</option>
+                                <!-- Opções carregadas via JS -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="order-status">Status</label>
+                            <select id="order-status">
+                                <option value="Pendente">Pendente</option>
+                                <option value="Em Preparo">Em Preparo</option>
+                                <option value="Entregue">Entregue</option>
+                                <option value="Pago">Pago</option>
+                                <option value="Cancelado">Cancelado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="order-discount">Desconto (R$)</label>
+                            <input type="number" id="order-discount" value="0" min="0" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="order-payment">Forma de Pagamento</label>
+                            <select id="order-payment">
+                                <option value="">(opcional)</option>
+                                <option value="Dinheiro">Dinheiro</option>
+                                <option value="Cartão">Cartão</option>
+                                <option value="PIX">PIX</option>
+                            </select>
+                        </div>
+                    </div>
+                    
                     <div class="form-group">
-                        <label for="order-table">Mesa</label>
-                        <select id="order-table" required>
-                            <!-- Opções de mesa carregadas pelo JS -->
-                        </select>
+                        <label>Itens do Pedido</label>
+                        <div class="add-item-row">
+                            <select id="menu-item-select" aria-label="Selecionar item do cardápio">
+                                <option value="">Selecione um item</option>
+                                <!-- Opções carregadas via JS -->
+                            </select>
+                            <input type="number" id="item-quantity" value="1" min="1" aria-label="Quantidade">
+                            <button type="button" id="add-item-to-order-btn" class="btn btn-secondary">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="order-status">Status</label>
-                        <select id="order-status">
-                            <option value="Pendente">Pendente</option>
-                            <option value="Em Preparo">Em Preparo</option>
-                            <option value="Entregue">Entregue</option>
-                            <option value="Pago">Pago</option>
-                            <option value="Cancelado">Cancelado</option>
-                        </select>
+                    
+                    <div class="order-items-list" id="order-items-container">
+                        <!-- Itens adicionados aparecerão aqui -->
                     </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="order-discount">Desconto</label>
-                        <input type="number" id="order-discount" value="0" min="0" step="0.01">
+                    
+                    <div class="order-total-display">
+                        <strong>Total:</strong>
+                        <span id="order-total-price">R$ 0,00</span>
                     </div>
-                    <div class="form-group">
-                        <label for="order-payment">Pagamento</label>
-                        <select id="order-payment">
-                            <option value="">(opcional)</option>
-                            <option value="Dinheiro">Dinheiro</option>
-                            <option value="Cartão">Cartão</option>
-                            <option value="PIX">PIX</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Itens do Pedido</label>
-                    <div class="add-item-form">
-                         <select id="menu-item-select" aria-label="Selecionar item do cardápio"></select>
-                         <input type="number" id="item-quantity" value="1" min="1" aria-label="Quantidade do item">
-                         <button type="button" id="add-item-to-order-btn" class="btn btn-secondary"><i class="fas fa-plus"></i> Adicionar</button>
-                    </div>
-                    <div id="order-items-container">
-                        <!-- Itens do pedido serão adicionados aqui -->
-                    </div>
-                </div>
-                <div class="order-total">
-                    <strong>Total:</strong> <span id="order-total-price">R$ 0,00</span>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Salvar Pedido</button>
-                    <button type="button" class="btn btn-secondary" id="order-close-btn" style="display:none;">Fechar conta + Cupom</button>
-                </div>
-            </form>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="order-close-btn" style="display:none;">
+                    <i class="fas fa-receipt"></i> Fechar conta + Cupom
+                </button>
+                <button type="submit" form="order-form" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Salvar Pedido
+                </button>
+            </div>
         </div>
     </div>
-
+    
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/api.js"></script>
     <script src="js/auth-neon.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/pedidos.js"></script>
+    <script>
+        // Menu Toggle Mobile
+        const menuToggle = document.getElementById('menu-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+        
+        menuToggle?.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('show');
+        });
+        
+        sidebarOverlay?.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('show');
+        });
+        
+        // User Info
+        const username = localStorage.getItem('username') || 'Usuário';
+        const userRole = localStorage.getItem('userRole') || 'admin';
+        const usernameDisplay = document.getElementById('username-display');
+        const userRoleDisplay = document.getElementById('user-role-display');
+        const userAvatar = document.getElementById('user-avatar');
+        
+        if (usernameDisplay) usernameDisplay.textContent = username;
+        if (userRoleDisplay) {
+            const roleLabels = {
+                'superadmin': 'Super Admin',
+                'admin': 'Administrador',
+                'staff': 'Atendente'
+            };
+            userRoleDisplay.textContent = roleLabels[userRole] || userRole;
+        }
+        if (userAvatar) userAvatar.textContent = username.charAt(0).toUpperCase();
+        
+        // Logout
+        const logoutBtn = document.getElementById('logout-btn');
+        logoutBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (confirm('Deseja realmente sair do sistema?')) {
+                localStorage.removeItem('authToken');
+                localStorage.removeItem('username');
+                localStorage.removeItem('userRole');
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
 </body>
 </html>
