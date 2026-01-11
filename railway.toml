@@ -1,7 +1,6 @@
-provider = "dockerfile"
+provider = "nixpacks"
 
 [build]
-builder = "DOCKERFILE"
-dockerfilePath = "Dockerfile"
+ builder = "NIXPACKS"
 
 [deploy]
