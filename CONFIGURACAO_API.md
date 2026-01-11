@@ -77,3 +77,21 @@ Se você tem dados no LocalStorage e quer migrar para o banco:
 2. Faça login e teste criar um pedido
 3. Verifique se os dados persistem após recarregar a página
 4. Configure um domínio customizado (opcional)
+
+## 🧹 Reconstrução do Banco (Local)
+Se preferir apagar e reconstruir o banco local com o schema atual:
+
+1. No PowerShell:
+
+```powershell
+Push-Location "C:\Users\PrescriMed\Desktop\Sistema\bar_restaurante-main\server"
+$env:DATABASE_URL="postgres://bar:bar@localhost:5432/bar_restaurante"
+$env:JWT_SECRET="local_dev_secret_please_change"
+$env:NODE_ENV="production"
+npm run rebuild
+Pop-Location
+```
+
+- O script remove objetos do schema `public` e reaplica o schema em [server/src/migrations/schema.sql](server/src/migrations/schema.sql).
+- Não impacta o layout do frontend; apenas recria tabelas, índices e seeds padronizados.
+- Em produção (Railway), não execute sem backup e confirmação explícita.
