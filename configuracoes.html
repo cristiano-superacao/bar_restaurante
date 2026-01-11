@@ -1,143 +1,845 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <base href="/">
-    <title>Configurações - Bar e Restaurante</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/base.css">
-    <link rel="stylesheet" href="css/dashboard.css">
-    <link rel="stylesheet" href="css/configuracoes.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/">
+  <title>Configurações - Sistema de Gestão</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-50: #eff6ff;
+      --primary-100: #dbeafe;
+      --primary-200: #bfdbfe;
+      --primary-300: #93c5fd;
+      --primary-400: #60a5fa;
+      --primary-500: #3b82f6;
+      --primary-600: #2563eb;
+      --primary-700: #1d4ed8;
+      --primary-800: #1e40af;
+      --primary-900: #1e3a8a;
+      --primary-950: #172554;
+      
+      --neutral-50: #f8fafc;
+      --neutral-100: #f1f5f9;
+      --neutral-200: #e2e8f0;
+      --neutral-300: #cbd5e1;
+      --neutral-400: #94a3b8;
+      --neutral-500: #64748b;
+      --neutral-600: #475569;
+      --neutral-700: #334155;
+      --neutral-800: #1e293b;
+      --neutral-900: #0f172a;
+      
+      --success-50: #f0fdf4;
+      --success-500: #22c55e;
+      --success-600: #16a34a;
+      --warning-50: #fffbeb;
+      --warning-500: #f59e0b;
+      --warning-600: #d97706;
+      --error-50: #fef2f2;
+      --error-500: #ef4444;
+      --error-600: #dc2626;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: var(--neutral-50);
+      color: var(--neutral-900);
+      line-height: 1.6;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 280px;
+      background: white;
+      border-right: 1px solid var(--neutral-200);
+      padding: 24px 0;
+      overflow-y: auto;
+      z-index: 100;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-brand {
+      padding: 0 24px 24px;
+      border-bottom: 1px solid var(--neutral-100);
+      margin-bottom: 24px;
+    }
+
+    .sidebar-brand h1 {
+      font-size: 24px;
+      color: var(--primary-600);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-brand h1 i {
+      font-size: 28px;
+    }
+
+    .sidebar-nav {
+      padding: 0 16px;
+    }
+
+    .nav-section {
+      margin-bottom: 32px;
+    }
+
+    .nav-section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--neutral-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0 8px;
+      margin-bottom: 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      color: var(--neutral-700);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.2s;
+      margin-bottom: 4px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .nav-item i {
+      width: 20px;
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .nav-item:hover {
+      background: var(--primary-50);
+      color: var(--primary-600);
+    }
+
+    .nav-item.active {
+      background: var(--primary-50);
+      color: var(--primary-600);
+      border-left: 3px solid var(--primary-600);
+      padding-left: 13px;
+    }
+
+    /* Main Wrapper */
+    .main-wrapper {
+      margin-left: 280px;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Header */
+    .header {
+      background: white;
+      border-bottom: 1px solid var(--neutral-200);
+      padding: 20px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: var(--neutral-700);
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .header-title h2 {
+      font-size: 24px;
+      color: var(--neutral-900);
+      font-weight: 700;
+    }
+
+    .header-title p {
+      font-size: 14px;
+      color: var(--neutral-500);
+      margin-top: 2px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      background: var(--neutral-50);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .user-info:hover {
+      background: var(--neutral-100);
+    }
+
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .user-details span {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--neutral-900);
+    }
+
+    .btn-logout {
+      background: var(--error-600);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-logout:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
+    }
+
+    /* Main Content */
+    .main-content {
+      padding: 32px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 32px;
+      border-bottom: 2px solid var(--neutral-200);
+      overflow-x: auto;
+    }
+
+    .tab {
+      padding: 12px 24px;
+      background: none;
+      border: none;
+      color: var(--neutral-600);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .tab:hover {
+      color: var(--primary-600);
+      background: var(--primary-50);
+    }
+
+    .tab.active {
+      color: var(--primary-600);
+      border-bottom-color: var(--primary-600);
+    }
+
+    .tab i {
+      font-size: 18px;
+    }
+
+    /* Tab Content */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* Settings Card */
+    .settings-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      margin-bottom: 24px;
+    }
+
+    .settings-card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--neutral-900);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .settings-card h3 i {
+      color: var(--primary-600);
+      font-size: 24px;
+    }
+
+    .settings-card p {
+      color: var(--neutral-600);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+
+    /* Form Group */
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: var(--neutral-700);
+      font-size: 14px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group input[type="url"],
+    .form-group input[type="number"],
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid var(--neutral-200);
+      border-radius: 8px;
+      font-size: 14px;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px var(--primary-50);
+    }
+
+    .form-group input:disabled {
+      background: var(--neutral-100);
+      color: var(--neutral-500);
+      cursor: not-allowed;
+    }
+
+    .form-group small {
+      display: block;
+      margin-top: 4px;
+      color: var(--neutral-500);
+      font-size: 12px;
+    }
+
+    /* Toggle Switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+
+    .toggle-row input[type="checkbox"] {
+      appearance: none;
+      width: 52px;
+      height: 28px;
+      background: var(--neutral-300);
+      border-radius: 14px;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .toggle-row input[type="checkbox"]::before {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s;
+    }
+
+    .toggle-row input[type="checkbox"]:checked {
+      background: var(--primary-600);
+    }
+
+    .toggle-row input[type="checkbox"]:checked::before {
+      transform: translateX(24px);
+    }
+
+    /* Button Group */
+    .button-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: var(--primary-600);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-700);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-secondary {
+      background: white;
+      color: var(--neutral-700);
+      border: 2px solid var(--neutral-300);
+    }
+
+    .btn-secondary:hover {
+      background: var(--neutral-50);
+      border-color: var(--neutral-400);
+    }
+
+    .btn-danger {
+      background: var(--error-600);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #b91c1c;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 6px rgba(220, 38, 38, 0.2);
+    }
+
+    /* Status Message */
+    .status-message {
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .status-message.show {
+      display: flex;
+    }
+
+    .status-message.success {
+      background: var(--success-50);
+      color: var(--success-600);
+      border: 1px solid var(--success-500);
+    }
+
+    .status-message.error {
+      background: var(--error-50);
+      color: var(--error-600);
+      border: 1px solid var(--error-500);
+    }
+
+    .status-message.warning {
+      background: var(--warning-50);
+      color: var(--warning-600);
+      border: 1px solid var(--warning-500);
+    }
+
+    .status-message i {
+      font-size: 20px;
+    }
+
+    /* Sidebar Overlay */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.active {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header {
+        padding: 16px;
+      }
+
+      .header-title h2 {
+        font-size: 20px;
+      }
+
+      .user-details {
+        display: none;
+      }
+
+      .main-content {
+        padding: 16px;
+      }
+
+      .settings-card {
+        padding: 24px 16px;
+      }
+
+      .tabs {
+        gap: 4px;
+      }
+
+      .tab {
+        padding: 10px 16px;
+        font-size: 13px;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <i class="fas fa-utensils logo-icon"></i>
-                <h2>Sistema</h2>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="dashboard.html"><i class="fas fa-tachometer-alt"></i> <span>Dashboard</span></a></li>
-                    <li><a href="cardapio.html"><i class="fas fa-book-open"></i> <span>Cardápio</span></a></li>
-                    <li><a href="pedidos.html"><i class="fas fa-receipt"></i> <span>Pedidos</span></a></li>
-                    <li><a href="clientes.html"><i class="fas fa-user"></i> <span>Clientes</span></a></li>
-                    <li><a href="delivery.html"><i class="fas fa-motorcycle"></i> <span>Delivery</span></a></li>
-                    <li><a href="mesas.html"><i class="fas fa-chair"></i> <span>Mesas</span></a></li>
-                    <li><a href="reserva.html"><i class="fas fa-calendar-check"></i> <span>Reservas</span></a></li>
-                    <li><a href="estoque.html"><i class="fas fa-boxes"></i> <span>Estoque</span></a></li>
-                    <li><a href="financeiro.html"><i class="fas fa-dollar-sign"></i> <span>Financeiro</span></a></li>
-                    <li><a href="relatorios.html"><i class="fas fa-chart-line"></i> <span>Relatórios</span></a></li>
-                    <li class="active"><a href="configuracoes.html"><i class="fas fa-cog"></i> <span>Configurações</span></a></li>
-                    <li><a href="usuarios.html"><i class="fas fa-users"></i> <span>Usuários</span></a></li>
-                    <li><a href="empresas.html"><i class="fas fa-building"></i> <span>Empresas</span></a></li>
-                    <li><a href="manual.html"><i class="fas fa-book"></i> <span>Manual</span></a></li>
-                </ul>
-            </nav>
-            <div class="sidebar-footer">
-                <div class="user-info">
-                    <i class="fas fa-user-circle"></i>
-                        <span id="username-display">Usuário</span>
-                        <small id="user-role-display">Cargo</small>
-                    </div>
-                </div>
-                <a href="#" id="logout-btn" class="logout-btn" title="Sair" aria-label="Sair"><i class="fas fa-sign-out-alt"></i></a>
-            </div>
-        </aside>
-        <main class="main-content">
-            <header class="main-header">
-                <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <div class="header-title">
-                    <h1>Configurações</h1>
-                </div>
-                <div class="header-actions"></div>
-            </header>
-            <section class="content-body">
-                <div class="toolbar">
-                    <div class="search-input">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="settings-search" placeholder="Buscar configurações..." aria-label="Buscar configurações">
-                    </div>
-                    <div class="filter-pill">
-                        <i class="fas fa-filter"></i>
-                        <select id="settings-section-filter" aria-label="Filtrar por seção">
-                            <option value="all">Todas</option>
-                            <option value="perfil">Perfil</option>
-                            <option value="dados">Dados</option>
-                            <option value="api">Conexão (API)</option>
-                        </select>
-                        <i class="fas fa-chevron-down"></i>
-                    </div>
-                </div>
-                <div class="settings-grid">
-                    <div class="settings-card" data-section="perfil">
-                        <h3><i class="fas fa-user-cog"></i> Perfil</h3>
-                        <div class="form-group">
-                            <label for="profile-name">Nome de Usuário</label>
-                            <input type="text" id="profile-name" disabled>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile-role">Cargo</label>
-                            <input type="text" id="profile-role" disabled>
-                        </div>
-                    </div>
-
-                    <div class="settings-card" data-section="dados">
-                        <h3><i class="fas fa-database"></i> Gerenciamento de Dados</h3>
-                        <p>Exporte todos os dados da aplicação ou limpe o armazenamento local para recomeçar.</p>
-                        <div class="data-actions">
-                            <button id="export-data-btn" class="btn btn-secondary"><i class="fas fa-file-export"></i> Exportar Dados (JSON)</button>
-                            <button id="clear-data-btn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar Todos os Dados</button>
-                        </div>
-                    </div>
-
-                    <div class="settings-card" data-section="api">
-                        <h3><i class="fas fa-plug"></i> Conexão com API</h3>
-                        <p class="settings-help">Ative a API para salvar dados no servidor (Postgres). Quando desativada, o sistema usa LocalStorage.</p>
-
-                        <div class="api-grid">
-                            <div class="form-group">
-                                <label class="toggle-row" for="api-enabled-toggle">
-                                    <span>API habilitada</span>
-                                    <input type="checkbox" id="api-enabled-toggle" />
-                                </label>
-                                <small class="muted">Requer recarregar a página após salvar.</small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="api-baseurl">URL da API (baseUrl)</label>
-                                <input type="url" id="api-baseurl" placeholder="https://sua-api.up.railway.app" />
-                                <small class="muted">Dica: use HTTPS em produção.</small>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="api-timeout">Timeout (ms)</label>
-                                <input type="number" id="api-timeout" min="1000" step="500" />
-                            </div>
-                        </div>
-
-                        <div class="data-actions">
-                            <button id="api-test-btn" class="btn btn-secondary" type="button"><i class="fas fa-vial"></i> Testar</button>
-                            <button id="api-save-btn" class="btn btn-primary" type="button"><i class="fas fa-save"></i> Salvar</button>
-                            <button id="api-reset-btn" class="btn btn-secondary" type="button"><i class="fas fa-rotate-left"></i> Voltar ao padrão</button>
-                        </div>
-
-                        <div id="api-status" class="api-status" aria-live="polite"></div>
-                    </div>
-                </div>
-            </section>
-        </main>
-        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+      <h1><i class="fas fa-utensils"></i> Bar & Restaurante</h1>
     </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">
+        <div class="nav-section-title">Principal</div>
+        <a href="dashboard.html" class="nav-item">
+          <i class="fas fa-chart-line"></i>
+          <span>Dashboard</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Operacional</div>
+        <a href="pedidos.html" class="nav-item">
+          <i class="fas fa-shopping-cart"></i>
+          <span>Pedidos</span>
+        </a>
+        <a href="mesas.html" class="nav-item">
+          <i class="fas fa-chair"></i>
+          <span>Mesas</span>
+        </a>
+        <a href="cardapio.html" class="nav-item">
+          <i class="fas fa-book-open"></i>
+          <span>Cardápio</span>
+        </a>
+        <a href="delivery.html" class="nav-item">
+          <i class="fas fa-motorcycle"></i>
+          <span>Delivery</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Gestão</div>
+        <a href="clientes.html" class="nav-item">
+          <i class="fas fa-user-friends"></i>
+          <span>Clientes</span>
+        </a>
+        <a href="reserva.html" class="nav-item">
+          <i class="fas fa-calendar-check"></i>
+          <span>Reservas</span>
+        </a>
+        <a href="estoque.html" class="nav-item">
+          <i class="fas fa-boxes"></i>
+          <span>Estoque</span>
+        </a>
+        <a href="financeiro.html" class="nav-item">
+          <i class="fas fa-dollar-sign"></i>
+          <span>Financeiro</span>
+        </a>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">Sistema</div>
+        <a href="relatorios.html" class="nav-item">
+          <i class="fas fa-chart-bar"></i>
+          <span>Relatórios</span>
+        </a>
+        <a href="usuarios.html" class="nav-item">
+          <i class="fas fa-users"></i>
+          <span>Usuários</span>
+        </a>
+        <a href="empresas.html" class="nav-item">
+          <i class="fas fa-building"></i>
+          <span>Empresas</span>
+        </a>
+        <a href="configuracoes.html" class="nav-item active">
+          <i class="fas fa-cog"></i>
+          <span>Configurações</span>
+        </a>
+      </div>
+    </nav>
+  </aside>
 
-    <script src="js/config.js"></script>
-    <script src="js/utils.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/auth-neon.js"></script>
-    <script src="js/dashboard.js"></script>
-    <script src="js/configuracoes.js"></script>
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menu-toggle">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="header-title">
+          <h2>Configurações</h2>
+          <p>Ajuste as configurações do sistema</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="user-info" id="user-info">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <div class="user-details">
+            <span id="user-name">Usuário</span>
+          </div>
+        </div>
+        <button class="btn-logout" id="logout-btn">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Sair</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="perfil">
+          <i class="fas fa-user-cog"></i>
+          <span>Perfil</span>
+        </button>
+        <button class="tab" data-tab="dados">
+          <i class="fas fa-database"></i>
+          <span>Dados</span>
+        </button>
+        <button class="tab" data-tab="api">
+          <i class="fas fa-plug"></i>
+          <span>API</span>
+        </button>
+      </div>
+
+      <!-- Perfil Tab -->
+      <div class="tab-content active" data-content="perfil">
+        <div class="settings-card">
+          <h3><i class="fas fa-user-cog"></i> Informações do Perfil</h3>
+          <p>Visualize suas informações de usuário</p>
+          <div class="form-group">
+            <label for="profile-name">Nome de Usuário</label>
+            <input type="text" id="profile-name" disabled>
+          </div>
+          <div class="form-group">
+            <label for="profile-role">Cargo</label>
+            <input type="text" id="profile-role" disabled>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dados Tab -->
+      <div class="tab-content" data-content="dados">
+        <div class="settings-card">
+          <h3><i class="fas fa-database"></i> Gerenciamento de Dados</h3>
+          <p>Exporte todos os dados da aplicação ou limpe o armazenamento local para recomeçar</p>
+          <div class="button-group">
+            <button id="export-data-btn" class="btn btn-secondary">
+              <i class="fas fa-file-export"></i>
+              <span>Exportar Dados (JSON)</span>
+            </button>
+            <button id="clear-data-btn" class="btn btn-danger">
+              <i class="fas fa-trash-alt"></i>
+              <span>Limpar Todos os Dados</span>
+            </button>
+          </div>
+          <div class="status-message" id="data-status"></div>
+        </div>
+      </div>
+
+      <!-- API Tab -->
+      <div class="tab-content" data-content="api">
+        <div class="settings-card">
+          <h3><i class="fas fa-plug"></i> Conexão com API</h3>
+          <p>Ative a API para salvar dados no servidor (Postgres). Quando desativada, o sistema usa LocalStorage</p>
+          
+          <div class="form-group">
+            <label class="toggle-row">
+              <span>API Habilitada</span>
+              <input type="checkbox" id="api-enabled-toggle">
+            </label>
+            <small>Requer recarregar a página após salvar</small>
+          </div>
+
+          <div class="form-group">
+            <label for="api-baseurl">URL da API (baseUrl)</label>
+            <input type="url" id="api-baseurl" placeholder="https://sua-api.up.railway.app">
+            <small>Dica: use HTTPS em produção</small>
+          </div>
+
+          <div class="form-group">
+            <label for="api-timeout">Timeout (ms)</label>
+            <input type="number" id="api-timeout" min="1000" step="500" placeholder="5000">
+          </div>
+
+          <div class="button-group">
+            <button id="api-test-btn" class="btn btn-secondary">
+              <i class="fas fa-vial"></i>
+              <span>Testar Conexão</span>
+            </button>
+            <button id="api-save-btn" class="btn btn-primary">
+              <i class="fas fa-save"></i>
+              <span>Salvar Configurações</span>
+            </button>
+            <button id="api-reset-btn" class="btn btn-secondary">
+              <i class="fas fa-rotate-left"></i>
+              <span>Voltar ao Padrão</span>
+            </button>
+          </div>
+
+          <div class="status-message" id="api-status"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/auth-neon.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/configuracoes.js"></script>
+  <script>
+    // Menu Toggle
+    document.getElementById('menu-toggle').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.toggle('active');
+      document.getElementById('sidebar-overlay').classList.toggle('active');
+    });
+
+    document.getElementById('sidebar-overlay').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('active');
+      document.getElementById('sidebar-overlay').classList.remove('active');
+    });
+
+    // Tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const target = tab.dataset.tab;
+        
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        
+        tab.classList.add('active');
+        document.querySelector(`[data-content="${target}"]`).classList.add('active');
+      });
+    });
+
+    // User Display
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    if (userData.name) {
+      document.getElementById('user-name').textContent = userData.name;
+      const initials = userData.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+      document.getElementById('user-avatar').textContent = initials;
+    }
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      if (confirm('Deseja realmente sair do sistema?')) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('userData');
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
 </body>
 </html>
