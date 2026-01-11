@@ -89,23 +89,48 @@ ALTER TABLE orders ADD COLUMN IF NOT EXISTS subtotal NUMERIC(12,2) NOT NULL DEFA
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS paid_at TIMESTAMP WITHOUT TIME ZONE;
 
 -- Restrições idempotentes de domínio para padronizar valores
+-- Normalização de valores existentes para evitar falha ao validar restrição
+-- Converte nulos/vazios e mapeia sinônimos usados em versões anteriores
+UPDATE orders SET status = COALESCE(NULLIF(TRIM(status), ''), 'Pendente');
+UPDATE orders SET status = 'Pendente' WHERE status IN ('Aberto','Novo','Aguardando','Iniciado');
+UPDATE orders SET status = 'Em Preparo' WHERE status IN ('Preparando','Em andamento');
+UPDATE orders SET status = 'Entregue' WHERE status IN ('Finalizado','Concluido','Concluído','Entregue ao cliente');
+UPDATE orders SET status = 'Cancelado' WHERE status IN ('Cancelada','Cancelado pelo cliente');
+UPDATE orders SET status = 'Pago' WHERE status IN ('Fechado','Finalizado Pago','Pago pelo cliente');
+UPDATE orders SET status = 'Saiu para Entrega' WHERE status IN ('Em Entrega','Saiu para entrega');
+
 DO $$
 BEGIN
-  -- status permitido: inclui estados de Mesa/Delivery
+  -- Restrições idempotentes: adiciona como NOT VALID para não quebrar dados legados
   ALTER TABLE orders
     ADD CONSTRAINT orders_status_chk
     CHECK (status IN (
       'Pendente', 'Em Preparo', 'Entregue', 'Saiu para Entrega', 'Pago', 'Cancelado'
-    ));
+    )) NOT VALID;
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- Tenta validar a restrição após normalização; ignora se ainda houver legados
+DO $$
+BEGIN
+  ALTER TABLE orders VALIDATE CONSTRAINT orders_status_chk;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
+
+-- Normaliza tipo de pedido e garante valor padrão
+UPDATE orders SET order_type = COALESCE(NULLIF(TRIM(order_type), ''), 'Mesa');
+UPDATE orders SET order_type = 'Mesa' WHERE order_type NOT IN ('Mesa','Delivery');
+
+DO $$
+BEGIN
+  -- tipos de pedido permitidos (idempotente)
+  ALTER TABLE orders
+    ADD CONSTRAINT orders_type_chk
+    CHECK (order_type IN ('Mesa','Delivery')) NOT VALID;
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 DO $$
 BEGIN
-  -- tipos de pedido permitidos
-  ALTER TABLE orders
-    ADD CONSTRAINT orders_type_chk
-    CHECK (order_type IN ('Mesa','Delivery'));
-EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+  ALTER TABLE orders VALIDATE CONSTRAINT orders_type_chk;
+EXCEPTION WHEN OTHERS THEN NULL; END $$;
 
 CREATE TABLE IF NOT EXISTS order_items (
   id SERIAL PRIMARY KEY,
