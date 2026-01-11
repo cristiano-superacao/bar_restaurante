@@ -33,8 +33,66 @@ document.addEventListener('DOMContentLoaded', () => {
         if (impactSignupBtn) impactSignupBtn.addEventListener('click', () => { closeImpact(); openSignup(); });
     } catch {}
 
-    function openSignup() { if (signupModal) signupModal.classList.add('show'); }
-    function closeSignup() { if (signupModal) signupModal.classList.remove('show'); }
+    // Gerenciamento do modal de cadastro com acessibilidade
+    let lastFocusedElement = null;
+
+    function openSignup() { 
+        if (signupModal) {
+            // Salva elemento que tinha foco antes do modal
+            lastFocusedElement = document.activeElement;
+            
+            signupModal.classList.add('show');
+            signupModal.setAttribute('aria-hidden', 'false');
+            
+            // Foca no primeiro campo do formulário
+            const firstInput = signupModal.querySelector('input');
+            if (firstInput) setTimeout(() => firstInput.focus(), 100);
+            
+            // Adiciona trap de foco no modal
+            document.addEventListener('keydown', handleModalKeydown);
+        }
+    }
+    
+    function closeSignup() { 
+        if (signupModal) {
+            signupModal.classList.remove('show');
+            signupModal.setAttribute('aria-hidden', 'true');
+            
+            // Remove trap de foco
+            document.removeEventListener('keydown', handleModalKeydown);
+            
+            // Restaura foco no elemento anterior
+            if (lastFocusedElement) {
+                lastFocusedElement.focus();
+                lastFocusedElement = null;
+            }
+        }
+    }
+    
+    function handleModalKeydown(e) {
+        // Fecha modal com ESC
+        if (e.key === 'Escape') {
+            closeSignup();
+            return;
+        }
+        
+        // Trap de foco: mantém foco dentro do modal
+        if (e.key === 'Tab' && signupModal && signupModal.classList.contains('show')) {
+            const focusableElements = signupModal.querySelectorAll(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            );
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+            
+            if (e.shiftKey && document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            } else if (!e.shiftKey && document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        }
+    }
     if (openSignupLink) openSignupLink.addEventListener('click', openSignup);
     if (signupClose) signupClose.addEventListener('click', closeSignup);
     window.addEventListener('click', (e) => { if (e.target === signupModal) closeSignup(); });

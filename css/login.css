@@ -456,6 +456,19 @@ body {
 /* Modal (login) usa base.css com overlay em blur e padding específico */
 .modal { background: rgba(2,6,23,0.60); backdrop-filter: blur(6px); z-index: 60; padding: 18px; }
 
+/* Classe para elementos visíveis apenas para leitores de tela */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
 /* Override suave para botão de fechar no contexto do modal */
 .modal .close-btn {
     border: 1px solid rgba(226,232,240,0.95);

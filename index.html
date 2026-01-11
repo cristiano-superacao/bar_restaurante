@@ -107,12 +107,13 @@
     </div>
 
     <!-- Modal de Cadastro -->
-    <div id="signup-modal" class="modal" aria-hidden="true">
-        <div class="modal-content auth-card" role="dialog" aria-labelledby="signup-title">
+    <div id="signup-modal" class="modal" aria-hidden="true" aria-modal="true">
+        <div class="modal-content auth-card" role="dialog" aria-labelledby="signup-title" aria-describedby="signup-description">
             <div class="modal-header">
                 <h2 id="signup-title">Criar conta</h2>
-                <button class="close-btn" id="signup-close" aria-label="Fechar">&times;</button>
+                <button class="close-btn" id="signup-close" aria-label="Fechar modal de cadastro">&times;</button>
             </div>
+            <p id="signup-description" class="sr-only">Formulário para criar uma nova conta no sistema</p>
             <form id="signup-form" class="auth-form">
                 <div class="field">
                     <label class="field-label" for="su-company">Empresa (opcional)</label>
