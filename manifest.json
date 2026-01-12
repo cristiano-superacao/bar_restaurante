@@ -13,54 +13,7 @@
     "lang": "pt-BR",
     "categories": ["business", "productivity", "food"],
     "icons": [
-        {
-            "src": "https://via.placeholder.com/72x72?text=MF",
-            "sizes": "72x72",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "https://via.placeholder.com/96x96?text=MF",
-            "sizes": "96x96",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "https://via.placeholder.com/128x128?text=MF",
-            "sizes": "128x128",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "https://via.placeholder.com/144x144?text=MF",
-            "sizes": "144x144",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "https://via.placeholder.com/152x152?text=MF",
-            "sizes": "152x152",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "https://via.placeholder.com/192x192?text=MF",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "https://via.placeholder.com/384x384?text=MF",
-            "sizes": "384x384",
-            "type": "image/png",
-            "purpose": "maskable any"
-        },
-        {
-            "src": "https://via.placeholder.com/512x512?text=MF",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable any"
-        }
+        
     ],
     "shortcuts": [
         {
