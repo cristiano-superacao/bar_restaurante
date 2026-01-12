@@ -668,7 +668,7 @@ a:hover {
 }
 
 /* Cores do ícone por faixa (tarja) */
-.stat-card.stripe-primary .stat-icon { background-color: var(--primary-100); color: var(--primary-600); }
+.stat-card.stripe-primary .stat-icon { background-color: var(--success-50); color: var(--success-600); }
 .stat-card.stripe-success .stat-icon { background-color: var(--success-50); color: var(--success-600); }
 .stat-card.stripe-warning .stat-icon { background-color: var(--warning-50); color: var(--warning-600); }
 .stat-card.stripe-error .stat-icon { background-color: var(--error-50); color: var(--error-600); }
