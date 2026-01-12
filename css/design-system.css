@@ -667,6 +667,13 @@ a:hover {
     flex-shrink: 0;
 }
 
+/* Cores do ícone por faixa (tarja) */
+.stat-card.stripe-primary .stat-icon { background-color: var(--primary-100); color: var(--primary-600); }
+.stat-card.stripe-success .stat-icon { background-color: var(--success-50); color: var(--success-600); }
+.stat-card.stripe-warning .stat-icon { background-color: var(--warning-50); color: var(--warning-600); }
+.stat-card.stripe-error .stat-icon { background-color: var(--error-50); color: var(--error-600); }
+.stat-card.stripe-violet .stat-icon { background-color: #f3e8ff; color: #7c3aed; }
+
 .stat-content { flex: 1; }
 .stat-label { font-size: var(--font-size-sm); color: var(--text-muted); font-weight: var(--font-weight-medium); margin-bottom: 0.25rem; }
 .stat-value { font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); color: var(--text-primary); line-height: 1; }
