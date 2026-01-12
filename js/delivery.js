@@ -23,10 +23,26 @@ document.addEventListener('DOMContentLoaded', function () {
   const customerAddressInput = document.getElementById('delivery-customer-address');
   const customerNeighborhoodInput = document.getElementById('delivery-customer-neighborhood');
   const customerReferenceInput = document.getElementById('delivery-customer-reference');
+  const driverSelect = document.getElementById('delivery-driver');
   const statusSelect = document.getElementById('delivery-status');
   const feeInput = document.getElementById('delivery-fee');
   const discountInput = document.getElementById('delivery-discount');
   const paymentSelect = document.getElementById('delivery-payment');
+  
+  function populateDriverSelect() {
+    if (!driverSelect) return;
+    // Buscar usuários com função "Motoboy"
+    const users = window.APP_STORAGE?.get('users', []) || [];
+    const motoboys = users.filter(u => u.function === 'Motoboy' && u.status !== 'Inativo');
+    driverSelect.innerHTML = '<option value="">Selecione o motoboy...</option>';
+    motoboys.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.name || m.username;
+      opt.textContent = m.name || m.username;
+      driverSelect.appendChild(opt);
+    });
+  }
+  
   function populateStatusSelect() {
     const sel = document.getElementById('delivery-status');
     if (!sel) return;
@@ -224,6 +240,9 @@ document.addEventListener('DOMContentLoaded', function () {
     populateMenu();
     populateStatusSelect();
     populatePaymentSelect();
+    populateDriverSelect();
+    const errEl = document.getElementById('delivery-form-error');
+    if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
     currentItems = [];
 
     if (order) {
@@ -234,6 +253,7 @@ document.addEventListener('DOMContentLoaded', function () {
       customerAddressInput.value = order.customerAddress || order.customer_address || '';
       customerNeighborhoodInput.value = order.customerNeighborhood || order.customer_neighborhood || '';
       customerReferenceInput.value = order.customerReference || order.customer_reference || '';
+      driverSelect.value = order.deliveryDriver || order.delivery_driver || '';
       statusSelect.value = order.status || 'Pendente';
       feeInput.value = Number(order.deliveryFee ?? order.delivery_fee ?? 0);
       discountInput.value = Number(order.discount ?? 0);
@@ -262,8 +282,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   async function submit(e) {
     e.preventDefault();
+    const errEl = document.getElementById('delivery-form-error');
+    const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
     if (currentItems.length === 0) {
-      alert('Adicione pelo menos um item ao delivery.');
+      showError('Adicione pelo menos um item ao delivery.');
       return;
     }
 
@@ -276,6 +298,7 @@ document.addEventListener('DOMContentLoaded', function () {
       customerAddress: customerAddressInput.value,
       customerNeighborhood: customerNeighborhoodInput.value,
       customerReference: customerReferenceInput.value,
+      deliveryDriver: driverSelect.value,
       deliveryFee: totals.fee,
       discount: totals.discount,
       paymentMethod: paymentSelect.value,
@@ -294,8 +317,9 @@ document.addEventListener('DOMContentLoaded', function () {
         deliveries = await window.API.orders.listWithItems({ type: 'Delivery' });
         filterAndRender();
         closeModal();
-      } catch {
-        alert('Erro ao salvar delivery via API.');
+      } catch (e) {
+        const msg = (e && e.details && (e.details.error || e.details.message)) ? (e.details.error || e.details.message) : 'Erro ao salvar delivery via API.';
+        showError(msg);
       }
       return;
     }
@@ -311,6 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
       customerAddress: payload.customerAddress,
       customerNeighborhood: payload.customerNeighborhood,
       customerReference: payload.customerReference,
+      deliveryDriver: payload.deliveryDriver,
       paymentMethod: payload.paymentMethod,
       deliveryFee: payload.deliveryFee,
       discount: payload.discount,
@@ -344,8 +369,9 @@ document.addEventListener('DOMContentLoaded', function () {
         filterAndRender();
         closeModal();
         window.open(`cupom.html?orderId=${encodeURIComponent(String(id))}`, '_blank');
-      } catch {
-        alert('Erro ao fechar conta via API.');
+      } catch (e) {
+        const errEl = document.getElementById('delivery-form-error');
+        if (errEl) { errEl.textContent = 'Erro ao fechar conta via API.'; errEl.style.display = 'block'; }
       }
       return;
     }

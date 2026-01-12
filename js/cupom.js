@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (order.customerName) metaLines.push(`<div class="row"><span>Cliente</span><span>${order.customerName}</span></div>`);
       if (order.customerPhone) metaLines.push(`<div class="row"><span>Telefone</span><span>${order.customerPhone}</span></div>`);
       if (order.customerAddress) metaLines.push(`<div class="row"><span>Endereço</span><span>${order.customerAddress}</span></div>`);
+      if (order.deliveryDriver) metaLines.push(`<div class="row"><span>Motoboy</span><span>${order.deliveryDriver}</span></div>`);
     }
     if (order.paymentMethod) metaLines.push(`<div class="row"><span>Pagamento</span><span>${order.paymentMethod}</span></div>`);
     metaLines.push(`<div class="row"><span>Emissão</span><span>${fmtDateTime(order.paidAt || order.createdAt)}</span></div>`);
@@ -90,7 +91,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     itemsEl.textContent = String(e && e.message ? e.message : e);
   }
 
-  if (printBtn) printBtn.addEventListener('click', () => window.print());
+  if (printBtn) printBtn.addEventListener('click', () => {
+    const isDelivery = (data && data.order && data.order.orderType === 'Delivery');
+    if (isDelivery) {
+      // Para delivery, imprimir duas vias
+      window.print();
+      setTimeout(() => {
+        if (confirm('Imprimir segunda via?')) {
+          window.print();
+        }
+      }, 500);
+    } else {
+      window.print();
+    }
+  });
   if (closeBtn) closeBtn.addEventListener('click', () => window.close());
 });
 
