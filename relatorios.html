@@ -214,5 +214,37 @@
     <script>
         const menuToggle=document.getElementById('menu-toggle');const sidebar=document.getElementById('sidebar');const sidebarOverlay=document.getElementById('sidebar-overlay');menuToggle?.addEventListener('click',()=>{sidebar.classList.toggle('open');sidebarOverlay.classList.toggle('show');});sidebarOverlay?.addEventListener('click',()=>{sidebar.classList.remove('open');sidebarOverlay.classList.remove('show');});const username=localStorage.getItem('username')||'Usuário';const userRole=localStorage.getItem('userRole')||'admin';const usernameDisplay=document.getElementById('username-display');const userRoleDisplay=document.getElementById('user-role-display');const userAvatar=document.getElementById('user-avatar');if(usernameDisplay)usernameDisplay.textContent=username;if(userRoleDisplay){const roleLabels={'superadmin':'Super Admin','admin':'Administrador','staff':'Atendente'};userRoleDisplay.textContent=roleLabels[userRole]||userRole;}if(userAvatar)userAvatar.textContent=username.charAt(0).toUpperCase();const logoutBtn=document.getElementById('logout-btn');logoutBtn?.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();if(confirm('Deseja realmente sair do sistema?')){localStorage.removeItem('authToken');localStorage.removeItem('username');localStorage.removeItem('userRole');window.location.href='index.html';}});
     </script>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-shield-alt"></i> Sistema Bar & Restaurante</h3>
+                <p>Versão 2.3.0 - Janeiro 2026</p>
+                <p>Desenvolvido por Cristiano Santos</p>
+                <span class="version-badge">v2.3.0</span>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-headset"></i> Suporte Técnico</h3>
+                <p><strong>Cristiano Santos</strong></p>
+                <a href="tel:+5571993372960"><i class="fas fa-phone"></i> (71) 99337-2960</a>
+                <p><i class="far fa-clock"></i> Seg-Sex: 8h-18h | Sáb: 8h-12h</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-link"></i> Links Úteis</h3>
+                <a href="manual.html"><i class="fas fa-book"></i> Central de Ajuda</a>
+                <a href="https://wa.me/5571993372960" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a href="mailto:contato@sistemabr.com"><i class="fas fa-envelope"></i> Email</a>
+            </div>
+        </div>
+        
+        <div class="footer-divider"></div>
+        
+        <div class="footer-bottom">
+            <p>© 2026 Sistema de Gestão para Bar e Restaurante. Todos os direitos reservados. Feito com <i class="fas fa-heart"></i> por Cristiano Santos</p>
+        </div>
+    </footer>
 </body>
 </html>

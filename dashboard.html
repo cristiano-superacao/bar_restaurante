@@ -388,128 +388,212 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: var(--spacing);
+            margin-bottom: 16px;
         }
         
         .stat-icon {
-            width: 48px;
-            height: 48px;
+            width: 56px;
+            height: 56px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-md);
-            font-size: 1.25rem;
+            border-radius: 14px;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Ícones com gradientes por card */
+        .stat-card:nth-child(1) .stat-icon {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+        }
+        
+        .stat-card:nth-child(2) .stat-icon {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+        }
+        
+        .stat-card:nth-child(3) .stat-icon {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+        }
+        
+        .stat-card:nth-child(4) .stat-icon {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+        }
+        
+        .stat-card:nth-child(5) .stat-icon {
+            background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+            color: #5b21b6;
+        }
+        
+        .stat-card:nth-child(6) .stat-icon {
+            background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+            color: #9f1239;
+        }
+        
+        .stat-card:nth-child(7) .stat-icon {
+            background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+            color: #134e4a;
+        }
+        
+        .stat-card:nth-child(8) .stat-icon {
+            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+            color: #312e81;
         }
         
         .stat-icon.primary {
-            background-color: var(--primary-100);
-            color: var(--primary-600);
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
         }
         
         .stat-icon.success {
-            background-color: var(--success-50);
-            color: var(--success-600);
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
         }
         
         .stat-icon.warning {
-            background-color: var(--warning-50);
-            color: var(--warning-600);
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
         }
         
         .stat-icon.error {
-            background-color: var(--error-50);
-            color: var(--error-600);
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
         }
         
         .stat-trend {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 0.25rem;
-            font-size: var(--font-size-xs);
-            font-weight: var(--font-weight-semibold);
-            padding: 0.25rem 0.5rem;
-            border-radius: var(--radius-full);
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 20px;
         }
         
         .stat-trend.up {
-            background-color: var(--success-50);
-            color: var(--success-700);
+            background-color: #dcfce7;
+            color: #166534;
         }
         
         .stat-trend.down {
-            background-color: var(--error-50);
-            color: var(--error-700);
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .stat-trend.neutral {
+            background-color: #f1f5f9;
+            color: #475569;
+        }
+        
+        .stat-trend i {
+            font-size: 10px;
         }
         
         .stat-label {
-            font-size: var(--font-size-sm);
-            color: var(--text-muted);
-            font-weight: var(--font-weight-medium);
-            margin-bottom: 0.5rem;
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .stat-value {
-            font-size: var(--font-size-3xl);
-            font-weight: var(--font-weight-bold);
-            color: var(--text-primary);
-            line-height: 1;
-            margin-bottom: 0.5rem;
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.2;
+            margin-bottom: 8px;
         }
         
         .stat-description {
-            font-size: var(--font-size-xs);
-            color: var(--text-muted);
+            font-size: 13px;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .stat-description i {
+            font-size: 11px;
         }
         
         /* Charts Section */
         .charts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-lg);
+            gap: 24px;
+            margin-bottom: 32px;
         }
         
         .chart-card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-lg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        
+        .chart-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         }
         
         .chart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--spacing-lg);
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
         }
         
         .chart-title {
-            font-size: var(--font-size-lg);
-            font-weight: var(--font-weight-semibold);
-            color: var(--text-primary);
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chart-title i {
+            color: #64748b;
+            font-size: 16px;
         }
         
         .chart-actions {
             display: flex;
-            gap: var(--spacing-xs);
+            gap: 8px;
         }
         
         .chart-filter {
-            padding: 0.375rem 0.75rem;
-            font-size: var(--font-size-xs);
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
             border: 1px solid var(--border-color);
-            border-radius: var(--radius);
+            border-radius: 8px;
             background-color: var(--bg-card);
-            color: var(--text-secondary);
+            color: #64748b;
             cursor: pointer;
-            transition: all var(--transition-fast);
+            transition: all 0.2s ease;
         }
         
-        .chart-filter:hover, .chart-filter.active {
-            background-color: var(--primary-50);
-            color: var(--primary-700);
-            border-color: var(--primary-200);
+        .chart-filter:hover {
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+        
+        .chart-filter.active {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            border-color: #16a34a;
+            box-shadow: 0 2px 8px rgba(22, 163, 74, 0.2);
         }
         
         .chart-container {
@@ -521,49 +605,70 @@
         .activity-card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-lg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all 0.3s ease;
+        }
+        
+        .activity-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
         }
         
         .activity-list {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing);
+            gap: 0;
         }
         
         .activity-item {
             display: flex;
-            gap: var(--spacing);
-            padding: var(--spacing);
-            border-radius: var(--radius);
-            transition: background-color var(--transition-fast);
+            gap: 16px;
+            padding: 16px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
         }
         
         .activity-item:hover {
-            background-color: var(--bg-hover);
+            background-color: #f8fafc;
+            transform: translateX(4px);
         }
         
         .activity-icon {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: var(--radius-full);
+            border-radius: 12px;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
         }
         
         .activity-icon.primary {
-            background-color: var(--primary-100);
-            color: var(--primary-600);
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
         }
         
         .activity-icon.success {
-            background-color: var(--success-50);
-            color: var(--success-600);
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
         }
         
         .activity-icon.warning {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+        }
+        
+        .activity-icon.error {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+        }
             background-color: var(--warning-50);
             color: var(--warning-600);
         }
@@ -574,21 +679,23 @@
         }
         
         .activity-title {
-            font-size: var(--font-size-sm);
-            font-weight: var(--font-weight-medium);
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
         }
         
         .activity-description {
-            font-size: var(--font-size-xs);
-            color: var(--text-muted);
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
         }
         
         .activity-time {
-            font-size: var(--font-size-xs);
-            color: var(--text-muted);
+            font-size: 12px;
+            color: #94a3b8;
             white-space: nowrap;
+            font-weight: 500;
         }
         
         /* Responsive */
@@ -613,6 +720,25 @@
                 display: none;
             }
             
+            .stats-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+                gap: 16px;
+            }
+            
+            .stat-card {
+                padding: 20px;
+            }
+            
+            .stat-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+            }
+            
+            .stat-value {
+                font-size: 28px;
+            }
+            
             .charts-grid {
                 grid-template-columns: 1fr;
             }
@@ -620,23 +746,57 @@
         
         @media (max-width: 640px) {
             .main-header {
-                padding: var(--spacing);
+                padding: 12px 16px;
             }
             
             .main-content {
-                padding: var(--spacing);
+                padding: 16px;
             }
             
             .stats-grid {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .stat-card {
+                padding: 16px;
+            }
+            
+            .stat-icon {
+                width: 44px;
+                height: 44px;
+                font-size: 1.1rem;
             }
             
             .header-title h1 {
-                font-size: var(--font-size-xl);
+                font-size: 20px;
             }
             
             .stat-value {
-                font-size: var(--font-size-2xl);
+                font-size: 24px;
+            }
+            
+            .stat-label {
+                font-size: 11px;
+            }
+            
+            .chart-card {
+                padding: 16px;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .activity-item {
+                padding: 12px;
+            }
+            
+            .activity-icon {
+                width: 40px;
+                height: 40px;
             }
         }
         
@@ -1025,5 +1185,37 @@
             }
         });
     </script>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3><i class="fas fa-shield-alt"></i> Sistema Bar & Restaurante</h3>
+                <p>Versão 2.3.0 - Janeiro 2026</p>
+                <p>Desenvolvido por Cristiano Santos</p>
+                <span class="version-badge">v2.3.0</span>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-headset"></i> Suporte Técnico</h3>
+                <p><strong>Cristiano Santos</strong></p>
+                <a href="tel:+5571993372960"><i class="fas fa-phone"></i> (71) 99337-2960</a>
+                <p><i class="far fa-clock"></i> Seg-Sex: 8h-18h | Sáb: 8h-12h</p>
+            </div>
+            
+            <div class="footer-section">
+                <h3><i class="fas fa-link"></i> Links Úteis</h3>
+                <a href="manual.html"><i class="fas fa-book"></i> Central de Ajuda</a>
+                <a href="https://wa.me/5571993372960" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+                <a href="mailto:contato@sistemabr.com"><i class="fas fa-envelope"></i> Email</a>
+            </div>
+        </div>
+        
+        <div class="footer-divider"></div>
+        
+        <div class="footer-bottom">
+            <p>© 2026 Sistema de Gestão para Bar e Restaurante. Todos os direitos reservados. Feito com <i class="fas fa-heart"></i> por Cristiano Santos</p>
+        </div>
+    </footer>
 </body>
 </html>
