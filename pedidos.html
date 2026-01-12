@@ -194,6 +194,113 @@
             border-color: var(--primary-200);
         }
         
+        /* Conteúdo do card gerado via JS */
+        .order-card {
+            cursor: pointer;
+        }
+        .order-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            transition: width 0.3s ease;
+            border-top-left-radius: var(--radius-xl);
+            border-bottom-left-radius: var(--radius-xl);
+        }
+        .order-card:hover::before { width: 8px; }
+        
+        .order-card .order-icon {
+            position: absolute;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            font-size: 1.25rem;
+            color: var(--primary-400);
+            opacity: 0.9;
+        }
+        .order-card h3 {
+            margin: 0 0 0.25rem 0;
+            font-size: var(--font-size-lg);
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .order-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: var(--font-size-sm);
+        }
+        .order-status-text {
+            display: inline-flex;
+            align-items: center;
+            margin-top: var(--spacing);
+            padding: 0.375rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-bold);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .order-total-price {
+            margin-top: var(--spacing-lg);
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--primary-700);
+        }
+        
+        /* Cores por status */
+        .order-card.Pendente::before {
+            background: linear-gradient(180deg, #f59e0b, #d97706);
+        }
+        .order-card.Em-Preparo::before {
+            background: linear-gradient(180deg, #3b82f6, #2563eb);
+        }
+        .order-card.Entregue::before,
+        .order-card.Pago::before {
+            background: linear-gradient(180deg, #10b981, #059669);
+        }
+        .order-card.Cancelado::before {
+            background: linear-gradient(180deg, #ef4444, #dc2626);
+        }
+        
+        .order-card.Pendente .order-status-text {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            border-color: #f59e0b;
+        }
+        .order-card.Em-Preparo .order-status-text {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+            border-color: #3b82f6;
+        }
+        .order-card.Entregue .order-status-text {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            border-color: #10b981;
+        }
+        .order-card.Pago .order-status-text {
+            background: linear-gradient(135deg, #d1fae5, #6ee7b7);
+            color: #047857;
+            border-color: #059669;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
+        }
+        .order-card.Cancelado .order-status-text {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+            border-color: #ef4444;
+        }
+        
+        .order-card:focus-within,
+        .order-card:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+            border-color: var(--primary-300);
+        }
+        
         .order-header {
             display: flex;
             justify-content: space-between;
