@@ -353,36 +353,7 @@
             margin-bottom: var(--spacing-lg);
         }
         
-        .stat-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: var(--spacing-lg);
-            transition: all var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
-            opacity: 0;
-            transition: opacity var(--transition);
-        }
-        
-        .stat-card:hover {
-            box-shadow: var(--shadow-md);
-            transform: translateY(-2px);
-        }
-        
-        .stat-card:hover::before {
-            opacity: 1;
-        }
+        .stat-card::before { background: linear-gradient(90deg, var(--primary-500), var(--primary-600)); }
         
         .stat-card-header {
             display: flex;

@@ -615,3 +615,70 @@ a:hover {
         border-radius: 0;
     }
 }
+
+/* === CARDS DE STATUS (GENÉRICOS) === */
+.stat-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    position: relative;
+    overflow: hidden;
+    transition: all var(--transition);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.stat-card:hover::before { opacity: 1; }
+
+.stat-icon {
+    width: 56px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-lg);
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.stat-content { flex: 1; }
+.stat-label { font-size: var(--font-size-sm); color: var(--text-muted); font-weight: var(--font-weight-medium); margin-bottom: 0.25rem; }
+.stat-value { font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); color: var(--text-primary); line-height: 1; }
+
+/* === BOTÕES DE AÇÃO (ÍCONES) === */
+[class$="-action-btn"] {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: transparent;
+    color: var(--text-secondary);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+[class$="-action-btn"]:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+}

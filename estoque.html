@@ -48,10 +48,6 @@
         
         .filter-group { display: flex; gap: var(--spacing-sm); align-items: center; }
         .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-lg); }
-        .stat-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing); position: relative; overflow: hidden; transition: all var(--transition); }
-        .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0; transition: opacity var(--transition); }
-        .stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-        .stat-card:hover::before { opacity: 1; }
         .stat-card.total::before { background: linear-gradient(90deg, var(--primary-500), var(--primary-600)); }
         .stat-card.low::before { background: linear-gradient(90deg, var(--warning-500), var(--warning-600)); }
         .stat-card.critical::before { background: linear-gradient(90deg, var(--error-500), var(--error-600)); }
@@ -81,8 +77,7 @@
         .quantity-unit { font-size: var(--font-size-sm); color: var(--text-muted); display: block; margin-top: 0.25rem; }
         .quantity-status { font-size: var(--font-size-xs); color: var(--text-muted); margin-top: 0.25rem; }
         .estoque-actions { display: flex; gap: var(--spacing-xs); }
-        .estoque-action-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none; background-color: transparent; color: var(--text-secondary); border-radius: var(--radius); cursor: pointer; transition: all var(--transition-fast); }
-        .estoque-action-btn:hover { background-color: var(--bg-hover); color: var(--text-primary); }
+        
         .estoque-action-btn.edit:hover { background-color: var(--primary-50); color: var(--primary-600); }
         .estoque-action-btn.delete:hover { background-color: var(--error-50); color: var(--error-600); }
         .empty-state { text-align: center; padding: var(--spacing-2xl); }

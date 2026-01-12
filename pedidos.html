@@ -5,43 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pedidos - Sistema de Gestão para Bar e Restaurante</title>
     <meta name="description" content="Gerenciamento completo de pedidos com controle de status, mesas e pagamentos.">
-    
-    <link rel="stylesheet" href="css/design-system.css">
-    <link rel="stylesheet" href="css/sidebar-verde.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        /* Layout Base */
-        .app-container {
-            display: flex;
-            min-height: 100vh;
-            background-color: var(--bg-body);
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
         }
-        
-        /* Sidebar - Reutilizando do dashboard */
-        
-        
-        .sidebar.collapsed {
-            transform: translateX(-100%);
-        }
-        
-        .sidebar-header {
-            padding: var(--spacing-lg);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing);
-        }
-        
-        .sidebar-logo {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-            color: var(--text-white);
-            border-radius: var(--radius-md);
-            font-size: 1.25rem;
         }
         
         .sidebar-brand {
