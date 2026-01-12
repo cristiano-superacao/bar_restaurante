@@ -88,10 +88,6 @@
 }
 
 /* Cards e Badges de Status com paleta verde */
-.stat-card.total::before,
-.stat-card.balance::before {
-    background: linear-gradient(90deg, #22c55e, #16a34a) !important;
-}
 
 .stat-card.total .stat-icon,
 .stat-card.balance .stat-icon {

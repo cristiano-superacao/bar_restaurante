@@ -690,3 +690,46 @@ a:hover {
     background-color: var(--bg-hover);
     color: var(--text-primary);
 }
+
+/* === TARJAS DE STATUS (UTILITÁRIOS) === */
+.stat-card.stripe-primary::before,
+.stat-card.total::before,
+.stat-card.balance::before,
+.stat-card.orders::before,
+.stat-card.preparing::before,
+.stat-card.capacity::before {
+    background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
+}
+
+.stat-card.stripe-success::before,
+.stat-card.ok::before,
+.stat-card.confirmed::before,
+.stat-card.delivered::before,
+.stat-card.income::before,
+.stat-card.sales::before,
+.stat-card.free::before {
+    background: linear-gradient(90deg, var(--success-500), var(--success-600));
+}
+
+.stat-card.stripe-warning::before,
+.stat-card.pending::before,
+.stat-card.low::before,
+.stat-card.warning::before {
+    background: linear-gradient(90deg, var(--warning-500), var(--warning-600));
+}
+
+.stat-card.stripe-error::before,
+.stat-card.cancelled::before,
+.stat-card.canceled::before,
+.stat-card.critical::before,
+.stat-card.expense::before,
+.stat-card.error::before,
+.stat-card.occupied::before {
+    background: linear-gradient(90deg, var(--error-500), var(--error-600));
+}
+
+.stat-card.stripe-violet::before,
+.stat-card.forecast::before,
+.stat-card.out::before {
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+}
