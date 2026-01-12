@@ -7,7 +7,178 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
-## [2.3.0] - 2024-01-16
+## [2.3.0] - 2026-01-11
+
+### 🎨 Design System Verde Profissional
+
+#### Adicionado
+- **Nova Paleta de Cores Verde**: Inspirada em sistemas profissionais
+  - Sidebar verde escura (#1a4d2e) com gradiente
+  - Fundo body cinza claro (#f8fafc)
+  - Destaques em verde (#22c55e, #16a34a)
+  - Variáveis CSS atualizadas em `design-system.css`
+- **sidebar-verde.css**: Arquivo CSS dedicado para estilização global
+  - Gradientes na sidebar e elementos primários
+  - Hover states verdes consistentes
+  - Active states com verde luminoso (#4ade80)
+  - Badges e botões com tema verde
+  - Estilos para página de login
+- **Padronização Visual**: Todas as 16 páginas atualizadas
+  - Dashboard, Pedidos, Mesas, Cardápio
+  - Delivery, Reservas, Clientes, Estoque
+  - Financeiro, Relatórios, Usuários
+  - Empresas, Configurações, Manual
+  - Login (index.html)
+
+#### Modificado
+- **design-system.css**: Atualização completa da paleta de cores
+  - Primário mudou de azul (#3b82f6) para verde (#22c55e)
+  - Sidebar backgrounds com nova paleta verde
+  - Gradientes e sombras ajustados
+  - Cards com bordas mais sutis
+- **Todas as páginas HTML**: Inclusão de `sidebar-verde.css`
+  - Padronização via link CSS global
+  - Consistência visual mantida
+  - Responsividade preservada
+
+### 👨‍💼 Sistema de Funções Operacionais
+
+#### Adicionado
+- **Campo `function` na tabela users**: 
+  - Caixa, Cozinha, Motoboy, Supervisor, Garçom
+  - Migração idempotente em `schema.sql`
+- **Badges de Função**: Visualização colorida no frontend
+  - Classes CSS para cada função (.badge-function-*)
+  - Cores distintas e profissionais
+  - Integração em usuarios.html
+- **Modal de Criação de Usuário**: usuarios.html
+  - Select de função operacional
+  - Campo obrigatório no formulário
+  - Validação client-side
+- **Lógica de Backend**: server/src/routes/users.js
+  - Campo `function` em SELECT, INSERT, UPDATE
+  - Validações com express-validator
+  - Admin não pode criar superadmin
+
+#### Modificado
+- **usuarios.js**: Refatoração completa
+  - Criação via modal em vez de prompt
+  - Coleta de função operacional
+  - Slug para classes CSS (toSlug utility)
+  - Inline error handling
+  - Badges renderizados na listagem
+
+### 🛵 Melhorias no Delivery
+
+#### Adicionado
+- **Campo Motoboy no Modal**: delivery.html
+  - Select obrigatório com motoboys ativos
+  - Listagem dinâmica de usuários com função "Motoboy"
+- **populateDriverSelect()**: delivery.js
+  - Filtra usuários por função e status
+  - Atualiza select automaticamente
+- **Campo deliveryDriver**: Persistência completa
+  - Salvo em payload da API
+  - Armazenado em localStorage
+  - Exibido no cupom fiscal
+- **Impressão em Duas Vias**: cupom.js
+  - Detecta pedidos de delivery
+  - Imprime primeira via automaticamente
+  - Confirma impressão da segunda via
+- **Nome do Motoboy no Cupom**: cupom.js
+  - Meta info adicional para delivery
+  - Identificação clara do responsável
+
+#### Modificado
+- **delivery.js**: 
+  - Payload inclui `deliveryDriver`
+  - openModal popula select de motoboy
+  - LocalStorage preserva campo
+- **cupom.js**:
+  - Exibe motoboy se order.deliveryDriver presente
+  - Lógica de impressão dupla para delivery
+
+### 🎯 Tratamento de Erros Padronizado
+
+#### Adicionado
+- **Blocos de Erro Inline**: HTML
+  - `#user-form-error` em usuarios.html
+  - `#order-form-error` em pedidos.html
+  - `#client-form-error` em clientes.html
+  - `#reserva-form-error` em reserva.html
+  - `#delivery-form-error` em delivery.html
+  - `#estoque-form-error` em estoque.html
+- **Classe CSS `.form-error`**: Estilização consistente
+  - Cor de erro (#dc2626)
+  - Fundo (#fef2f2)
+  - Borda e padding padronizados
+  - Display: none por padrão
+- **Função showError()**: JavaScript
+  - Exibe mensagens dentro dos modais
+  - Substitui alert() em todos os módulos
+  - Mensagens detalhadas da API
+
+#### Modificado
+- **usuarios.js, pedidos.js, clientes.js, reserva.js, delivery.js, estoque.js**:
+  - Substituição de `alert()` por mensagens inline
+  - Tratamento de `err.details.message` e `err.details.error`
+  - Validações client-side com feedback imediato
+  - Limpeza de erros ao abrir modal
+- **Validações no estoque.js**:
+  - Nome obrigatório
+  - Categoria obrigatória
+  - Quantidade >= 0
+  - Unidade obrigatória
+
+### 🔧 Melhorias Técnicas
+
+#### Adicionado
+- **toSlug() utility**: usuarios.js
+  - Converte função para classe CSS
+  - Remove acentos e caracteres especiais
+  - Padronização de nomes
+- **populateDriverSelect()**: delivery.js
+  - Busca users com função "Motoboy"
+  - Filtra por status ativo
+  - Popula select dinamicamente
+- **Validação de Contexto Empresarial**:
+  - NO_COMPANY_CONTEXT error handling
+  - Mensagens específicas para superadmin
+  - Redirecionamento para empresas.html
+
+#### Modificado
+- **api.js**: 
+  - Header X-Company-Id sempre enviado
+  - Tratamento de NO_COMPANY_CONTEXT
+  - Parse de err.details melhorado
+- **Todos os módulos com modal**:
+  - Erro inline em vez de alert
+  - Validações client-side robustas
+  - Feedback visual imediato
+
+### 📊 Estatísticas do Projeto
+
+- **Páginas HTML**: 16
+- **Módulos JavaScript**: 20
+- **Arquivos CSS**: 16 (15 módulos + sidebar-verde.css)
+- **Rotas Backend REST**: 11
+- **Funções de Usuário**: 5 (Caixa, Cozinha, Motoboy, Supervisor, Garçom)
+- **Commits desta versão**: 15+ (design verde, funções, delivery motoboy, erro inline)
+
+### 🐛 Correções
+- Modal de usuário não limpava erros ao reabrir
+- Delivery não validava campos obrigatórios
+- Estoque permitia salvar sem validação
+- Badges de função não tinham cores distintas
+
+### 🔒 Segurança
+- Validação de função operacional no backend
+- Admin não pode criar superadmin
+- Context empresarial obrigatório para endpoints escopados
+
+---
+
+## [2.2.0] - 2024-01-16
 
 ### ✨ Adicionado
 

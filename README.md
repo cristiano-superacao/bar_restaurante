@@ -1,6 +1,6 @@
 # 🍽️ Sistema de Gestão para Bar e Restaurante
 
-[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](https://github.com/cristiano-superacao/bar_restaurante)
+[![Version](https://img.shields.io/badge/version-2.3.0-brightgreen.svg)](https://github.com/cristiano-superacao/bar_restaurante)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Railway](https://img.shields.io/badge/deploy-Railway-purple.svg)](https://railway.app)
 [![Netlify](https://img.shields.io/badge/deploy-Netlify-00C7B7.svg)](https://barestaurante.netlify.app)
@@ -8,7 +8,7 @@
 [![PostgreSQL](https://img.shields.io/badge/postgresql-14%2B-blue.svg)](https://www.postgresql.org)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg)](Dockerfile)
 
-> 🚀 **Sistema completo de gestão empresarial** para bares e restaurantes com **arquitetura híbrida progressiva**. Opera 100% offline (LocalStorage) ou com backend robusto (Express + PostgreSQL). Interface responsiva e profissional, pronta para produção e escalável.
+> 🚀 **Sistema completo de gestão empresarial** para bares e restaurantes com **arquitetura híbrida progressiva** e **design verde profissional**. Opera 100% offline (LocalStorage) ou com backend robusto (Express + PostgreSQL). Interface responsiva, moderna e pronta para produção.
 
 📍 **Demo Online**: [barestaurante.netlify.app](https://barestaurante.netlify.app)  
 📍 **API Backend**: [barestaurante.up.railway.app](https://barestaurante.up.railway.app/api/health)  
@@ -16,9 +16,35 @@
 
 ---
 
+## ✨ Novidades da Versão 2.3.0
+
+### 🎨 Design System Verde Profissional
+- **Nova Paleta de Cores Verde**: Sistema visual renovado com verde escuro (#1a4d2e) na sidebar
+- **sidebar-verde.css**: Arquivo CSS dedicado para estilização global e consistente
+- **16 Páginas Atualizadas**: Todas as interfaces seguem o novo padrão visual
+- **Responsividade Mantida**: Layout profissional em desktop, tablet e mobile
+
+### 👨‍💼 Sistema de Funções Operacionais
+- **Campo `function` em Users**: Caixa, Cozinha, Motoboy, Supervisor, Garçom
+- **Badges Coloridas**: Identificação visual por função operacional
+- **Filtros por Função**: Select de motoboy no delivery lista apenas usuários com função "Motoboy"
+
+### 🛵 Melhorias no Delivery
+- **Campo Motoboy Obrigatório**: Seleção de motoboy responsável pelo pedido
+- **Impressão em Duas Vias**: Confirmação automática para imprimir segunda via
+- **Nome do Motoboy no Cupom**: Identificação clara no documento fiscal
+
+### 🎯 Tratamento de Erros Padronizado
+- **Mensagens Inline**: Substituição de `alert()` por blocos de erro dentro dos modais
+- **Validações Client-Side**: Feedback imediato antes de enviar ao backend
+- **Detalhes da API**: Exibição de mensagens detalhadas do servidor
+
+---
+
 ## 📋 Índice
 
 - [✨ Visão Geral](#-visão-geral)
+- [🎨 Novidades da Versão 2.3.0](#-novidades-da-versão-230)
 - [🎯 Funcionalidades Principais](#-funcionalidades-principais)
 - [🏗️ Arquitetura do Sistema](#️-arquitetura-do-sistema)
 - [⚡ Início Rápido](#-início-rápido)
@@ -35,7 +61,7 @@
 
 ## ✨ Visão Geral
 
-Sistema profissional de gestão desenvolvido com **arquitetura híbrida progressiva**, permitindo operação em múltiplos cenários e facilitando a transição gradual para cloud.
+Sistema profissional de gestão desenvolvido com **arquitetura híbrida progressiva** e **design system verde profissional**, permitindo operação em múltiplos cenários e facilitando a transição gradual para cloud.
 
 ### 🎯 Modos de Operação
 
@@ -47,15 +73,55 @@ Sistema profissional de gestão desenvolvido com **arquitetura híbrida progress
 
 ### 🌟 Principais Diferenciais
 
+- ✅ **Design System Verde Profissional**: Sidebar verde escura, fundo claro, visual moderno
 - ✅ **Multi-tenant**: Isolamento completo de dados por empresa (company_id)
 - ✅ **Autenticação JWT**: Segurança robusta com roles (superadmin, admin, staff)
 - ✅ **Interface Responsiva**: Design adaptativo profissional (desktop, tablet, mobile)
-- ✅ **Zero Breaking Changes**: Compatibilidade retroativa garantida em todas as versões
-- ✅ **Docker Ready**: Dockerfile otimizado + healthcheck automático incluídos
+- ✅ **RBAC Completo**: Controle de acesso granular por função de usuário
+- ✅ **Funções Operacionais**: Caixa, Cozinha, Motoboy, Supervisor, Garçom
+- ✅ **Delivery com Motoboy**: Impressão em duas vias com nome do responsável
+- ✅ **Tratamento de Erros**: Mensagens inline padronizadas em todos os modais
+- ✅ **Docker Ready**: Dockerfile otimizado + healthcheck automático
 - ✅ **Validação Completa**: express-validator em todas as rotas da API
 - ✅ **Rate Limiting**: Proteção contra ataques (100 req/15min global, 5 req/15min login)
 - ✅ **Progressive Web App (PWA)**: Instalável e funciona offline
 - ✅ **Detecção Automática de API**: Frontend detecta automaticamente backend local ou cloud
+
+---
+
+## 🎨 Novidades da Versão 2.3.0
+
+### 🎨 Design System Verde Profissional
+- **Nova Paleta de Cores**: Sidebar verde escura (#1a4d2e), fundo cinza claro (#f8fafc)
+- **Tema Consistente**: Todas as 16 páginas padronizadas com o novo visual
+- **CSS Sidebar Verde**: Arquivo dedicado (sidebar-verde.css) para estilização global
+- **Gradientes e Sombras**: Efeitos visuais sutis e profissionais
+- **Hover States Aprimorados**: Feedback visual claro em todos os elementos interativos
+
+### 👨‍💼 Sistema de Funções Operacionais
+- **Funções de Usuário**: Caixa, Cozinha, Motoboy, Supervisor, Garçom
+- **Badges Visuais**: Identificação colorida por função
+- **Integração Completa**: Funções refletidas em toda a interface
+- **Backend Suportado**: Campo `function` na tabela users
+
+### 🛵 Melhorias no Delivery
+- **Campo Motoboy Obrigatório**: Seleção do responsável pela entrega
+- **Impressão em Duas Vias**: Sistema automático para delivery
+- **Nome do Motoboy no Cupom**: Identificação clara no comprovante
+- **Listagem Dinâmica**: Apenas motoboys ativos aparecem no select
+
+### 🎯 Tratamento de Erros Padronizado
+- **Mensagens Inline**: Erros exibidos dentro dos modais
+- **Consistência Visual**: Mesmo padrão em todos os formulários
+- **Detalhes da API**: Mensagens específicas do backend
+- **Validações Client-side**: Feedback imediato ao usuário
+- **Módulos Atualizados**: Usuários, Pedidos, Clientes, Reservas, Delivery, Estoque
+
+### 🔧 Melhorias Técnicas
+- **Slug para Badges**: Conversão automática de função para classe CSS
+- **Persistência Completa**: Campo motoboy salvo em localStorage e API
+- **Validação de Contexto**: Superadmin deve selecionar empresa
+- **Error Handling Robusto**: Tratamento de NO_COMPANY_CONTEXT e erros de rede
 
 ---
 
