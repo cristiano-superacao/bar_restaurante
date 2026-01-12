@@ -19,18 +19,6 @@
     --header-height: 80px;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--main-bg-color);
-    color: var(--text-color-dark);
-}
-
 .controls-container {
     display: flex;
     justify-content: space-between;
@@ -213,18 +201,6 @@ body {
 }
 .muted { color: #7b8a97; font-size: 12px; }
 
-.badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 700;
-    border: 1px solid var(--border-color);
-}
-.badge-success { background: #e8f0fe; color: var(--primary-green); }
-.badge-muted { background: #f3f6f9; color: #7b8a97; }
-
 @media (max-width: 1024px) {
     .stat-cards { grid-template-columns: repeat(2, 1fr); }
 }
@@ -245,211 +221,6 @@ body {
 .dashboard-container {
     display: flex;
     min-height: 100vh;
-}
-
-/* Sidebar */
-.sidebar {
-    width: var(--sidebar-width);
-    background-color: var(--sidebar-bg-color);
-    color: var(--text-color-light);
-    display: flex;
-    flex-direction: column;
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 100%;
-    z-index: 1000;
-    transition: transform 0.3s ease;
-}
-
-.sidebar.collapsed {
-    transform: translateX(-100%);
-}
-
-.sidebar-header {
-    display: flex;
-    align-items: center;
-    padding: 20px;
-    height: var(--header-height);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.sidebar-header i {
-    font-size: 28px;
-    margin-right: 15px;
-}
-
-.sidebar-header h2,
-.sidebar-header h3 {
-    font-size: 22px;
-    font-weight: 600;
-    margin: 0;
-    white-space: nowrap;
-}
-
-.sidebar-nav {
-    flex-grow: 1;
-    padding: 20px 0;
-    overflow-y: auto;
-}
-
-.sidebar-nav ul {
-    list-style: none;
-}
-
-.sidebar-nav a {
-    display: flex;
-    align-items: center;
-    padding: 15px 20px;
-    color: var(--text-color-light);
-    text-decoration: none;
-    transition: background-color 0.3s, color 0.3s;
-    border-left: 3px solid transparent;
-    white-space: nowrap;
-}
-
-.sidebar-nav a:hover,
-.sidebar-nav a.active,
-.sidebar-nav li.active > a {
-    background-color: var(--primary-color);
-    color: #fff;
-    border-left-color: #fff;
-}
-
-.sidebar-nav a i {
-    font-size: 18px;
-    width: 30px;
-    text-align: center;
-    margin-right: 15px;
-}
-
-.sidebar-footer {
-    padding: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-}
-
-.sidebar-footer a {
-    display: flex;
-    align-items: center;
-    color: var(--text-color-light);
-    text-decoration: none;
-    padding: 10px;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-    white-space: nowrap;
-}
-
-.sidebar-footer a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-.sidebar-footer a i {
-    margin-right: 10px;
-}
-
-.sidebar-footer .user-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    min-width: 0;
-    margin-right: 0;
-    text-align: left;
-}
-
-.sidebar-footer .user-info i {
-    font-size: 20px;
-    opacity: 0.9;
-}
-
-.sidebar-footer .user-info span {
-    display: block;
-    font-weight: 600;
-    line-height: 1.1;
-}
-
-.sidebar-footer .user-info small {
-    display: block;
-    opacity: 0.85;
-    line-height: 1.1;
-}
-
-.sidebar-footer .logout-btn {
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    justify-content: center;
-}
-
-.sidebar-footer .logout-btn i {
-    margin-right: 0;
-}
-
-/* Main Content */
-.main-content {
-    flex-grow: 1;
-    margin-left: var(--sidebar-width);
-
-.sidebar-footer .company-switch-btn {
-    background: rgba(255, 255, 255, 0.08);
-}
-
-.sidebar-footer .company-switch-btn:hover {
-    background-color: rgba(255, 255, 255, 0.18);
-}
-    display: flex;
-    flex-direction: column;
-    transition: margin-left 0.3s ease;
-}
-
-.main-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 30px;
-    height: var(--header-height);
-    background-color: #fff;
-    border-bottom: 1px solid var(--border-color);
-    position: sticky;
-    top: 0;
-    z-index: 999;
-}
-
-.menu-toggle {
-    display: none;
-    background: none;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-    color: var(--text-color-dark);
-}
-
-.header-title h1 {
-    font-size: 28px;
-    font-weight: 600;
-    margin: 0;
-}
-
-.header-title p {
-    color: #777;
-    font-size: 14px;
-    margin: 0;
-}
-
-.header-user {
-    display: flex;
-    align-items: center;
-}
-
-.header-actions {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
-    min-width: 0;
 }
 
 /* Badge de empresa ativa (multi-tenant) */
@@ -499,28 +270,6 @@ body {
 
 .company-pill:hover {
     box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-}
-
-.user-info {
-    text-align: right;
-    margin-right: 15px;
-}
-
-.user-info span {
-    display: block;
-    font-weight: 500;
-}
-
-.user-info small {
-    color: #777;
-    text-transform: capitalize;
-}
-
-.user-avatar {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
 }
 
 .content-area {
@@ -576,7 +325,7 @@ body {
     flex-direction: column;
 }
 
-.card-title {
+.summary-card .card-title {
     font-size: 14px;
     color: #777;
     margin-bottom: 5px;
@@ -593,58 +342,5 @@ body {
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 2px 4px var(--shadow-color);
-}
-
-
-.sidebar-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 999;
-}
-
-/* Responsividade */
-@media (max-width: 992px) {
-    .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.3s ease;
-    }
-
-    .sidebar.open {
-        transform: translateX(0);
-    }
-
-    .main-content {
-        margin-left: 0;
-    }
-
-    .menu-toggle {
-        display: block;
-    }
-
-    .main-header {
-        justify-content: flex-start;
-        gap: 15px;
-    }
-
-    .sidebar-overlay.active {
-        display: block;
-    }
-}
-
-@media (max-width: 576px) {
-    .header-title h1 {
-        font-size: 22px;
-    }
-    .header-title p {
-        display: none;
-    }
-    .main-header .user-info {
-        display: none;
-    }
 }
 

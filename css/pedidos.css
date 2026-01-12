@@ -74,7 +74,6 @@
 .order-card.Pendente { border-top-color: #fbbc05; }
 .order-card.Em-Preparo { border-top-color: #4a90e2; }
 .order-card.Entregue { border-top-color: #2f6bb3; }
-.order-card.Pago { border-top-color: #2f6bb3; }
 .order-card.Cancelado { border-top-color: #ea4335; }
 
 

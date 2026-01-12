@@ -1,6 +1,5 @@
 /* Ajustes de status específicos para layout de Mesas em Delivery */
 .order-card.Saiu-para-Entrega { border-top-color: #7e57c2; }
-.order-card.Pago { border-top-color: #1a73e8; }
 
 .delivery-totals {
   display: flex;

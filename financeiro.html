@@ -5,61 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Financeiro - Sistema de Gestão para Bar e Restaurante</title>
     <meta name="description" content="Controle financeiro completo com receitas, despesas e saldo em tempo real.">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     
     <link rel="stylesheet" href="css/design-system.css">
     <link rel="stylesheet" href="css/sidebar-azul.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .app-container { display: flex; min-height: 100vh; background-color: var(--bg-body); }
-        .sidebar { width: 280px; background-color: var(--bg-card); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; position: fixed; left: 0; top: 0; bottom: 0; z-index: var(--z-fixed); transition: transform var(--transition); }
-        .sidebar.collapsed { transform: translateX(-100%); }
-        .sidebar-header { padding: var(--spacing-lg); border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: var(--spacing); }
-        .sidebar-logo { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary-600), var(--primary-700)); color: var(--text-white); border-radius: var(--radius-md); font-size: 1.25rem; }
-        .sidebar-brand { flex: 1; }
-        .sidebar-brand-name { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--text-primary); line-height: 1.2; }
-        .sidebar-brand-subtitle { font-size: var(--font-size-xs); color: var(--text-muted); }
-        .sidebar-nav { flex: 1; overflow-y: auto; padding: var(--spacing); }
-        .nav-section { margin-bottom: var(--spacing-lg); }
-        .nav-section-title { font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; padding: var(--spacing-sm) var(--spacing); margin-bottom: var(--spacing-xs); }
-        .nav-list { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; }
-        .nav-item a { display: flex; align-items: center; gap: var(--spacing); padding: 0.75rem var(--spacing); color: var(--text-secondary); text-decoration: none; border-radius: var(--radius); transition: all var(--transition-fast); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); }
-        .nav-item a:hover { background-color: var(--bg-hover); color: var(--text-primary); }
-        .nav-item.active a { background-color: var(--primary-50); color: var(--primary-700); }
-        .nav-item a i { width: 20px; text-align: center; font-size: 1.125rem; }
-        .sidebar-footer { padding: var(--spacing); border-top: 1px solid var(--border-color); }
-        .user-card { display: flex; align-items: center; gap: var(--spacing); padding: var(--spacing); background-color: var(--bg-hover); border-radius: var(--radius-md); cursor: pointer; transition: all var(--transition-fast); }
-        .user-card:hover { background-color: var(--bg-active); }
-        .user-avatar { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, var(--primary-500), var(--primary-600)); color: var(--text-white); border-radius: var(--radius-full); font-size: var(--font-size-lg); font-weight: var(--font-weight-semibold); }
-        .user-info { flex: 1; min-width: 0; }
-        .user-name { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--text-primary); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .user-role { font-size: var(--font-size-xs); color: var(--text-muted); display: block; }
-        .logout-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none; background-color: transparent; color: var(--text-muted); border-radius: var(--radius); cursor: pointer; transition: all var(--transition-fast); }
-        .logout-btn:hover { background-color: var(--error-50); color: var(--error-600); }
-        .main-wrapper { flex: 1; margin-left: 280px; display: flex; flex-direction: column; transition: margin-left var(--transition); }
-        .sidebar.collapsed ~ .main-wrapper { margin-left: 0; }
-        .main-header { background-color: var(--bg-card); border-bottom: 1px solid var(--border-color); padding: var(--spacing) var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing-lg); position: sticky; top: 0; z-index: var(--z-sticky); }
-        .menu-toggle { width: 40px; height: 40px; display: none; align-items: center; justify-content: center; border: none; background-color: transparent; color: var(--text-secondary); border-radius: var(--radius); cursor: pointer; transition: all var(--transition-fast); }
-        .menu-toggle:hover { background-color: var(--bg-hover); color: var(--text-primary); }
-        .header-title { flex: 1; }
-        .header-title h1 { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
-        .header-title p { font-size: var(--font-size-sm); color: var(--text-muted); margin: 0.25rem 0 0; }
-        .main-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
+        /* App shell (sidebar/header/main) centralizado em css/design-system.css */
         .toolbar { display: flex; gap: var(--spacing); margin-bottom: var(--spacing-lg); flex-wrap: wrap; align-items: center; }
         
         .filter-group { display: flex; gap: var(--spacing-sm); align-items: center; }
-        
-        .stat-card.balance::before { background: linear-gradient(90deg, var(--primary-500), var(--primary-600)); }
-        .stat-card.income::before { background: linear-gradient(90deg, var(--success-500), var(--success-600)); }
-        .stat-card.expense::before { background: linear-gradient(90deg, var(--error-500), var(--error-600)); }
-        .stat-card.forecast::before { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
-        .stat-icon { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-lg); font-size: 1.5rem; flex-shrink: 0; }
-        .stat-card.balance .stat-icon { background-color: var(--primary-100); color: var(--primary-600); }
-        .stat-card.income .stat-icon { background-color: var(--success-50); color: var(--success-600); }
-        .stat-card.expense .stat-icon { background-color: var(--error-50); color: var(--error-600); }
-        .stat-card.forecast .stat-icon { background-color: #f3e8ff; color: #7c3aed; }
-        .stat-content { flex: 1; }
-        .stat-label { font-size: var(--font-size-sm); color: var(--text-muted); font-weight: var(--font-weight-medium); margin-bottom: 0.25rem; }
-        .stat-value { font-size: var(--font-size-3xl); font-weight: var(--font-weight-bold); color: var(--text-primary); line-height: 1; }
+
         
         /* Transações List */
         .transacoes-list { display: flex; flex-direction: column; gap: var(--spacing); }
@@ -107,17 +63,10 @@
         .modal-footer { padding: var(--spacing-lg); border-top: 1px solid var(--border-color); display: flex; gap: var(--spacing); justify-content: flex-end; }
         
         @media (max-width: 1024px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-wrapper { margin-left: 0; }
-            .menu-toggle { display: flex; }
             .transacao-item { grid-template-columns: auto 1fr auto; }
             .transacao-actions { grid-column: 1 / -1; justify-content: flex-end; margin-top: var(--spacing-sm); }
         }
         @media (max-width: 640px) {
-            .main-header { padding: var(--spacing); }
-            .main-content { padding: var(--spacing); }
-            .header-title h1 { font-size: var(--font-size-xl); }
             .toolbar { flex-direction: column; align-items: stretch; }
             
             .filter-group { flex-wrap: wrap; }
@@ -125,8 +74,6 @@
             .transacao-item { grid-template-columns: auto 1fr; padding: var(--spacing); }
             .transacao-valor { grid-column: 1 / -1; text-align: left; margin-top: var(--spacing-sm); }
         }
-        .sidebar-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.5); z-index: calc(var(--z-fixed) - 1); display: none; }
-        .sidebar-overlay.show { display: block; }
     </style>
 </head>
 <body>
@@ -298,9 +245,6 @@
     <script src="js/rbac.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/financeiro.js"></script>
-    <script>
-        const menuToggle=document.getElementById('menu-toggle');const sidebar=document.getElementById('sidebar');const sidebarOverlay=document.getElementById('sidebar-overlay');menuToggle?.addEventListener('click',()=>{sidebar.classList.toggle('open');sidebarOverlay.classList.toggle('show');});sidebarOverlay?.addEventListener('click',()=>{sidebar.classList.remove('open');sidebarOverlay.classList.remove('show');});const username=localStorage.getItem('username')||'Usuário';const userRole=localStorage.getItem('userRole')||'admin';const usernameDisplay=document.getElementById('username-display');const userRoleDisplay=document.getElementById('user-role-display');const userAvatar=document.getElementById('user-avatar');if(usernameDisplay)usernameDisplay.textContent=username;if(userRoleDisplay){const roleLabels={'superadmin':'Super Admin','admin':'Administrador','staff':'Atendente'};userRoleDisplay.textContent=roleLabels[userRole]||userRole;}if(userAvatar)userAvatar.textContent=username.charAt(0).toUpperCase();const logoutBtn=document.getElementById('logout-btn');logoutBtn?.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();if(confirm('Deseja realmente sair do sistema?')){localStorage.removeItem('authToken');localStorage.removeItem('username');localStorage.removeItem('userRole');window.location.href='index.html';}});
-    </script>
 
     <!-- Footer -->
     <footer class="app-footer">

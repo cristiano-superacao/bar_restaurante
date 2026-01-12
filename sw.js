@@ -9,12 +9,14 @@ const DYNAMIC_CACHE = 'maria-flor-dynamic-v1';
 const STATIC_FILES = [
     '/',
     '/index.html',
-    '/pages/dashboard.html',
+    '/dashboard.html',
+    '/css/design-system.css',
+    '/css/sidebar-azul.css',
     '/css/login.css',
     '/css/dashboard.css',
     '/js/login.js',
     '/js/dashboard.js',
-    '/js/client-config.js',
+    '/js/config.js',
     'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css',
     'https://cdn.jsdelivr.net/npm/chart.js'
 ];
@@ -115,8 +117,8 @@ self.addEventListener('push', event => {
         const data = event.data.json();
         const options = {
             body: data.body,
-            icon: '/img/icon-192.png',
-            badge: '/img/icon-72.png',
+            icon: '/favicon.svg',
+            badge: '/favicon.svg',
             vibrate: [100, 50, 100],
             data: {
                 url: data.url || '/'

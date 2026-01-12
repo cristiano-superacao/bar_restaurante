@@ -7,6 +7,131 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [3.0.0] - 2026-01-12
+
+### 🎨 Design Premium Azul Profissional
+
+#### Adicionado
+- **Design System Centralizado**: `css/design-system.css`
+  - Sidebar azul Premium com gradiente (#1e3a8a → #172554)
+  - Footer azul Premium com gradiente matching
+  - Paleta de cores azul completa (primary-50 a primary-950)
+  - Badges, botões e componentes com tema azul
+  - Animações fluidas (heartbeat no footer)
+  - User card, logout button e todos componentes da sidebar
+- **Estrutura de Documentação Profissional**: pasta `docs/`
+  - [ARCHITECTURE.md](docs/ARCHITECTURE.md): Arquitetura completa (~400 linhas)
+  - [API.md](docs/API.md): Documentação da API REST (~1000 linhas)
+  - [DEPLOYMENT.md](docs/DEPLOYMENT.md): Guias de deploy Railway/Netlify/Docker (~800 linhas)
+  - [DEVELOPMENT.md](docs/DEVELOPMENT.md): Guia para desenvolvedores (~900 linhas)
+- **Scripts de Validação**: `scripts/`
+  - `validate-ui.mjs`: Validação de estrutura HTML e links
+  - `analyze-css.mjs`: Análise de duplicidades CSS
+
+#### Modificado
+- **css/sidebar-azul.css**: Reduzido a stub (~10 linhas)
+  - Antes: ~331 linhas com duplicações completas da sidebar/footer/login/badges
+  - Agora: Apenas comentário legacy e :root vazio para overrides opcionais
+  - Todo conteúdo migrado para design-system.css
+- **css/fixes.css**: Neutralizado como legacy (~5 linhas)
+  - Antes: ~160 linhas de correções/overrides diversos
+  - Agora: Stub com comentário "LEGACY - mantido para compatibilidade"
+- **css/dashboard.css**: Eliminação de duplicidades
+  - Removido `.badge` e `.badge-success` (agora vem do design-system)
+  - Escopado `.card-title` → `.summary-card .card-title`
+  - Removido reset global `*` no body
+- **css/cardapio.css**: Escopos específicos
+  - `.card-title` → `.menu-item-card .card-title`
+  - `.card-footer` → `.menu-item-card .card-footer`
+- **css/delivery.css** e **css/pedidos.css**: Centralização
+  - Removido `.order-card.Pago` duplicado (agora no design-system)
+- **css/cupom.css**: Migração de CSS inline + escopo
+  - Migrado todo CSS inline de cupom.html (~270 linhas)
+  - Escopado com `body.page-cupom` para evitar colisões
+  - Removido body global, mantida especificidade
+- **cupom.html**: Limpeza de inline styles
+  - Removido `<style>` inline completo
+  - Adicionado `class="page-cupom"` no `<body>`
+- **css/login.css**: Escopo de página
+  - `body` → `body.login-page` em todos os seletores
+  - Evita colisões com outros estilos globais
+- **index.html**: Classe de escopo
+  - Adicionado `class="login-page"` no `<body>`
+
+#### Removido
+- **css/sidebar-verde.css**: Deletado completamente
+  - Tema verde substituído pelo azul Premium
+  - Todas referências removidas do HTML
+
+### 🧹 Refatoração e Organização de Código
+
+#### Adicionado
+- **Zero Duplicidades CSS**: Validação automatizada confirma
+  - Todos seletores CSS únicos entre arquivos
+  - Componentes globais centralizados
+  - Estilos específicos de página escopados
+
+#### Modificado
+- **Arquitetura de CSS**: De múltiplos arquivos duplicados para design system centralizado
+  - Antes: sidebar-azul.css (331L), fixes.css (160L), duplicações em 6+ arquivos
+  - Agora: design-system.css centralizado, arquivos específicos enxutos
+
+### 📚 Documentação Completa
+
+#### Adicionado
+- **docs/ARCHITECTURE.md**:
+  - Visão geral do sistema multi-tenant
+  - Diagramas de arquitetura (Frontend ↔ Backend ↔ PostgreSQL)
+  - Estrutura de pastas detalhada
+  - Fluxos de autenticação e autorização
+  - Schema completo do banco de dados
+  - Design system (paleta, tipografia, componentes)
+  - Guias de deploy e performance
+- **docs/API.md**:
+  - Documentação completa de todos os endpoints REST
+  - Autenticação JWT (login, refresh token)
+  - CRUD completo: Users, Companies, Menu Items, Orders, Tables, Customers, Reservations, Stock, Transactions
+  - Validações, parâmetros, respostas de exemplo
+  - Códigos de resposta HTTP
+  - Rate limiting e health check
+- **docs/DEPLOYMENT.md**:
+  - Deploy do backend: Railway (recomendado), Docker local, local sem Docker
+  - Deploy do frontend: Netlify, Vercel, servidor estático (Nginx/Apache)
+  - Configuração de banco de dados PostgreSQL
+  - Variáveis de ambiente completas
+  - CI/CD com GitHub Actions
+  - Troubleshooting de CORS, database, migrações
+- **docs/DEVELOPMENT.md**:
+  - Setup completo do ambiente de desenvolvimento
+  - Estrutura do projeto detalhada
+  - Padrões de código (JavaScript, CSS, HTML)
+  - Design system e componentes
+  - Fluxo de trabalho Git (Conventional Commits)
+  - Guias de teste (backend e frontend)
+  - Debug (Node.js, browser DevTools)
+  - Como contribuir
+
+#### Modificado
+- **README.md**: Atualizado para versão 3.0.0
+  - Badge de versão: 2.3.0 → 3.0.0
+  - Seção "Novidades da Versão 3.0.0" completa
+  - Descrição do Design Premium Azul
+  - Referências à nova estrutura docs/
+  - Eliminação de menções ao tema verde
+- **package.json**: Versão atualizada
+  - version: "2.1.0" → "3.0.0"
+
+### 🐛 Correções e Melhorias
+
+#### Corrigido
+- **Duplicidade de body reset**: Removida de dashboard.css e outros
+- **Colisões de .order-card.Pago**: Centralizado no design-system
+- **CSS inline no cupom**: Migrado para arquivo dedicado
+- **Escopo de login**: Isolado com body.login-page
+- **Importações CSS desnecessárias**: sidebar-verde.css removido
+
+---
+
 ## [2.3.0] - 2026-01-11
 
 ### 🎨 Design System Verde Profissional
@@ -17,7 +142,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
   - Fundo body cinza claro (#f8fafc)
   - Destaques em verde (#22c55e, #16a34a)
   - Variáveis CSS atualizadas em `design-system.css`
-- **sidebar-verde.css**: Arquivo CSS dedicado para estilização global
+- **sidebar-azul.css**: Arquivo CSS do tema Premium (gradiente azul) para estilização global
   - Gradientes na sidebar e elementos primários
   - Hover states verdes consistentes
   - Active states com verde luminoso (#4ade80)
@@ -36,7 +161,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
   - Sidebar backgrounds com nova paleta verde
   - Gradientes e sombras ajustados
   - Cards com bordas mais sutis
-- **Todas as páginas HTML**: Inclusão de `sidebar-verde.css`
+- **Todas as páginas HTML**: Inclusão de `sidebar-azul.css`
   - Padronização via link CSS global
   - Consistência visual mantida
   - Responsividade preservada
@@ -160,7 +285,7 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 - **Páginas HTML**: 16
 - **Módulos JavaScript**: 20
-- **Arquivos CSS**: 16 (15 módulos + sidebar-verde.css)
+- **Arquivos CSS**: 17 (15 módulos + design-system.css + sidebar-azul.css)
 - **Rotas Backend REST**: 11
 - **Funções de Usuário**: 5 (Caixa, Cozinha, Motoboy, Supervisor, Garçom)
 - **Commits desta versão**: 15+ (design verde, funções, delivery motoboy, erro inline)

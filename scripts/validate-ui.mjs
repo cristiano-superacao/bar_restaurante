@@ -24,7 +24,12 @@ function hasDesignSystemCssLink(html) {
 }
 
 function hasSidebarCssLink(html) {
-  return /<link[^>]+href=["']css\/sidebar-verde\.css["'][^>]*>/i.test(html);
+  return /<link[^>]+href=["']css\/(sidebar-azul|sidebar-verde)\.css["'][^>]*>/i.test(html);
+}
+
+function whichSidebarCssLink(html) {
+  const m = html.match(/<link[^>]+href=["']css\/(sidebar-azul|sidebar-verde)\.css["'][^>]*>/i);
+  return m ? `css/${m[1].toLowerCase()}.css` : null;
 }
 
 function hasCupomCssLink(html) {
@@ -65,7 +70,8 @@ function main() {
   const htmlFiles = listHtmlFiles();
   const baseCssPath = path.join(rootDir, 'css', 'design-system.css');
   const fallbackBaseCssPath = path.join(rootDir, 'css', 'base.css');
-  const sidebarCssPath = path.join(rootDir, 'css', 'sidebar-verde.css');
+  const sidebarAzulCssPath = path.join(rootDir, 'css', 'sidebar-azul.css');
+  const sidebarVerdeCssPath = path.join(rootDir, 'css', 'sidebar-verde.css');
 
   let baseCss = '';
   if (fs.existsSync(baseCssPath)) {
@@ -73,7 +79,11 @@ function main() {
   } else if (fs.existsSync(fallbackBaseCssPath)) {
     baseCss = readText(fallbackBaseCssPath);
   }
-  const sidebarCss = fs.existsSync(sidebarCssPath) ? readText(sidebarCssPath) : '';
+  // Preferência pelo tema azul (Premium). Mantém compatibilidade com o verde caso exista.
+  const sidebarCssPath = fs.existsSync(sidebarAzulCssPath)
+    ? sidebarAzulCssPath
+    : (fs.existsSync(sidebarVerdeCssPath) ? sidebarVerdeCssPath : '');
+  const sidebarCss = sidebarCssPath ? readText(sidebarCssPath) : '';
 
   const [hasBtn, hasPrimary, hasSecondary, hasDanger] = checkBaseCssSelectors(baseCss);
   if (!hasBtn || !hasPrimary || !hasSecondary || !hasDanger) {
@@ -82,7 +92,7 @@ function main() {
 
   if (sidebarOverridesButtons(sidebarCss)) {
     // Aviso leve: apenas se houver declaração genérica de .btn fora do design system
-    warnings.push({ file: 'css/sidebar-verde.css', message: 'Encontrado seletor genérico .btn — evite sobrescrever o design system aqui.' });
+    warnings.push({ file: sidebarCssPath ? `css/${path.basename(sidebarCssPath)}` : 'css/sidebar-azul.css', message: 'Encontrado seletor genérico .btn — evite sobrescrever o design system aqui.' });
   }
 
   for (const htmlName of htmlFiles) {
@@ -90,13 +100,14 @@ function main() {
     const hasBase = hasBaseCssLink(html);
     const hasDesign = hasDesignSystemCssLink(html);
     const hasSidebar = hasSidebarCssLink(html);
+    const sidebarFile = whichSidebarCssLink(html);
     const btnUsages = findBtnClasses(html);
 
     if (btnUsages.length > 0 && !(hasBase || hasDesign)) {
       issues.push({ file: htmlName, message: 'Usa classes .btn* mas não inclui css/design-system.css no <head>' });
     }
     if (hasSidebar && !(hasBase || hasDesign)) {
-      warnings.push({ file: htmlName, message: 'Inclui css/sidebar-verde.css sem css/design-system.css — pode perder estilos compartilhados' });
+      warnings.push({ file: htmlName, message: `Inclui ${sidebarFile || 'css/sidebar-azul.css'} sem css/design-system.css — pode perder estilos compartilhados` });
     }
 
     if (htmlName.toLowerCase() === 'cupom.html') {

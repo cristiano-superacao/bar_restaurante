@@ -75,7 +75,7 @@
     flex-direction: column;
 }
 
-.card-title {
+.menu-item-card .card-title {
     font-size: 18px;
     font-weight: 600;
     margin-bottom: 8px;
@@ -101,7 +101,7 @@
     line-height: 1.5;
 }
 
-.card-footer {
+.menu-item-card .card-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
