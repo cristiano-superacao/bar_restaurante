@@ -46,7 +46,7 @@
         .main-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
         
         
-        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-lg); }
+        .stats-row { --stats-min: 250px; }
         .stat-card.sales::before { background: linear-gradient(90deg, var(--success-500), var(--success-600)); }
         .stat-card.orders::before { background: linear-gradient(90deg, var(--primary-500), var(--primary-600)); }
         .stat-icon { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-lg); font-size: 1.5rem; flex-shrink: 0; }

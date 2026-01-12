@@ -284,12 +284,7 @@
         
         
         /* Stats Cards */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-lg);
-        }
+        .stats-row { --stats-min: 220px; }
         
         .stat-card::before { background: linear-gradient(90deg, var(--primary-500), var(--primary-600)); }
         

@@ -592,6 +592,14 @@ a:hover {
     .search-box { min-width: 100%; }
 }
 
+/* === GRIDS DE ESTATÍSTICAS === */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--stats-min, 200px), 1fr));
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg);
+}
+
 /* === RESPONSIVIDADE === */
 @media (max-width: 768px) {
     :root {
