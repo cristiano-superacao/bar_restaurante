@@ -51,6 +51,7 @@ class AuthSystemNeon {
                             email: userConfig.email,
                             username: userConfig.username,
                             role: userConfig.role,
+                            company_id: userConfig.company_id,
                             permissions: userConfig.permissions || []
                         }
                     };
@@ -64,6 +65,7 @@ class AuthSystemNeon {
                             email: userConfig.email,
                             username: userConfig.username,
                             role: userConfig.role,
+                            company_id: userConfig.company_id,
                             permissions: userConfig.permissions || []
                         }
                     };

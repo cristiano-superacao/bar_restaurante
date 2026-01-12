@@ -1,4 +1,14 @@
 (function () {
+  // 🔐 Verificação de acesso - Apenas superadmin pode acessar esta página
+  if (typeof RBAC !== 'undefined' && !RBAC.isSuperAdmin()) {
+    console.warn('⚠️ Acesso negado: Apenas superadmin pode acessar a gestão de empresas');
+    RBAC.showAccessDeniedMessage();
+    setTimeout(() => {
+      window.location.href = 'dashboard.html';
+    }, 2000);
+    return;
+  }
+
   function $(sel) { return document.querySelector(sel); }
 
   let cameFromSwitch = false;

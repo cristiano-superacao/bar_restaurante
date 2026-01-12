@@ -370,8 +370,7 @@
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/api.js"></script>
-    <script src="js/auth-neon.js"></script>
-    <script src="js/dashboard.js"></script>
+    <script src="js/auth-neon.js"></script>    <script src="js/rbac.js"></script>    <script src="js/dashboard.js"></script>
     <script src="js/delivery.js"></script>
     <script>
         const menuToggle=document.getElementById('menu-toggle');const sidebar=document.getElementById('sidebar');const sidebarOverlay=document.getElementById('sidebar-overlay');menuToggle?.addEventListener('click',()=>{sidebar.classList.toggle('open');sidebarOverlay.classList.toggle('show');});sidebarOverlay?.addEventListener('click',()=>{sidebar.classList.remove('open');sidebarOverlay.classList.remove('show');});const username=localStorage.getItem('username')||'Usuário';const userRole=localStorage.getItem('userRole')||'admin';const usernameDisplay=document.getElementById('username-display');const userRoleDisplay=document.getElementById('user-role-display');const userAvatar=document.getElementById('user-avatar');if(usernameDisplay)usernameDisplay.textContent=username;if(userRoleDisplay){const roleLabels={'superadmin':'Super Admin','admin':'Administrador','staff':'Atendente'};userRoleDisplay.textContent=roleLabels[userRole]||userRole;}if(userAvatar)userAvatar.textContent=username.charAt(0).toUpperCase();const logoutBtn=document.getElementById('logout-btn');logoutBtn?.addEventListener('click',(e)=>{e.preventDefault();e.stopPropagation();if(confirm('Deseja realmente sair do sistema?')){localStorage.removeItem('authToken');localStorage.removeItem('username');localStorage.removeItem('userRole');window.location.href='index.html';}});

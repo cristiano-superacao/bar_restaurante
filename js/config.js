@@ -53,45 +53,63 @@ const CONFIG = {
 
     // Credenciais de Teste
     USERS: {
+        superadmin: {
+            username: 'superadmin',
+            email: 'superadmin@sistema.com.br',
+            password: 'super123',
+            name: 'Super Administrador',
+            role: 'superadmin',
+            company_id: null, // Acesso a todas as empresas
+            permissions: ['all']
+        },
         admin: {
             username: 'admin',
             email: 'admin@mariaflor.com.br',
             password: 'admin123',
-            name: 'Administrador',
+            name: 'Administrador Maria Flor',
             role: 'admin',
-            permissions: ['all']
+            company_id: 1, // Empresa Maria Flor
+            permissions: ['dashboard.view', 'pedidos.manage', 'mesas.manage', 'cardapio.manage', 
+                         'delivery.manage', 'clientes.manage', 'reservas.manage', 'estoque.manage',
+                         'financeiro.manage', 'relatorios.view', 'usuarios.manage', 'configuracoes.manage']
         },
-        gerente: {
-            username: 'gerente',
-            email: 'gerente@mariaflor.com.br',
-            password: 'gerente123',
-            name: 'Maria Santos',
-            role: 'gerente',
-            permissions: ['vendas', 'pedidos', 'cardapio', 'estoque', 'financeiro']
+        admin2: {
+            username: 'admin2',
+            email: 'admin@outrorestaurante.com.br',
+            password: 'admin123',
+            name: 'Administrador Outro Restaurante',
+            role: 'admin',
+            company_id: 2, // Outra empresa
+            permissions: ['dashboard.view', 'pedidos.manage', 'mesas.manage', 'cardapio.manage', 
+                         'delivery.manage', 'clientes.manage', 'reservas.manage', 'estoque.manage',
+                         'financeiro.manage', 'relatorios.view', 'usuarios.manage', 'configuracoes.manage']
         },
         garcom: {
             username: 'garcom',
             email: 'garcom@mariaflor.com.br',
             password: 'garcom123',
             name: 'João Silva',
-            role: 'garcom',
-            permissions: ['vendas', 'pedidos', 'mesas']
+            role: 'staff',
+            company_id: 1,
+            permissions: ['dashboard.view', 'pedidos.view', 'pedidos.create', 'mesas.view', 'cardapio.view', 'delivery.view']
         },
         cozinha: {
             username: 'cozinha',
             email: 'cozinha@mariaflor.com.br',
             password: 'cozinha123',
             name: 'Ana Costa',
-            role: 'cozinha',
-            permissions: ['pedidos', 'cardapio']
+            role: 'staff',
+            company_id: 1,
+            permissions: ['dashboard.view', 'pedidos.view', 'cardapio.view']
         },
         caixa: {
             username: 'caixa',
             email: 'caixa@mariaflor.com.br',
             password: 'caixa123',
             name: 'Carlos Oliveira',
-            role: 'caixa',
-            permissions: ['vendas', 'financeiro']
+            role: 'staff',
+            company_id: 1,
+            permissions: ['dashboard.view', 'pedidos.view', 'financeiro.view']
         }
     },
 
