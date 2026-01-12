@@ -680,6 +680,8 @@
             border-radius: var(--radius);
             font-size: var(--font-size-sm);
             transition: all var(--transition-fast);
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
         
         .form-group input:focus,
@@ -687,6 +689,10 @@
             outline: none;
             border-color: var(--primary-500);
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-group input::placeholder {
+            color: var(--text-muted);
         }
         
         .add-item-row {
