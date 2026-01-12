@@ -21,32 +21,28 @@ document.addEventListener('DOMContentLoaded', function () {
             name: 'Hambúrguer Clássico',
             category: 'Lanches',
             price: 25.50,
-            description: 'Pão, carne, queijo, alface, tomate e molho especial.',
-            image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=60'
+            description: 'Pão, carne, queijo, alface, tomate e molho especial.'
         },
         {
             id: 2,
             name: 'Pizza Margherita',
             category: 'Pizzas',
             price: 45.00,
-            description: 'Molho de tomate, mussarela fresca, manjericão e azeite.',
-            image: 'https://images.unsplash.com/photo-1598021680942-85f81e038dd4?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=60'
+            description: 'Molho de tomate, mussarela fresca, manjericão e azeite.'
         },
         {
             id: 3,
             name: 'Coca-Cola Lata',
             category: 'Bebidas',
             price: 5.00,
-            description: 'Refrigerante de cola gelado, 350ml.',
-            image: 'https://images.unsplash.com/photo-1622483767028-3f66f32a2ea7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=60'
+            description: 'Refrigerante de cola gelado, 350ml.'
         },
         {
             id: 4,
             name: 'Pudim de Leite',
             category: 'Sobremesas',
             price: 12.00,
-            description: 'Pudim de leite condensado com calda de caramelo.',
-            image: 'https://images.unsplash.com/photo-1586985289933-60a93a935c17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=60'
+            description: 'Pudim de leite condensado com calda de caramelo.'
         }
     ];
 
@@ -98,7 +94,6 @@ document.addEventListener('DOMContentLoaded', function () {
             const catClass = `cat-${(item.category||'').replace(/\s+/g,'')}`;
             card.className = `menu-item-card ${catClass}`;
             card.innerHTML = `
-                <img src="${item.image || 'https://via.placeholder.com/300x180.png?text=Sem+Imagem'}" alt="${item.name}" class="card-image">
                 <div class="card-content">
                     <span class="card-category">${item.category}</span>
                     <h3 class="card-title">${item.name}</h3>
@@ -152,7 +147,6 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('item-category').value = item.category;
             document.getElementById('item-price').value = item.price;
             document.getElementById('item-description').value = item.description;
-            document.getElementById('item-image').value = item.image;
         } else {
             modalTitle.textContent = 'Adicionar Novo Item';
             itemIdInput.value = '';
@@ -177,8 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
             name: document.getElementById('item-name').value,
             category: category,
             price: parseFloat(document.getElementById('item-price').value),
-            description: document.getElementById('item-description').value,
-            image: document.getElementById('item-image').value
+            description: document.getElementById('item-description').value
         };
 
         if (apiEnabled && window.API) {
