@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS users (
   email TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
   role TEXT NOT NULL DEFAULT 'admin',
+  function TEXT,
   active BOOLEAN NOT NULL DEFAULT true,
   company_id INT REFERENCES companies(id) ON DELETE SET NULL,
   created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
@@ -32,6 +33,8 @@ CREATE TABLE IF NOT EXISTS users (
 ALTER TABLE users ADD COLUMN IF NOT EXISTS company_id INT REFERENCES companies(id) ON DELETE SET NULL;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW();
 ALTER TABLE users ADD COLUMN IF NOT EXISTS active BOOLEAN NOT NULL DEFAULT true;
+-- Função operacional do usuário (ex.: Caixa, Cozinha, Motoboy, Supervisor, Garçom)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS function TEXT;
 
 -- Cardápio
 CREATE TABLE IF NOT EXISTS menu_items (

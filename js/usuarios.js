@@ -1,6 +1,14 @@
 (function () {
   function $(sel) { return document.querySelector(sel); }
 
+  // Utilitário: slug para classes de função (remove acentos, minúsculas)
+  function toSlug(s) {
+    return String(s || '')
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+  }
+
   const setText = (id, value) => (window.UTILS?.setText ? window.UTILS.setText(id, value) : (() => { const el = document.getElementById(id); if (el) el.textContent = value; })());
   const getSelectedCompanyId = () => (window.UTILS?.getSelectedCompanyId ? window.UTILS.getSelectedCompanyId() : (() => { const v = localStorage.getItem('activeCompanyId'); const n = v ? Number(v) : null; return Number.isFinite(n) ? n : null; })());
 
@@ -43,6 +51,9 @@
       const isActive = u.active !== false;
       const badgeClass = isActive ? 'badge badge-success' : 'badge badge-muted';
       const badgeText = isActive ? 'Ativo' : 'Inativo';
+      const funcText = u.function ? String(u.function) : null;
+      const funcCls = funcText ? `badge-function-${toSlug(funcText)}` : '';
+      const funcBadge = funcText ? `<span class="badge ${funcCls}">Função: ${funcText}</span>` : '';
       const companyPart = isSuperadmin
         ? `<span class="muted">Empresa: ${u.company_name ? u.company_name : (u.company_id ?? '—')}</span>`
         : '';
@@ -55,6 +66,7 @@
               <span class="${badgeClass}">${badgeText}</span>
               <span class="muted">${String(u.email || '')}</span>
               <span class="muted">Role: ${String(u.role || '')}</span>
+              ${funcBadge}
               ${companyPart}
             </div>
           </div>
@@ -73,23 +85,51 @@
     return window.API.users.list();
   }
 
-  async function createUserFlow() {
-    const username = prompt('Username:');
-    if (!username) return;
-    const email = prompt('Email:');
-    if (!email) return;
-    const password = prompt('Senha:');
-    if (!password) return;
+  function openUserModal() {
+    const modal = document.getElementById('user-modal');
+    const form = document.getElementById('user-form');
+    if (!modal || !form) return;
+    document.getElementById('modal-title').textContent = 'Novo Usuário';
+    form.reset();
+    const errEl = document.getElementById('user-form-error');
+    if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+    modal.classList.add('active');
+  }
+
+  function closeUserModal() {
+    const modal = document.getElementById('user-modal');
+    if (modal) modal.classList.remove('active');
+  }
+
+  async function submitUserForm() {
+    const nameEl = document.getElementById('user-name-input');
+    const emailEl = document.getElementById('user-email-input');
+    const passwordEl = document.getElementById('user-password-input');
+    const roleEl = document.getElementById('user-role-input');
+    const funcEl = document.getElementById('user-function-input');
+    const statusEl = document.getElementById('user-status-input');
+    const errEl = document.getElementById('user-form-error');
+
+    if (!nameEl || !emailEl || !roleEl || !statusEl) return;
+
+    const username = (nameEl.value || '').trim();
+    const email = (emailEl.value || '').trim();
+    const password = (passwordEl?.value || '').trim();
+    const role = (roleEl.value || 'staff').trim();
+    const func = (funcEl?.value || '').trim();
+    const status = (statusEl.value || 'active');
+
+    const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
+    if (!username || !email) { showError('Preencha nome e email.'); return; }
+    if (!password) { showError('Informe uma senha.'); return; }
 
     const isSuperadmin = localStorage.getItem('userRole') === 'superadmin';
-    let role = prompt('Role (admin/staff/superadmin):', 'staff') || 'staff';
-    role = role.trim();
-
-    let payload = { username, email, password, role };
+    const payload = { username, email, password, role };
+    if (func) payload.function = func;
 
     if (isSuperadmin) {
       const cid = getSelectedCompanyId();
-      const companyId = cid || Number(prompt('companyId (obrigatório para superadmin criar usuário):') || 0);
+      const companyId = cid || null;
       if (!companyId) {
         alert('companyId é obrigatório. Selecione uma empresa em Empresas.');
         return;
@@ -97,12 +137,37 @@
       payload.companyId = companyId;
     }
 
-    await window.API.users.create(payload);
+    let created;
+    try {
+      created = await window.API.users.create(payload);
+    } catch (e) {
+      const details = e && e.details && (e.details.error || e.details.message);
+      showError(details || 'Não foi possível criar o usuário.');
+      return;
+    }
+
+    // Ajusta status se não for "active" (POST não aceita active)
+    const shouldBeActive = status === 'active';
+    if (!shouldBeActive && created?.id) {
+      const makeActive = false; // "inactive" e "pending" mapeados como inativo
+      try {
+        await window.API.users.update(created.id, { active: makeActive });
+      } catch (e) {
+        // Mostrar erro, mas manter modal fechando após criação
+        const details = e && e.details && (e.details.error || e.details.message);
+        showError(details || 'Usuário criado, mas falha ao ajustar status.');
+      }
+    }
+
+    closeUserModal();
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
-    const searchInput = $('.toolbar .search-input input');
+    const searchInput = document.getElementById('search-input');
     const newBtn = document.getElementById('btn-new-user');
+    const modalClose = document.getElementById('modal-close');
+    const modalCancel = document.getElementById('modal-cancel');
+    const modalSave = document.getElementById('modal-save');
 
     let users = [];
     try {
@@ -120,9 +185,17 @@
     if (searchInput) searchInput.addEventListener('input', rerender);
 
     if (newBtn) {
-      newBtn.addEventListener('click', async () => {
+      newBtn.addEventListener('click', () => {
+        openUserModal();
+      });
+    }
+
+    if (modalClose) modalClose.addEventListener('click', closeUserModal);
+    if (modalCancel) modalCancel.addEventListener('click', closeUserModal);
+    if (modalSave) {
+      modalSave.addEventListener('click', async () => {
         try {
-          await createUserFlow();
+          await submitUserForm();
           users = await loadUsers();
           rerender();
         } catch {

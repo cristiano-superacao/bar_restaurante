@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
     if (isSuperadmin) {
       // Superadmin pode listar todos ou filtrar por empresa
       const { rows } = await query(
-        `SELECT u.id, u.username, u.email, u.role, u.active, u.company_id, c.name as company_name, u.created_at
+        `SELECT u.id, u.username, u.email, u.role, u.function, u.active, u.company_id, c.name as company_name, u.created_at
          FROM users u
          LEFT JOIN companies c ON c.id = u.company_id
          WHERE ($1::int IS NULL OR u.company_id = $1)
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
     // Admin/Staff só podem ver usuários da própria empresa
     if (!req.user?.companyId) return res.status(400).json({ error: 'companyId não definido no usuário' });
     const { rows } = await query(
-      `SELECT id, username, email, role, active, company_id, created_at
+      `SELECT id, username, email, role, function, active, company_id, created_at
        FROM users
        WHERE company_id = $1
        ORDER BY created_at DESC, id DESC`,
@@ -47,6 +47,7 @@ router.post('/', [
   body('email').isString().isEmail().normalizeEmail(),
   body('password').isString().isLength({ min: 6 }),
   body('role').optional().isString().isIn(['staff','admin','superadmin']),
+  body('function').optional().isString().trim().isLength({ min: 3 }),
   body('companyId').optional().toInt(),
 ], async (req, res) => {
   try {
@@ -55,7 +56,7 @@ router.post('/', [
     const role = req.user?.role;
     if (!canManageUsers(role)) return res.status(403).json({ error: 'Forbidden' });
 
-    const { username, email, password, role: newRole = 'staff', companyId } = req.body || {};
+    const { username, email, password, role: newRole = 'staff', function: fn, companyId } = req.body || {};
     if (!username || !email || !password) return res.status(400).json({ error: 'username, email e password são obrigatórios' });
 
     let cid = null;
@@ -70,8 +71,8 @@ router.post('/', [
 
     const passwordHash = await bcrypt.hash(String(password), 10);
     const { rows } = await query(
-      'INSERT INTO users(username, email, password_hash, role, company_id, active) VALUES ($1,$2,$3,$4,$5,true) RETURNING id, username, email, role, active, company_id, created_at',
-      [String(username).trim(), String(email).trim(), passwordHash, String(newRole), cid]
+      'INSERT INTO users(username, email, password_hash, role, function, company_id, active) VALUES ($1,$2,$3,$4,$5,$6,true) RETURNING id, username, email, role, function, active, company_id, created_at',
+      [String(username).trim(), String(email).trim(), passwordHash, String(newRole), (fn ? String(fn).trim() : null), cid]
     );
     res.status(201).json(rows[0]);
   } catch (e) {
@@ -87,6 +88,7 @@ router.put('/:id', [
   body('username').optional().isString().trim().isLength({ min: 3 }),
   body('email').optional().isString().isEmail().normalizeEmail(),
   body('role').optional().isString().isIn(['staff','admin','superadmin']),
+  body('function').optional().isString().trim().isLength({ min: 3 }),
   body('active').optional().isBoolean().toBoolean(),
   body('password').optional().isString().isLength({ min: 6 }),
 ], async (req, res) => {
@@ -97,7 +99,7 @@ router.put('/:id', [
     if (!canManageUsers(role)) return res.status(403).json({ error: 'Forbidden' });
 
     const { id } = req.params;
-    const { username, email, role: newRole, active, password } = req.body || {};
+    const { username, email, role: newRole, function: fn, active, password } = req.body || {};
 
     // Admin não pode promover para superadmin
     if (role !== 'superadmin' && newRole === 'superadmin') {
@@ -115,15 +117,17 @@ router.put('/:id', [
        SET username = COALESCE($1, username),
            email = COALESCE($2, email),
            role = COALESCE($3, role),
-           active = COALESCE($4, active),
-           password_hash = COALESCE($5, password_hash)
-       WHERE id = $6
-         AND ($7::int IS NULL OR company_id = $7)
-       RETURNING id, username, email, role, active, company_id, created_at`,
+           function = COALESCE($4, function),
+           active = COALESCE($5, active),
+           password_hash = COALESCE($6, password_hash)
+       WHERE id = $7
+         AND ($8::int IS NULL OR company_id = $8)
+       RETURNING id, username, email, role, function, active, company_id, created_at`,
       [
         username !== undefined ? String(username).trim() : null,
         email !== undefined ? String(email).trim() : null,
         newRole !== undefined ? String(newRole) : null,
+        fn !== undefined ? String(fn).trim() : null,
         active !== undefined ? !!active : null,
         passwordHash,
         Number(id),
