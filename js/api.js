@@ -279,6 +279,7 @@
           const item = { id: Date.now(), ...data };
           curr.push(item); LS.set('users', curr); return item;
         }
+        // Permite enviar function (função operacional: Caixa, Cozinha, Motoboy, Supervisor, Garçom)
         return fetchWithTimeout('/api/users', { method: 'POST', body: JSON.stringify(data) });
       },
       async update(id, data) {
@@ -287,6 +288,7 @@
           const upd = curr.map(u => u.id === id ? { ...u, ...data, id } : u);
           LS.set('users', upd); return upd.find(u => u.id === id) || null;
         }
+        // Permite atualizar function
         return fetchWithTimeout(`/api/users/${id}`, { method: 'PUT', body: JSON.stringify(data) });
       },
       async remove(id) {

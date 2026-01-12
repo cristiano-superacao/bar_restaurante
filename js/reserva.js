@@ -96,6 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const openModal = (reserva = null) => {
         reservaForm.reset();
+        const errEl = document.getElementById('reserva-form-error');
+        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
         if (reserva) {
             document.getElementById('reserva-modal-title').textContent = 'Editar Reserva';
             editingReservaId = reserva.id;
@@ -127,6 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     reservaForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const errEl = document.getElementById('reserva-form-error');
+        const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
         const reservaData = {
             id: editingReservaId || Date.now().toString(),
             name: document.getElementById('reserva-name').value,
@@ -136,6 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
             people: document.getElementById('reserva-people').value,
             status: document.getElementById('reserva-status').value,
         };
+
+        if (!reservaData.name || !reservaData.phone || !reservaData.date || !reservaData.time) {
+            showError('Preencha todos os campos obrigatórios.');
+            return;
+        }
 
         if (apiEnabled && window.API && window.API.reservations) {
             try {
@@ -151,7 +160,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeModal();
                 return;
             } catch (err) {
-                alert('Erro ao salvar reserva via API.');
+                const msg = (err && err.details && (err.details.error || err.details.message)) ? (err.details.error || err.details.message) : 'Erro ao salvar reserva via API.';
+                showError(msg);
                 return;
             }
         }
@@ -183,7 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderReservas();
                     return;
                 } catch (err) {
-                    alert('Erro ao excluir reserva via API.');
+                    const errEl = document.getElementById('reserva-form-error');
+                    if (errEl) { errEl.textContent = 'Erro ao excluir reserva via API.'; errEl.style.display = 'block'; }
                     return;
                 }
             }

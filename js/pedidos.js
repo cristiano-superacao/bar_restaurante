@@ -227,6 +227,8 @@ document.addEventListener('DOMContentLoaded', function () {
         populateTableSelect();
         populateStatusSelect();
         populatePaymentSelect();
+        const errEl = document.getElementById('order-form-error');
+        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
         if (order) {
             modalTitle.textContent = 'Editar Pedido';
             orderIdInput.value = order.id;
@@ -268,9 +270,11 @@ document.addEventListener('DOMContentLoaded', function () {
         const discount = orderDiscountInput ? (parseFloat(orderDiscountInput.value) || 0) : 0;
         const total = Math.max(0, subtotal - discount);
         const paymentMethod = orderPaymentSelect ? orderPaymentSelect.value : '';
+        const errEl = document.getElementById('order-form-error');
+        const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
 
         if (currentOrderItems.length === 0) {
-            alert('Adicione pelo menos um item ao pedido.');
+            showError('Adicione pelo menos um item ao pedido.');
             return;
         }
 
@@ -288,12 +292,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 pedidos = await window.API.orders.listWithItems({ type: 'Mesa' });
                 filterAndRenderOrders();
                 closeModal();
-                        } catch (err) {
-                                console.error('Erro ao salvar pedido via API:', err);
-                                const msg = (err && err.details && err.details.error)
-                                    ? `Erro: ${err.details.error}`
-                                    : 'Erro ao salvar pedido via API.';
-                                alert(msg);
+            } catch (err) {
+                console.error('Erro ao salvar pedido via API:', err);
+                const msg = (err && err.details && (err.details.error || err.details.message))
+                    ? `Erro: ${err.details.error || err.details.message}`
+                    : 'Erro ao salvar pedido via API.';
+                showError(msg);
             }
         } else {
             const newOrder = {
@@ -325,6 +329,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const discount = orderDiscountInput ? (parseFloat(orderDiscountInput.value) || 0) : 0;
         const paymentMethod = (orderPaymentSelect && orderPaymentSelect.value) ? orderPaymentSelect.value : 'Dinheiro';
+        const errEl = document.getElementById('order-form-error');
+        const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
 
         if (apiEnabled && window.API) {
             try {
@@ -333,12 +339,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 filterAndRenderOrders();
                 closeModal();
                 window.open(`cupom.html?orderId=${encodeURIComponent(String(id))}`, '_blank');
-                        } catch (e) {
-                                console.error('Erro ao fechar conta via API:', e);
-                                const msg = (e && e.details && e.details.error)
-                                    ? `Erro: ${e.details.error}`
-                                    : 'Erro ao fechar conta via API.';
-                                alert(msg);
+            } catch (e) {
+                console.error('Erro ao fechar conta via API:', e);
+                const msg = (e && e.details && (e.details.error || e.details.message))
+                    ? `Erro: ${e.details.error || e.details.message}`
+                    : 'Erro ao fechar conta via API.';
+                showError(msg);
             }
             return;
         }

@@ -29,6 +29,8 @@
   function openModal(editing){
     el.modal.classList.add('show');
     el.modalTitle.textContent = editing ? 'Editar Cliente' : 'Novo Cliente';
+    const errEl = document.getElementById('client-form-error');
+    if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
   }
   function closeModal(){ el.modal.classList.remove('show'); }
 
@@ -42,6 +44,8 @@
 
   el.form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
+    const errEl = document.getElementById('client-form-error');
+    const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
     const payload = {
       name: el.name.value.trim(),
       email: el.email.value.trim() || null,
@@ -50,7 +54,7 @@
       birthdate: el.birthdate.value || null,
       notes: el.notes.value.trim() || null
     };
-    if (!payload.name) { alert('Nome é obrigatório'); return; }
+    if (!payload.name) { showError('Nome é obrigatório'); return; }
 
     try {
       if (el.id.value) {
@@ -61,7 +65,8 @@
       closeModal();
       load();
     } catch (e) {
-      alert('Erro ao salvar cliente');
+      const msg = (e && e.details && (e.details.error || e.details.message)) ? (e.details.error || e.details.message) : 'Erro ao salvar cliente';
+      showError(msg);
     }
   });
 

@@ -103,6 +103,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const openModal = (produto = null) => {
         produtoForm.reset();
+        const errEl = document.getElementById('estoque-form-error');
+        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
         if (produto) {
             document.getElementById('produto-modal-title').textContent = 'Editar Produto';
             editingProdutoId = produto.id;
@@ -133,6 +135,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     produtoForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        const errEl = document.getElementById('estoque-form-error');
+        const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
+        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
         const produtoData = {
             id: editingProdutoId || Date.now().toString(),
             name: document.getElementById('produto-name').value,
@@ -141,6 +146,28 @@ document.addEventListener('DOMContentLoaded', () => {
             unit: document.getElementById('produto-unit').value,
             minQuantity: parseInt(document.getElementById('produto-min-quantity').value),
         };
+
+        // Validações básicas e mensagens amigáveis
+        if (!produtoData.name || !String(produtoData.name).trim()) {
+            showError('Nome do produto é obrigatório.');
+            return;
+        }
+        if (!produtoData.category) {
+            showError('Categoria é obrigatória.');
+            return;
+        }
+        if (Number.isNaN(produtoData.quantity) || produtoData.quantity < 0) {
+            showError('Quantidade deve ser um número maior ou igual a 0.');
+            return;
+        }
+        if (!produtoData.unit || !String(produtoData.unit).trim()) {
+            showError('Unidade é obrigatória (ex.: un, kg, L).');
+            return;
+        }
+        if (Number.isNaN(produtoData.minQuantity) || produtoData.minQuantity < 0) {
+            // Permitir vazio => 0
+            produtoData.minQuantity = Number.isNaN(produtoData.minQuantity) ? 0 : produtoData.minQuantity;
+        }
 
         if (apiEnabled && window.API) {
             try {
@@ -153,7 +180,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderEstoque();
                 closeModal();
             } catch (err) {
-                alert('Erro ao salvar item de estoque via API.');
+                // Mensagens detalhadas vindas do helper da API
+                if (err && err.code === 'NO_COMPANY_CONTEXT') {
+                    showError('Selecione uma empresa para operar o estoque.');
+                    return;
+                }
+                const msg = (err && err.details && (err.details.error || err.details.message))
+                  ? (err.details.error || err.details.message)
+                  : (err && err.message ? err.message : 'Erro ao salvar item de estoque');
+                showError(msg);
             }
         } else {
             if (editingProdutoId) {
