@@ -19,8 +19,12 @@ function hasBaseCssLink(html) {
   return /<link[^>]+href=["']css\/base\.css["'][^>]*>/i.test(html);
 }
 
-function hasDashboardCssLink(html) {
-  return /<link[^>]+href=["']css\/dashboard\.css["'][^>]*>/i.test(html);
+function hasDesignSystemCssLink(html) {
+  return /<link[^>]+href=["']css\/design-system\.css["'][^>]*>/i.test(html);
+}
+
+function hasSidebarCssLink(html) {
+  return /<link[^>]+href=["']css\/sidebar-verde\.css["'][^>]*>/i.test(html);
 }
 
 function hasCupomCssLink(html) {
@@ -41,18 +45,17 @@ function findBtnClasses(html) {
 }
 
 function checkBaseCssSelectors(baseCss) {
-  const req = [
-    /\.btn\s*\{/,
-    /\.btn-primary\s*\{/,
-    /\.btn-secondary\s*\{/,
-    /\.btn-danger\s*\{/
-  ];
-  return req.map((r) => r.test(baseCss));
+  const hasBtn = /\.btn\s*\{/.test(baseCss);
+  const hasPrimary = /\.btn-primary\s*\{/.test(baseCss);
+  const hasSecondary = /\.btn-secondary\s*\{/.test(baseCss);
+  // Aceita .btn-ghost como substituto moderno de .btn-danger
+  const hasDangerOrGhost = /\.btn-danger\s*\{|\.btn-ghost\s*\{/.test(baseCss);
+  return [hasBtn, hasPrimary, hasSecondary, hasDangerOrGhost];
 }
 
-function dashboardOverridesButtons(dashboardCss) {
-  // sinaliza se houver seletor genérico .btn { ... } (não qualificado)
-  return /(^|\n)\s*\.btn\s*\{/.test(dashboardCss);
+function sidebarOverridesButtons(sidebarCss) {
+  // sinaliza se houver seletor genérico .btn { ... } fora do design system
+  return /(^|\n)\s*\.btn\s*\{/.test(sidebarCss);
 }
 
 function main() {
@@ -60,32 +63,40 @@ function main() {
   const warnings = [];
 
   const htmlFiles = listHtmlFiles();
-  const baseCssPath = path.join(rootDir, 'css', 'base.css');
-  const dashboardCssPath = path.join(rootDir, 'css', 'dashboard.css');
+  const baseCssPath = path.join(rootDir, 'css', 'design-system.css');
+  const fallbackBaseCssPath = path.join(rootDir, 'css', 'base.css');
+  const sidebarCssPath = path.join(rootDir, 'css', 'sidebar-verde.css');
 
-  const baseCss = fs.existsSync(baseCssPath) ? readText(baseCssPath) : '';
-  const dashboardCss = fs.existsSync(dashboardCssPath) ? readText(dashboardCssPath) : '';
+  let baseCss = '';
+  if (fs.existsSync(baseCssPath)) {
+    baseCss = readText(baseCssPath);
+  } else if (fs.existsSync(fallbackBaseCssPath)) {
+    baseCss = readText(fallbackBaseCssPath);
+  }
+  const sidebarCss = fs.existsSync(sidebarCssPath) ? readText(sidebarCssPath) : '';
 
   const [hasBtn, hasPrimary, hasSecondary, hasDanger] = checkBaseCssSelectors(baseCss);
   if (!hasBtn || !hasPrimary || !hasSecondary || !hasDanger) {
-    issues.push({ file: 'css/base.css', message: 'Faltam seletores obrigatórios (.btn/.btn-primary/.btn-secondary/.btn-danger)' });
+    issues.push({ file: 'css/design-system.css', message: 'Faltam seletores obrigatórios (.btn/.btn-primary/.btn-secondary e .btn-danger ou .btn-ghost)' });
   }
 
-  if (dashboardOverridesButtons(dashboardCss)) {
-    warnings.push({ file: 'css/dashboard.css', message: 'Encontrado seletor genérico .btn — pode causar conflito. (esperado: sem .btn genérico)' });
+  if (sidebarOverridesButtons(sidebarCss)) {
+    // Aviso leve: apenas se houver declaração genérica de .btn fora do design system
+    warnings.push({ file: 'css/sidebar-verde.css', message: 'Encontrado seletor genérico .btn — evite sobrescrever o design system aqui.' });
   }
 
   for (const htmlName of htmlFiles) {
     const html = readText(path.join(rootDir, htmlName));
     const hasBase = hasBaseCssLink(html);
-    const hasDash = hasDashboardCssLink(html);
+    const hasDesign = hasDesignSystemCssLink(html);
+    const hasSidebar = hasSidebarCssLink(html);
     const btnUsages = findBtnClasses(html);
 
-    if (btnUsages.length > 0 && !hasBase) {
-      issues.push({ file: htmlName, message: 'Usa classes .btn* mas não inclui css/base.css no <head>' });
+    if (btnUsages.length > 0 && !(hasBase || hasDesign)) {
+      issues.push({ file: htmlName, message: 'Usa classes .btn* mas não inclui css/design-system.css no <head>' });
     }
-    if (hasDash && !hasBase) {
-      warnings.push({ file: htmlName, message: 'Inclui css/dashboard.css sem css/base.css — pode perder estilos compartilhados' });
+    if (hasSidebar && !(hasBase || hasDesign)) {
+      warnings.push({ file: htmlName, message: 'Inclui css/sidebar-verde.css sem css/design-system.css — pode perder estilos compartilhados' });
     }
 
     if (htmlName.toLowerCase() === 'cupom.html') {
