@@ -288,8 +288,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 pedidos = await window.API.orders.listWithItems({ type: 'Mesa' });
                 filterAndRenderOrders();
                 closeModal();
-            } catch (err) {
-                alert('Erro ao salvar pedido via API.');
+                        } catch (err) {
+                                console.error('Erro ao salvar pedido via API:', err);
+                                const msg = (err && err.details && err.details.error)
+                                    ? `Erro: ${err.details.error}`
+                                    : 'Erro ao salvar pedido via API.';
+                                alert(msg);
             }
         } else {
             const newOrder = {
@@ -329,8 +333,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 filterAndRenderOrders();
                 closeModal();
                 window.open(`cupom.html?orderId=${encodeURIComponent(String(id))}`, '_blank');
-            } catch (e) {
-                alert('Erro ao fechar conta via API.');
+                        } catch (e) {
+                                console.error('Erro ao fechar conta via API:', e);
+                                const msg = (e && e.details && e.details.error)
+                                    ? `Erro: ${e.details.error}`
+                                    : 'Erro ao fechar conta via API.';
+                                alert(msg);
             }
             return;
         }

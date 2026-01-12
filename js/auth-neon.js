@@ -20,6 +20,14 @@ class AuthSystemNeon {
                 this.token = savedToken;
                 this.currentUser = JSON.parse(savedUser);
                 console.log('✅ Sessão restaurada:', this.currentUser.nome);
+                // Reaplicar contexto padrão
+                try {
+                    localStorage.setItem('username', this.currentUser.username || this.currentUser.email || '');
+                    localStorage.setItem('userRole', this.currentUser.role || '');
+                    if (this.currentUser.company_id != null) {
+                        localStorage.setItem('activeCompanyId', String(this.currentUser.company_id));
+                    }
+                } catch {}
             } catch (error) {
                 console.warn('⚠️ Erro ao restaurar sessão:', error);
                 this.logout();
@@ -87,6 +95,14 @@ class AuthSystemNeon {
                 // Salvar no localStorage
                 localStorage.setItem('authToken', this.token);
                 localStorage.setItem('currentUser', JSON.stringify(this.currentUser));
+                // Padroniza contexto de usuário para UI e API
+                try {
+                    localStorage.setItem('username', this.currentUser.username || this.currentUser.email || '');
+                    localStorage.setItem('userRole', this.currentUser.role || '');
+                    if (this.currentUser.company_id != null) {
+                        localStorage.setItem('activeCompanyId', String(this.currentUser.company_id));
+                    }
+                } catch {}
 
                 console.log('✅ Login realizado:', this.currentUser.nome);
                 console.log('👤 Usuário logado:', this.currentUser);

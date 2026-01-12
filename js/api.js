@@ -20,10 +20,10 @@
     try {
       const token = localStorage.getItem('authToken');
 
-      // Multi-empresa: para superadmin, enviar contexto via header quando definido
+      // Multi-empresa: enviar contexto via header quando houver empresa ativa
       const userRole = localStorage.getItem('userRole');
       const activeCompanyId = localStorage.getItem('activeCompanyId');
-      const companyHeader = (userRole === 'superadmin' && activeCompanyId)
+      const companyHeader = activeCompanyId
         ? { 'X-Company-Id': String(activeCompanyId) }
         : {};
 
@@ -82,8 +82,14 @@
             window.location.href = 'index.html';
           }
         }
+        // Tenta obter detalhes do erro em JSON
+        let details = null;
+        try {
+          details = await res.json();
+        } catch {}
         const e = new Error(`HTTP ${res.status}`);
         e.code = `HTTP_${res.status}`;
+        if (details && typeof details === 'object') e.details = details;
         throw e;
       }
       const ct = res.headers.get('content-type') || '';
