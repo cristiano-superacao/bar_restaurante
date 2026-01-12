@@ -7,6 +7,7 @@
     <meta name="description" content="Gerenciamento completo de pedidos com controle de status, mesas e pagamentos.">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍽️</text></svg>">
     <link rel="stylesheet" href="css/design-system.css">
+    <link rel="stylesheet" href="css/sidebar-verde.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Layout Base */
@@ -709,6 +710,18 @@
         .modal-body {
             padding: var(--spacing-lg);
         }
+
+        .form-error {
+            display: none;
+            margin-bottom: var(--spacing);
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            border: 2px solid var(--error-500);
+            background: var(--error-50);
+            color: var(--error-700);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+        }
         
         .form-row {
             display: grid;
@@ -1160,6 +1173,7 @@
             </div>
             <div class="modal-body">
                 <form id="order-form">
+                    <div id="order-form-error" class="form-error"></div>
                     <input type="hidden" id="order-id">
                     
                     <div class="form-row">
