@@ -580,20 +580,24 @@ a:hover {
 }
 
 .btn-primary {
-    background-color: var(--primary-600);
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
     color: var(--text-on-primary);
     border-color: var(--primary-600);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.2);
 }
 
 .btn-primary:hover:not(:disabled) {
-    background-color: var(--primary-700);
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
     border-color: var(--primary-700);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.25);
+    filter: brightness(1.03);
 }
 
 .btn-primary:active:not(:disabled) {
     transform: translateY(0);
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.2);
+    filter: brightness(0.98);
 }
 
 .btn-secondary {
@@ -870,15 +874,17 @@ a:hover {
     border: 1px solid var(--border-color);
     border-radius: var(--radius-full);
     font-size: var(--font-size-sm);
-    background-color: var(--bg-card);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
     color: var(--text-secondary);
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 20 20'%3E%3Cpath fill='%233b82f6' d='M5.23 7.21a1 1 0 0 1 1.41 0L10 10.58l3.36-3.37a1 1 0 1 1 1.41 1.42l-4.07 4.07a1 1 0 0 1-1.41 0L5.23 8.63a1 1 0 0 1 0-1.42Z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.75rem center;
+    background-size: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: all var(--transition-fast);
 }
 
@@ -914,6 +920,8 @@ a:hover {
     border-radius: var(--radius-full);
     font-size: var(--font-size-sm);
     transition: all var(--transition-fast);
+    background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .search-box input:focus {
@@ -927,7 +935,7 @@ a:hover {
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-muted);
+    color: var(--primary-400);
     pointer-events: none;
 }
 
