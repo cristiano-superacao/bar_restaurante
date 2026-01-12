@@ -7,25 +7,25 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    /* === PALETA DE CORES VERDE (inspirada na referência) === */
-    /* Verde Principal (Sidebar e elementos primários) */
-    --primary-50: #f0fdf4;
-    --primary-100: #dcfce7;
-    --primary-200: #bbf7d0;
-    --primary-300: #86efac;
-    --primary-400: #4ade80;
-    --primary-500: #22c55e;  /* Verde médio */
-    --primary-600: #16a34a;  /* Verde sidebar */
-    --primary-700: #15803d;  /* Verde escuro hover */
-    --primary-800: #166534;  /* Verde muito escuro */
-    --primary-900: #14532d;  /* Verde sidebar base */
-    --primary-950: #052e16;  /* Verde quase preto */
+    /* === PALETA DE CORES AZUL GRADIENTE PROFISSIONAL === */
+    /* Azul Principal (Sidebar e elementos primários) */
+    --primary-50: #eff6ff;
+    --primary-100: #dbeafe;
+    --primary-200: #bfdbfe;
+    --primary-300: #93c5fd;
+    --primary-400: #60a5fa;
+    --primary-500: #3b82f6;  /* Azul médio */
+    --primary-600: #2563eb;  /* Azul sidebar */
+    --primary-700: #1d4ed8;  /* Azul escuro hover */
+    --primary-800: #1e40af;  /* Azul muito escuro */
+    --primary-900: #1e3a8a;  /* Azul sidebar base */
+    --primary-950: #172554;  /* Azul quase preto */
     
-    /* Verde Escuro para Sidebar (inspirado na imagem) */
-    --sidebar-bg: #1a4d2e;     /* Verde escuro principal */
-    --sidebar-hover: #235c3a;   /* Verde hover */
-    --sidebar-active: #2d7047;  /* Verde active */
-    --sidebar-border: #163d24;  /* Borda mais escura */
+    /* Azul Escuro para Sidebar (inspirado em layout profissional) */
+    --sidebar-bg: #1e3a8a;     /* Azul escuro principal */
+    --sidebar-hover: #2563eb;   /* Azul hover */
+    --sidebar-active: #3b82f6;  /* Azul active */
+    --sidebar-border: #172554;  /* Borda mais escura */
     
     /* Tons Neutros */
     --gray-50: #f8fafc;      /* Fundo body claro */
@@ -668,7 +668,7 @@ a:hover {
 }
 
 /* Cores do ícone por faixa (tarja) */
-.stat-card.stripe-primary .stat-icon { background-color: var(--success-50); color: var(--success-600); }
+.stat-card.stripe-primary .stat-icon { background-color: var(--primary-100); color: var(--primary-600); }
 .stat-card.stripe-success .stat-icon { background-color: var(--success-50); color: var(--success-600); }
 .stat-card.stripe-warning .stat-icon { background-color: var(--warning-50); color: var(--warning-600); }
 .stat-card.stripe-error .stat-icon { background-color: var(--error-50); color: var(--error-600); }
