@@ -46,14 +46,8 @@
         .header-title p { font-size: var(--font-size-sm); color: var(--text-muted); margin: 0.25rem 0 0; }
         .main-content { flex: 1; padding: var(--spacing-lg); overflow-y: auto; }
         .toolbar { display: flex; gap: var(--spacing); margin-bottom: var(--spacing-lg); flex-wrap: wrap; align-items: center; }
-        .search-box { position: relative; flex: 1; min-width: 250px; }
-        .search-box input { width: 100%; padding: 0.625rem 1rem 0.625rem 2.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-full); font-size: var(--font-size-sm); transition: all var(--transition-fast); }
-        .search-box input:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
-        .search-box i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
+        
         .filter-group { display: flex; gap: var(--spacing-sm); align-items: center; }
-        .filter-select { padding: 0.625rem 2.5rem 0.625rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-full); font-size: var(--font-size-sm); background-color: var(--bg-card); color: var(--text-secondary); cursor: pointer; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 9L1 4h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; transition: all var(--transition-fast); }
-        .filter-select:hover { border-color: var(--primary-300); }
-        .filter-select:focus { outline: none; border-color: var(--primary-500); box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
         .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-lg); margin-bottom: var(--spacing-lg); }
         .stat-card { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: var(--spacing-lg); display: flex; align-items: center; gap: var(--spacing); position: relative; overflow: hidden; transition: all var(--transition); }
         .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0; transition: opacity var(--transition); }
@@ -148,7 +142,7 @@
             .main-content { padding: var(--spacing); }
             .header-title h1 { font-size: var(--font-size-xl); }
             .toolbar { flex-direction: column; align-items: stretch; }
-            .search-box { min-width: 100%; }
+            
             .filter-group { flex-wrap: wrap; }
             .stats-row { grid-template-columns: 1fr; }
         }
