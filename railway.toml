@@ -6,7 +6,7 @@ builder = "NIXPACKS"
 watchPatterns = ["server/**"]
 
 [deploy]
-startCommand = "if [ -d server ]; then cd server; elif [ -d servidor ]; then cd servidor; fi; npm start"
+startCommand = "cd server && npm start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
