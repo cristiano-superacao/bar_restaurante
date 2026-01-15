@@ -1,0 +1,14 @@
+{
+  "name": "restaurante-servidor-legacy-proxy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Proxy para compatibilidade com deploy no Railway (Root Directory: servidor)",
+  "scripts": {
+    "postinstall": "cd ../server && npm ci --omit=dev",
+    "start": "cd ../server && npm start",
+    "build": "echo 'Legacy build proxy' && cd ../server"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
