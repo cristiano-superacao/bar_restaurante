@@ -1149,6 +1149,194 @@ a:hover {
     .modal-footer > * { width: 100%; }
 }
 
+/* === MODAIS PREMIUM (OPT-IN com .modal-premium) === */
+.modal.modal-premium {
+    background: rgba(15, 23, 42, 0.72);
+    backdrop-filter: blur(8px);
+}
+
+.modal.modal-premium .modal-content {
+    background: #f8fafc;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 25px 70px rgba(2, 6, 23, 0.35);
+}
+
+.modal.modal-premium .modal-header {
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+    border-bottom: none;
+    padding: 1.5rem 1.75rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal.modal-premium .modal-header::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    right: -60%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.modal.modal-premium .modal-header h2,
+.modal.modal-premium .modal-header h3,
+.modal.modal-premium .modal-title {
+    color: #fff;
+    position: relative;
+    z-index: 1;
+}
+
+.modal.modal-premium .modal-body {
+    background: #f8fafc;
+    padding: 1.75rem;
+}
+
+.modal.modal-premium .modal-footer {
+    background: #fff;
+    border-top: 1px solid rgba(226, 232, 240, 0.95);
+    padding: 1.25rem 1.75rem;
+}
+
+.modal.modal-premium .modal-close,
+.modal.modal-premium .close-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 18px;
+    position: relative;
+    z-index: 1;
+}
+
+.modal.modal-premium .modal-close:hover,
+.modal.modal-premium .close-btn:hover {
+    background: rgba(255, 255, 255, 0.26);
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+/* Inputs (premium) dentro do modal */
+.modal.modal-premium .modal-body input,
+.modal.modal-premium .modal-body select,
+.modal.modal-premium .modal-body textarea {
+    border: 2px solid rgba(226, 232, 240, 0.95);
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modal.modal-premium .modal-body input:focus,
+.modal.modal-premium .modal-body select:focus,
+.modal.modal-premium .modal-body textarea:focus {
+    outline: none;
+    border-color: rgba(59, 130, 246, 0.85);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+}
+
+/* Botões (premium) dentro do modal */
+.modal.modal-premium .modal-btn.save {
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+    box-shadow: 0 10px 26px rgba(59, 130, 246, 0.22);
+}
+
+.modal.modal-premium .modal-btn.save:hover {
+    background: linear-gradient(135deg, var(--primary-700) 0%, var(--primary-800) 100%);
+}
+
+.modal.modal-premium .modal-btn.cancel {
+    background: #f1f5f9;
+    border-color: rgba(226, 232, 240, 0.95);
+}
+
+.modal.modal-premium .modal-btn.cancel:hover {
+    background: #e2e8f0;
+}
+
+/* Compat: botões .btn (algumas telas) */
+.modal.modal-premium .btn.btn-primary {
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+    border: none;
+    box-shadow: 0 10px 26px rgba(59, 130, 246, 0.22);
+}
+
+.modal.modal-premium .btn.btn-secondary {
+    background: #f1f5f9;
+    border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+/* Componentes premium usados no Cardápio (centralizados aqui para reuso) */
+.modal-premium-content { max-width: 720px; }
+.modal-premium-title { font-size: 24px; font-weight: 800; margin: 0; letter-spacing: -0.5px; }
+.modal-premium-subtitle { margin: 4px 0 0; font-size: 14px; color: rgba(255,255,255,0.86); }
+.modal-title-wrapper { display: flex; align-items: center; gap: 16px; }
+.modal-icon-badge { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.22); color: #fff; }
+.premium-close-btn { font-size: 18px; }
+
+.premium-form { display: flex; flex-direction: column; gap: 22px; }
+.form-section { background: #fff; border: 1px solid rgba(226,232,240,0.95); border-radius: 16px; padding: 22px; box-shadow: 0 1px 3px rgba(2,6,23,0.08); }
+.section-header { display: flex; align-items: center; gap: 12px; padding-bottom: 14px; margin-bottom: 16px; border-bottom: 2px solid rgba(241,245,249,0.95); }
+.section-header i { color: var(--primary-600); }
+.section-header h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--text-primary); letter-spacing: -0.3px; }
+
+.form-row { display: grid; gap: 14px; }
+.form-row.two-columns { grid-template-columns: repeat(2, 1fr); }
+.form-group-premium { display: flex; flex-direction: column; gap: 8px; }
+.form-group-premium.full-width { grid-column: 1 / -1; }
+
+.premium-label { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: rgba(51,65,85,0.98); }
+.premium-label i { color: var(--primary-600); font-size: 13px; }
+.premium-input,
+.premium-textarea { width: 100%; padding: 12px 14px; border: 2px solid rgba(226,232,240,0.95); border-radius: 12px; background: #fff; }
+.premium-textarea { resize: vertical; min-height: 96px; line-height: 1.6; }
+
+.input-with-icon { position: relative; display: flex; align-items: center; }
+.input-prefix { position: absolute; left: 14px; font-weight: 800; color: rgba(100,116,139,0.98); pointer-events: none; }
+.premium-input.with-prefix { padding-left: 44px; }
+
+.addons-section-premium { background: linear-gradient(135deg, rgba(240,249,255,1) 0%, rgba(224,242,254,1) 100%); border: 2px solid rgba(186,230,253,1); }
+.addons-section-header { display: flex; align-items: center; justify-content: space-between; border-bottom-color: rgba(186,230,253,1); }
+.addons-header-left { display: flex; align-items: center; gap: 12px; }
+.addons-counter-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 999px; background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%); color: #fff; font-weight: 800; box-shadow: 0 10px 26px rgba(59, 130, 246, 0.22); }
+.addons-hint-premium { display: flex; gap: 12px; padding: 14px; background: rgba(255,255,255,0.65); border-left: 4px solid var(--primary-600); border-radius: 12px; margin-bottom: 16px; }
+.addons-hint-premium i { color: var(--primary-600); font-size: 18px; margin-top: 2px; }
+.addons-hint-premium strong { display: block; margin-bottom: 4px; }
+.addons-hint-premium p { margin: 0; color: rgba(100,116,139,0.98); font-size: 13px; line-height: 1.5; }
+.addons-options-premium { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+
+.modal-premium-footer { display: flex; gap: 12px; justify-content: flex-end; }
+.btn-primary-premium,
+.btn-secondary-premium { padding: 14px 22px; border-radius: 12px; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease; border: none; }
+.btn-primary-premium { background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%); color: #fff; box-shadow: 0 12px 30px rgba(59, 130, 246, 0.24); }
+.btn-primary-premium:hover { transform: translateY(-2px); box-shadow: 0 16px 40px rgba(59, 130, 246, 0.32); }
+.btn-secondary-premium { background: #f1f5f9; color: rgba(51,65,85,0.98); border: 1px solid rgba(226,232,240,0.95); }
+.btn-secondary-premium:hover { background: #e2e8f0; }
+
+.premium-alert { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 14px; }
+
+@media (max-width: 768px) {
+    .modal.modal-premium .modal-content { border-radius: 20px; }
+    .modal.modal-premium .modal-header,
+    .modal.modal-premium .modal-body,
+    .modal.modal-premium .modal-footer { padding-left: 18px; padding-right: 18px; }
+    .form-row.two-columns { grid-template-columns: 1fr; }
+    .addons-options-premium { grid-template-columns: 1fr; }
+    .modal-premium-footer { flex-direction: column-reverse; }
+    .btn-primary-premium,
+    .btn-secondary-premium { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 480px) {
+    .addons-section-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .addons-counter-badge { width: 100%; justify-content: center; }
+}
+
 /* === FILTROS / SELECTS COMPARTILHADOS === */
 .filter-select {
     padding: 0.625rem 2.5rem 0.625rem 1rem;
