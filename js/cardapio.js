@@ -290,6 +290,8 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('item-category').value = item.category;
             document.getElementById('item-price').value = item.price;
             document.getElementById('item-description').value = item.description;
+            const allowsAddonsCheckbox = document.getElementById('item-allows-addons');
+            if (allowsAddonsCheckbox) allowsAddonsCheckbox.checked = item.allowsAddons || false;
 
             const selected = item.addonStockIds || item.addon_stock_ids || [];
             renderProductAddonOptions(Array.isArray(selected) ? selected : []);
@@ -313,6 +315,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const id = itemIdInput.value;
         const categoryInput = document.getElementById('item-category');
         const category = categoryInput.value.trim();
+        const allowsAddonsCheckbox = document.getElementById('item-allows-addons');
 
         const selectedAddonIds = getSelectedAddonIds();
         if (selectedAddonIds.length > ADDONS_MAX) {
@@ -326,6 +329,7 @@ document.addEventListener('DOMContentLoaded', function () {
             category: category,
             price: parseFloat(document.getElementById('item-price').value),
             description: document.getElementById('item-description').value,
+            allowsAddons: allowsAddonsCheckbox ? allowsAddonsCheckbox.checked : false,
             addonStockIds: selectedAddonIds
         };
 

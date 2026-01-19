@@ -149,11 +149,19 @@
                     <div class="form-group">
                         <label for="produto-category">Categoria *</label>
                         <select id="produto-category" required>
-                            <option value="Bebidas">Bebidas</option>
-                            <option value="Ingredientes">Ingredientes</option>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="Acompanhamento">Acompanhamento</option>
+                            <option value="Bebida">Bebida</option>
                             <option value="Limpeza">Limpeza</option>
+                            <option value="Alimento">Alimento</option>
                             <option value="Outros">Outros</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                            <input type="checkbox" id="produto-is-addon" style="width: 18px; height: 18px; cursor: pointer;">
+                            <span>É Acompanhamento (aparece em Novo Pedido)</span>
+                        </label>
                     </div>
                     <div class="form-row">
                         <div class="form-group">

@@ -160,6 +160,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('produto-quantity').value = String(toInt(p.quantity, 0));
             document.getElementById('produto-unit').value = p.unit;
             document.getElementById('produto-min-quantity').value = String(toInt(p.minQuantity, 0));
+            const isAddonCheckbox = document.getElementById('produto-is-addon');
+            if (isAddonCheckbox) isAddonCheckbox.checked = p.isAddon || false;
         } else {
             document.getElementById('produto-modal-title').textContent = 'Novo Produto';
             editingProdutoId = null;
@@ -184,6 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const errEl = document.getElementById('estoque-form-error');
         const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
         if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+        const isAddonCheckbox = document.getElementById('produto-is-addon');
         const produtoData = {
             id: editingProdutoId || Date.now().toString(),
             name: document.getElementById('produto-name').value,
@@ -191,6 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             quantity: parseInt(document.getElementById('produto-quantity').value),
             unit: document.getElementById('produto-unit').value,
             minQuantity: parseInt(document.getElementById('produto-min-quantity').value),
+            isAddon: isAddonCheckbox ? isAddonCheckbox.checked : false
         };
 
         // Validações básicas e mensagens amigáveis

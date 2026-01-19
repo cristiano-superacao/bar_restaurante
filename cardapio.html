@@ -881,8 +881,14 @@
                                     <i class="fas fa-list"></i>
                                     Categoria *
                                 </label>
-                                <input type="text" id="item-category" class="premium-input" 
-                                       placeholder="Ex: Lanches, Bebidas, Pratos" required>
+                                <select id="item-category" class="premium-input" required>
+                                    <option value="">Selecione uma categoria</option>
+                                    <option value="Acompanhamento">Acompanhamento</option>
+                                    <option value="Bebida">Bebida</option>
+                                    <option value="Limpeza">Limpeza</option>
+                                    <option value="Alimento">Alimento</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
                             </div>
                             
                             <div class="form-group form-group-premium">
@@ -906,6 +912,18 @@
                                 </label>
                                 <textarea id="item-description" class="premium-textarea" rows="4" 
                                           placeholder="Descreva os ingredientes e características do item..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group form-group-premium">
+                                <label class="premium-label" style="display: flex; align-items: center; gap: 12px; cursor: pointer;">
+                                    <input type="checkbox" id="item-allows-addons" style="width: 20px; height: 20px; cursor: pointer;">
+                                    <span>
+                                        <i class="fas fa-puzzle-piece"></i>
+                                        Permite Acompanhamento (Pastel, Hambúrguer, Crepe, Tapioca, etc.)
+                                    </span>
+                                </label>
                             </div>
                         </div>
                     </div>

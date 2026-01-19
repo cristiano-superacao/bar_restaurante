@@ -108,14 +108,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function menuItemAllowsAddons(menuItem) {
+        // Nova lógica: verifica se o campo allowsAddons está marcado
+        if (menuItem?.allowsAddons === true) return true;
+        
+        // Fallback: se não tem o campo, usa a lógica antiga (nome do produto)
         const base = `${menuItem?.category || ''} ${menuItem?.name || ''}`;
         const t = normalizeText(base);
         return ['pastel', 'hamburguer', 'crepe', 'tapioca'].some(k => t.includes(k));
     }
 
     function isAddonStockItem(stockItem) {
+        // Nova lógica: verifica se o campo isAddon está marcado
+        if (stockItem?.isAddon === true || stockItem?.is_addon === true) return true;
+        
+        // Fallback: se não tem o campo, usa a lógica antiga (categoria)
         const cat = normalizeText(stockItem?.category);
-        return stockItem?.isAddon === true || stockItem?.is_addon === true || cat.includes('acomp');
+        return cat.includes('acomp');
     }
 
     function getAddonStockOptions() {
@@ -614,6 +622,31 @@ document.addEventListener('DOMContentLoaded', function () {
             const total = Math.max(0, subtotal - discount);
             return { ...o, status: 'Pago', paymentMethod, discount, subtotal, total, paidAt: now };
         });
+        const closedOrder = updated.find(o => String(o.id) === String(id));
+        
+        // MOVIMENTAÇÃO DE ESTOQUE AO FINALIZAR PEDIDO
+        if (closedOrder && closedOrder.items) {
+            const estoqueAtual = STORE.get('estoque', estoque, ['estoque']) || estoque;
+            const safeNumber = (v) => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
+            
+            closedOrder.items.forEach(orderItem => {
+                // Deduzir acompanhamentos do estoque
+                if (Array.isArray(orderItem.addons)) {
+                    orderItem.addons.forEach(addon => {
+                        const stockId = String(addon.stockId || addon.stock_id || '');
+                        const qtyToDeduct = safeNumber(addon.quantity) * safeNumber(orderItem.quantity);
+                        const stockItem = estoqueAtual.find(s => String(s.id) === stockId);
+                        if (stockItem && qtyToDeduct > 0) {
+                            stockItem.quantity = Math.max(0, safeNumber(stockItem.quantity) - qtyToDeduct);
+                        }
+                    });
+                }
+            });
+            
+            STORE.set('estoque', estoqueAtual);
+            estoque = estoqueAtual;
+        }
+        
         pedidos = updated;
         saveOrders();
 
