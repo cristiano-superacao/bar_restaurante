@@ -700,6 +700,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- Inicialização ---
     (async () => {
         await loadData();
+        populateTableSelect();
         populateMenuItemSelect();
         filterAndRenderOrders();
         syncAddonsVisibility();
