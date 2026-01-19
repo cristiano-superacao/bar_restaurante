@@ -20,7 +20,7 @@ function detectApiBaseUrl() {
             // ignora
         }
 
-        // Ambiente de desenvolvimento: frontend em 8000, backend em 3000
+        // Ambiente de desenvolvimento: frontend em 8000/8080, backend em 3000
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
             return `${protocol || 'http:'}//localhost:3000`;
         }
@@ -30,7 +30,17 @@ function detectApiBaseUrl() {
             return window.__API_BASE_URL__;
         }
 
-        // Produção: Railway
+        // Netlify: detecta domínio .netlify.app ou deploy previews
+        if (hostname && (hostname.includes('netlify.app') || hostname.includes('netlify.com'))) {
+            return DEFAULT_RAILWAY; // Frontend no Netlify, backend no Railway
+        }
+
+        // Railway: detecta domínio .up.railway.app (caso hospede frontend também)
+        if (hostname && hostname.includes('railway.app')) {
+            return DEFAULT_RAILWAY; // Mesmo domínio para frontend e backend
+        }
+
+        // Produção: padrão Railway
         return DEFAULT_RAILWAY;
     } catch {
         return DEFAULT_RAILWAY;
