@@ -66,7 +66,7 @@ const CONFIG = {
 
     // API (opcional). Quando enabled=false, usa apenas LocalStorage
     API: {
-        enabled: true, // API habilitada por padrão (Railway)
+        enabled: false, // API desabilitada para testes locais (usa LocalStorage)
         baseUrl: detectApiBaseUrl(), // Detecta automaticamente (local x Railway)
         timeoutMs: 8000
     },
