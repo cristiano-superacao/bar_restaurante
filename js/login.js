@@ -118,6 +118,21 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const res = await window.API.auth.login({ username, password });
                 if (res && res.token) {
+                    try {
+                        const apiUser = res.user || {};
+                        const companyId = apiUser.companyId ?? apiUser.company_id ?? localStorage.getItem('activeCompanyId') ?? null;
+                        const currentUser = {
+                            id: apiUser.id ?? Date.now(),
+                            nome: apiUser.nome || apiUser.name || apiUser.username || apiUser.email || username,
+                            name: apiUser.name || apiUser.nome || apiUser.username || apiUser.email || username,
+                            email: apiUser.email || '',
+                            username: apiUser.username || apiUser.email || username,
+                            role: apiUser.role || localStorage.getItem('userRole') || '',
+                            company_id: companyId != null ? Number(companyId) : null,
+                            permissions: Array.isArray(apiUser.permissions) ? apiUser.permissions : []
+                        };
+                        localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    } catch {}
                     localStorage.setItem('loginTime', new Date().toISOString());
                     const role = (res.user && res.user.role) ? res.user.role : localStorage.getItem('userRole');
                     const activeCompanyId = localStorage.getItem('activeCompanyId');
@@ -152,6 +167,24 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('activeCompanyId', localStorage.getItem('activeCompanyId') || '1');
             localStorage.setItem('activeCompanyName', localStorage.getItem('activeCompanyName') || (cfg.APP && cfg.APP.name ? cfg.APP.name : 'Empresa'));
             localStorage.setItem('loginTime', new Date().toISOString());
+
+            try {
+                const companyId = found.company_id ?? Number(localStorage.getItem('activeCompanyId') || 1);
+                const currentUser = {
+                    id: found.id ?? Date.now(),
+                    nome: found.name || found.nome || found.username,
+                    name: found.name || found.nome || found.username,
+                    email: found.email || '',
+                    username: found.username,
+                    role: found.role || 'admin',
+                    company_id: companyId != null ? Number(companyId) : null,
+                    permissions: Array.isArray(found.permissions) ? found.permissions : []
+                };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                if (currentUser.company_id != null) {
+                    localStorage.setItem('activeCompanyId', String(currentUser.company_id));
+                }
+            } catch {}
             window.location.href = 'dashboard.html';
             return;
         }

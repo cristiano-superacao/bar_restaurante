@@ -172,6 +172,22 @@
             localStorage.setItem('username', res.user.username || res.user.email || '');
             localStorage.setItem('userRole', res.user.role || '');
 
+            try {
+              const u = res.user || {};
+              const companyId = u.companyId ?? u.company_id ?? null;
+              const currentUser = {
+                id: u.id ?? Date.now(),
+                nome: u.nome || u.name || u.username || u.email || '',
+                name: u.name || u.nome || u.username || u.email || '',
+                email: u.email || '',
+                username: u.username || u.email || '',
+                role: u.role || '',
+                company_id: companyId != null ? Number(companyId) : null,
+                permissions: Array.isArray(u.permissions) ? u.permissions : []
+              };
+              localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            } catch {}
+
             if (res.user.companyName) {
               localStorage.setItem('activeCompanyName', String(res.user.companyName));
             }
