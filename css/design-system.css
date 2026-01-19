@@ -80,6 +80,10 @@
     --text-muted: var(--gray-500);
     --text-white: #ffffff;
     --text-on-primary: #ffffff;
+
+    /* Compatibilidade (CSS legado) */
+    --text-color-dark: var(--text-primary);
+    --accent-orange: var(--warning-500);
     
     /* Bordas */
     --border-color: var(--gray-200);
@@ -149,6 +153,11 @@
 
     /* Layout */
     --sidebar-width: 280px;
+
+    /* Modais */
+    --modal-max-width: 600px;
+    --modal-max-width-lg: 700px;
+    --modal-max-width-sm: 500px;
 }
 
 /* === RESET E BASE === */
@@ -471,6 +480,63 @@ body {
     margin: 0.25rem 0 0;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing);
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+/* Badge de empresa ativa (multi-tenant) */
+.company-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    background: var(--bg-card);
+    color: var(--text-primary);
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    max-width: 260px;
+}
+
+.company-pill i {
+    color: var(--text-muted);
+}
+
+.company-pill .label {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.company-pill .name {
+    font-weight: 800;
+    font-size: 13px;
+    min-width: 0;
+    max-width: 160px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.company-pill.is-warning {
+    border-color: rgba(251, 188, 5, 0.45);
+    background: #fff7e6;
+}
+
+.company-pill.is-warning i {
+    color: var(--accent-orange);
+}
+
+.company-pill:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
 .main-content {
     flex: 1;
     padding: var(--spacing-lg);
@@ -698,10 +764,59 @@ a:hover {
 }
 
 .form-error {
-    display: block;
-    margin-top: var(--spacing-xs);
+    display: none;
+    margin-bottom: var(--spacing);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius);
+    border: 2px solid var(--error-500);
+    background: var(--error-50);
+    color: var(--error-700);
     font-size: var(--font-size-sm);
-    color: var(--error-600);
+    font-weight: var(--font-weight-semibold);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--spacing);
+    margin-bottom: var(--spacing);
+}
+
+.form-group label {
+    display: block;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.625rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    font-size: var(--font-size-sm);
+    transition: all var(--transition-fast);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-500);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    font-family: inherit;
 }
 
 /* === CARDS === */
@@ -791,7 +906,7 @@ a:hover {
     justify-content: center;
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(4px);
-    z-index: var(--z-modal-backdrop);
+    z-index: var(--z-modal);
     padding: var(--spacing);
 }
 
@@ -799,15 +914,27 @@ a:hover {
     display: flex;
 }
 
+.modal.active {
+    display: flex;
+}
+
 .modal-content {
     background-color: var(--bg-card);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     box-shadow: var(--shadow-2xl);
-    max-width: 500px;
+    max-width: var(--modal-max-width);
     width: 100%;
     max-height: 90vh;
     overflow-y: auto;
     animation: modalSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-content.modal-lg {
+    max-width: var(--modal-max-width-lg);
+}
+
+.modal-content.modal-sm {
+    max-width: var(--modal-max-width-sm);
 }
 
 @keyframes modalSlideIn {
@@ -829,13 +956,22 @@ a:hover {
     border-bottom: 1px solid var(--border-color);
 }
 
+.modal-header h2,
+.modal-header h3 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+    color: var(--text-primary);
+    margin: 0;
+}
+
 .modal-title {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-semibold);
     margin: 0;
 }
 
-.modal-close {
+.modal-close,
+.modal .close-btn {
     width: 2rem;
     height: 2rem;
     display: flex;
@@ -846,14 +982,15 @@ a:hover {
     color: var(--text-muted);
     border-radius: var(--radius);
     cursor: pointer;
-    transition: all var(--transition);
+    transition: all var(--transition-fast);
     font-size: 1.5rem;
     line-height: 1;
 }
 
-.modal-close:hover {
-    background-color: var(--bg-hover);
-    color: var(--text-primary);
+.modal-close:hover,
+.modal .close-btn:hover {
+    background-color: var(--error-50);
+    color: var(--error-600);
 }
 
 .modal-body {
@@ -866,6 +1003,41 @@ a:hover {
     padding: var(--spacing-lg);
     border-top: 1px solid var(--border-color);
     justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: none;
+}
+
+.modal-btn.cancel {
+    background: #fff;
+    color: var(--text-secondary);
+    border: 2px solid var(--border-color);
+}
+
+.modal-btn.cancel:hover {
+    background: var(--bg-hover);
+}
+
+.modal-btn.save {
+    background: var(--primary-600);
+    color: #fff;
+}
+
+.modal-btn.save:hover {
+    background: var(--primary-700);
+}
+
+@media (max-width: 480px) {
+    .modal-body { padding: var(--spacing); }
+    .modal-footer { padding: var(--spacing); gap: var(--spacing-sm); flex-direction: column; }
+    .modal-footer > * { width: 100%; }
 }
 
 /* === FILTROS / SELECTS COMPARTILHADOS === */

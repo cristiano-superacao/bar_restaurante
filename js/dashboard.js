@@ -105,42 +105,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Menu responsivo
-    const menuToggle = document.getElementById('menu-toggle');
-    const sidebar = document.querySelector('.sidebar');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
-
-    if (menuToggle && sidebar && sidebarOverlay) {
-        menuToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-            sidebarOverlay.classList.toggle('active');
-        });
-
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-            sidebarOverlay.classList.remove('active');
-        });
-
-        // UX: fecha o menu com ESC
-        document.addEventListener('keydown', (ev) => {
-            if (ev.key === 'Escape') {
-                sidebar.classList.remove('open');
-                sidebarOverlay.classList.remove('active');
-            }
-        });
-
-        // UX: fecha o menu ao navegar (principalmente no mobile)
-        sidebar.addEventListener('click', (ev) => {
-            const link = ev.target && ev.target.closest ? ev.target.closest('a') : null;
-            if (!link) return;
-            if (sidebar.classList.contains('open')) {
-                sidebar.classList.remove('open');
-                sidebarOverlay.classList.remove('active');
-            }
-        });
-    }
-
-
     // Logout agora centralizado em auth-neon.js
 
     // Carrega os dados do dashboard

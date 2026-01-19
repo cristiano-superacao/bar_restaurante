@@ -140,13 +140,6 @@
     el.grid.appendChild(frag);
   }
 
-  // Sidebar toggle (responsivo)
-  const sidebar = document.querySelector('.sidebar');
-  const overlay = document.getElementById('sidebar-overlay');
-  const toggle = document.getElementById('menu-toggle');
-  if (toggle) toggle.addEventListener('click', () => { sidebar.classList.add('open'); overlay.classList.add('active'); });
-  if (overlay) overlay.addEventListener('click', () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); });
-
   // User header
   try {
     document.getElementById('username-display').textContent = localStorage.getItem('username') || '';

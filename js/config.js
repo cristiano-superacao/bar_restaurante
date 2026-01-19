@@ -10,6 +10,16 @@ function detectApiBaseUrl() {
         if (typeof window === 'undefined') return DEFAULT_RAILWAY;
         const { protocol, hostname } = window.location || {};
 
+        // Permite forçar a API via querystring (útil para testes locais sem backend)
+        // Ex.: http://localhost:8000/dashboard.html?api=railway
+        try {
+            const params = new URLSearchParams(window.location.search || '');
+            const api = (params.get('api') || '').toLowerCase();
+            if (api === 'railway') return DEFAULT_RAILWAY;
+        } catch {
+            // ignora
+        }
+
         // Ambiente de desenvolvimento: frontend em 8000, backend em 3000
         if (hostname === 'localhost' || hostname === '127.0.0.1') {
             return `${protocol || 'http:'}//localhost:3000`;

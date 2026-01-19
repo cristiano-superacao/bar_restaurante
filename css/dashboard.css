@@ -223,55 +223,6 @@
     min-height: 100vh;
 }
 
-/* Badge de empresa ativa (multi-tenant) */
-.company-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 999px;
-    background: #fff;
-    color: var(--text-color-dark);
-    text-decoration: none;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    max-width: 260px;
-}
-
-.company-pill i {
-    color: #8aa0ae;
-}
-
-.company-pill .label {
-    color: #7b8a97;
-    font-size: 12px;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.company-pill .name {
-    font-weight: 800;
-    font-size: 13px;
-    min-width: 0;
-    max-width: 160px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.company-pill.is-warning {
-    border-color: rgba(251, 188, 5, 0.45);
-    background: #fff7e6;
-}
-
-.company-pill.is-warning i {
-    color: var(--accent-orange);
-}
-
-.company-pill:hover {
-    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-}
-
 .content-area {
     padding: 30px;
     flex-grow: 1;

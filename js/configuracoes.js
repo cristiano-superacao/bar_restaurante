@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const sectionFilterEl = document.getElementById('settings-section-filter');
     const settingsCards = Array.from(document.querySelectorAll('.settings-card'));
 
+    // Tabs (Configurações)
+    const tabButtons = Array.from(document.querySelectorAll('.tabs .tab'));
+    const tabContents = Array.from(document.querySelectorAll('.tab-content'));
+
     // Painel API
     const apiEnabledToggle = document.getElementById('api-enabled-toggle');
     const apiBaseUrlEl = document.getElementById('api-baseurl');
@@ -41,6 +45,18 @@ document.addEventListener('DOMContentLoaded', function () {
             const matchesSearch = !q || title.includes(q);
             const matchesSection = section === 'all' || (card.dataset.section === section);
             card.style.display = (matchesSearch && matchesSection) ? '' : 'none';
+        });
+    }
+
+    function setActiveTab(tabKey) {
+        if (!tabKey) return;
+
+        tabButtons.forEach((btn) => {
+            btn.classList.toggle('active', btn.dataset.tab === tabKey);
+        });
+
+        tabContents.forEach((content) => {
+            content.classList.toggle('active', content.dataset.content === tabKey);
         });
     }
 
@@ -212,8 +228,18 @@ document.addEventListener('DOMContentLoaded', function () {
     if (apiSaveBtn) apiSaveBtn.addEventListener('click', saveApiOverride);
     if (apiResetBtn) apiResetBtn.addEventListener('click', resetApiOverride);
 
+    tabButtons.forEach((btn) => {
+        btn.addEventListener('click', () => {
+            setActiveTab(btn.dataset.tab);
+        });
+    });
+
     // --- Inicialização ---
     loadProfileInfo();
     applySettingsFilters();
     loadApiPanel();
+
+    // Inicializa a aba ativa pelo HTML (fallback: primeira aba)
+    const initialTab = tabButtons.find((b) => b.classList.contains('active'))?.dataset.tab || tabButtons[0]?.dataset.tab;
+    if (initialTab) setActiveTab(initialTab);
 });
