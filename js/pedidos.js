@@ -25,6 +25,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const addItemToOrderBtn = document.getElementById('add-item-to-order-btn');
     const addonsSection = document.getElementById('addons-section');
     const addonsOptions = document.getElementById('addons-options');
+    const addonsCountEl = document.getElementById('addons-count');
+    const ADDONS_MAX = 4;
     const orderItemsContainer = document.getElementById('order-items-container');
     const orderTotalPriceEl = document.getElementById('order-total-price');
     const orderDiscountInput = document.getElementById('order-discount');
@@ -129,17 +131,57 @@ document.addEventListener('DOMContentLoaded', function () {
             .sort((a, b) => String(a.name).localeCompare(String(b.name), 'pt-BR'));
     }
 
+    function getAddonOptionsForMenuItem(menuItem) {
+        const opts = getAddonStockOptions();
+        const ids = menuItem?.addonStockIds ?? menuItem?.addon_stock_ids;
+        if (!Array.isArray(ids) || ids.length === 0) return opts;
+        const allowed = new Set(ids.map(v => String(v)));
+        return opts.filter(o => allowed.has(String(o.id)));
+    }
+
     function clearAddonSelection() {
         if (!addonsOptions) return;
         const inputs = addonsOptions.querySelectorAll('input[type="checkbox"]');
         inputs.forEach(i => { i.checked = false; });
+        updateAddonsLimitUI();
     }
 
-    function renderAddonOptions() {
+    function updateAddonsLimitUI() {
         if (!addonsOptions) return;
-        const opts = getAddonStockOptions();
+
+        const checkboxes = Array.from(addonsOptions.querySelectorAll('input[type="checkbox"]'));
+        const labels = Array.from(addonsOptions.querySelectorAll('.addon-option'));
+        const selectedCount = checkboxes.filter(cb => cb.checked).length;
+        if (addonsCountEl) addonsCountEl.textContent = `${selectedCount}/${ADDONS_MAX}`;
+
+        const shouldLock = selectedCount >= ADDONS_MAX;
+        checkboxes.forEach((cb, idx) => {
+            const label = labels[idx];
+            if (!label) return;
+            const isSelected = cb.checked;
+            const shouldDisable = shouldLock && !isSelected;
+            cb.disabled = cb.disabled || shouldDisable;
+            label.classList.toggle('is-disabled', cb.disabled);
+            label.classList.toggle('is-locked', shouldLock && isSelected);
+        });
+    }
+
+    function onAddonToggle(e) {
+        const target = e.target;
+        if (!target || target.tagName !== 'INPUT' || target.type !== 'checkbox') return;
+        const checked = Array.from(addonsOptions.querySelectorAll('input[type="checkbox"]:checked'));
+        if (checked.length > ADDONS_MAX) {
+            target.checked = false;
+        }
+        updateAddonsLimitUI();
+    }
+
+    function renderAddonOptions(menuItem = null) {
+        if (!addonsOptions) return;
+        const opts = menuItem ? getAddonOptionsForMenuItem(menuItem) : getAddonStockOptions();
         if (opts.length === 0) {
             addonsOptions.innerHTML = '<div class="empty-message" style="margin:0;">Cadastre itens no estoque com categoria "Acompanhamentos".</div>';
+            if (addonsCountEl) addonsCountEl.textContent = `0/${ADDONS_MAX}`;
             return;
         }
         addonsOptions.innerHTML = '';
@@ -153,6 +195,8 @@ document.addEventListener('DOMContentLoaded', function () {
             `;
             addonsOptions.appendChild(label);
         });
+
+        updateAddonsLimitUI();
     }
 
     function syncAddonsVisibility() {
@@ -160,14 +204,18 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedOption = menuItemSelect.options[menuItemSelect.selectedIndex];
         const itemId = selectedOption && selectedOption.value ? Number(selectedOption.value) : null;
         const menuItem = (Array.isArray(menuItems) ? menuItems : []).find(mi => Number(mi.id) === Number(itemId));
-        const show = !!menuItem && menuItemAllowsAddons(menuItem);
+        const configuredIds = menuItem?.addonStockIds ?? menuItem?.addon_stock_ids;
+        const hasConfiguredAddons = Array.isArray(configuredIds) && configuredIds.length > 0;
+        const show = !!menuItem && (hasConfiguredAddons || menuItemAllowsAddons(menuItem));
 
         addonsSection.style.display = show ? 'block' : 'none';
         if (show) {
-            renderAddonOptions();
+            renderAddonOptions(menuItem);
         } else {
             clearAddonSelection();
         }
+
+        updateAddonsLimitUI();
     }
 
     function getSelectedAddons() {
@@ -320,9 +368,9 @@ document.addEventListener('DOMContentLoaded', function () {
         if (quantity <= 0) return;
 
         const selectedAddons = getSelectedAddons();
-        if (selectedAddons.length > 4) {
+        if (selectedAddons.length > ADDONS_MAX) {
             const errEl = document.getElementById('order-form-error');
-            if (errEl) { errEl.textContent = 'Selecione no máximo 4 acompanhamentos.'; errEl.style.display = 'block'; }
+            if (errEl) { errEl.textContent = `Selecione no máximo ${ADDONS_MAX} acompanhamentos.`; errEl.style.display = 'block'; }
             return;
         }
 
@@ -340,6 +388,7 @@ document.addEventListener('DOMContentLoaded', function () {
         itemQuantityInput.value = 1;
         clearAddonSelection();
         syncAddonsVisibility();
+        updateAddonsLimitUI();
     }
 
     function handleRemoveOrderItem(e) {
@@ -435,36 +484,79 @@ document.addEventListener('DOMContentLoaded', function () {
                 showError(msg);
             }
         } else {
-            // Baixa no estoque (modo LocalStorage) para acompanhamentos
-            const needed = new Map();
-            currentOrderItems.forEach(it => {
-                const addons = Array.isArray(it.addons) ? it.addons : [];
-                addons.forEach(a => {
-                    const k = String(a.stockId);
-                    const prev = needed.get(k) || 0;
-                    needed.set(k, prev + (Number(it.quantity) || 1) * (Number(a.quantity) || 1));
+            // Movimentação de saída do estoque (modo LocalStorage)
+            // Regra: deduz somente na criação do pedido (evita dupla baixa ao editar).
+            if (!id) {
+                const estoqueAtual = STORE.get('estoque', estoque, ['estoque']) || estoque;
+
+                const safeNumber = (v) => {
+                    const n = Number(v);
+                    return Number.isFinite(n) ? n : 0;
+                };
+
+                const resolveBaseStockId = (menuItemId, menuItemName) => {
+                    const mid = menuItemId ? String(menuItemId) : '';
+                    const nameNorm = normalizeText(menuItemName);
+
+                    // vínculo explícito (menuItemId/menu_item_id)
+                    let found = (estoqueAtual || []).find(s => String(s.menuItemId || s.menu_item_id || '') === mid && !s.isAddon && !s.is_addon);
+                    if (found) return String(found.id);
+
+                    // match conservador por id + nome
+                    found = (estoqueAtual || []).find(s => {
+                        if (s.isAddon || s.is_addon) return false;
+                        const sid = String(s.id);
+                        const sameId = sid === mid || safeNumber(sid) === safeNumber(mid);
+                        if (!sameId) return false;
+                        const sNameNorm = normalizeText(s.name);
+                        return sNameNorm && nameNorm && sNameNorm === nameNorm;
+                    });
+                    return found ? String(found.id) : null;
+                };
+
+                const needed = new Map();
+                const stockLabelById = new Map();
+
+                currentOrderItems.forEach(it => {
+                    // Produto base (opcional: só se houver vínculo confiável)
+                    const baseStockId = resolveBaseStockId(it.id, it.name);
+                    if (baseStockId) {
+                        needed.set(baseStockId, (needed.get(baseStockId) || 0) + safeNumber(it.quantity || 1));
+                    }
+
+                    // Acompanhamentos (sempre vinculados via stockId)
+                    const addons = Array.isArray(it.addons) ? it.addons : [];
+                    addons.forEach(a => {
+                        const k = String(a.stockId);
+                        const prev = needed.get(k) || 0;
+                        needed.set(k, prev + (safeNumber(it.quantity) || 1) * (safeNumber(a.quantity) || 1));
+                    });
                 });
-            });
-            const estoqueAtual = STORE.get('estoque', estoque, ['estoque']) || estoque;
-            for (const [stockId, qNeed] of needed.entries()) {
-                const item = (estoqueAtual || []).find(s => String(s.id) === String(stockId));
-                const qHave = Number(item?.quantity ?? item?.quantidade ?? 0);
-                if (!item || qHave < qNeed) {
-                    showError(`Estoque insuficiente para acompanhamento (ID: ${stockId}).`);
-                    return;
+
+                for (const [stockId, qNeed] of needed.entries()) {
+                    const item = (estoqueAtual || []).find(s => String(s.id) === String(stockId));
+                    const qHave = safeNumber(item?.quantity ?? item?.quantidade ?? 0);
+                    const label = item?.name ? String(item.name) : `ID: ${stockId}`;
+                    stockLabelById.set(String(stockId), label);
+                    if (!item || qHave < qNeed) {
+                        showError(`Estoque insuficiente para "${label}". Necessário: ${qNeed}.`);
+                        return;
+                    }
                 }
+
+                const estoqueNovo = (estoqueAtual || []).map(s => {
+                    const key = String(s.id);
+                    const dec = needed.get(key) || 0;
+                    if (!dec) return s;
+                    const qHave = safeNumber(s.quantity ?? s.quantidade ?? 0);
+                    const next = Math.max(0, qHave - dec);
+                    if (s.quantity !== undefined) return { ...s, quantity: next };
+                    return { ...s, quantidade: next };
+                });
+
+                STORE.set('estoque', estoqueNovo);
+                estoque = estoqueNovo;
             }
-            const estoqueNovo = (estoqueAtual || []).map(s => {
-                const key = String(s.id);
-                const dec = needed.get(key) || 0;
-                if (!dec) return s;
-                const qHave = Number(s.quantity ?? s.quantidade ?? 0);
-                const next = Math.max(0, qHave - dec);
-                if (s.quantity !== undefined) return { ...s, quantity: next };
-                return { ...s, quantidade: next };
-            });
-            STORE.set('estoque', estoqueNovo);
-            estoque = estoqueNovo;
 
             const newOrder = {
                 id: id ? parseInt(id) : Date.now(),
@@ -564,6 +656,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     addItemToOrderBtn.addEventListener('click', handleAddItemToOrder);
     if (menuItemSelect) menuItemSelect.addEventListener('change', syncAddonsVisibility);
+    if (addonsOptions) addonsOptions.addEventListener('change', onAddonToggle);
     orderItemsContainer.addEventListener('click', handleRemoveOrderItem);
     if (orderDiscountInput) orderDiscountInput.addEventListener('input', updateOrderTotal);
     orderForm.addEventListener('submit', handleFormSubmit);

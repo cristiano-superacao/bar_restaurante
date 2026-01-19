@@ -257,6 +257,118 @@
         .menu-card:hover .menu-card-actions {
             opacity: 1;
         }
+
+        /* Acompanhamentos por produto (Premium) */
+        .addons-section {
+            margin-top: var(--spacing);
+            padding: var(--spacing);
+            border-radius: 14px;
+            border: 1px solid rgba(59, 130, 246, 0.16);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.06), rgba(255,255,255,0.65));
+            backdrop-filter: blur(8px);
+        }
+
+        .addons-head {
+            display: flex;
+            justify-content: space-between;
+            gap: var(--spacing);
+            align-items: baseline;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .addons-title {
+            font-weight: var(--font-weight-bold);
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+        }
+
+        .addons-hint {
+            color: var(--text-muted);
+            font-size: var(--font-size-xs);
+            margin-bottom: 10px;
+        }
+
+        .addons-count {
+            padding: 0.25rem 0.6rem;
+            border-radius: 999px;
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-bold);
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--primary-700);
+            border: 1px solid rgba(37, 99, 235, 0.18);
+            white-space: nowrap;
+        }
+
+        .addons-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .addon-option {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.92);
+            border: 1px solid rgba(148, 163, 184, 0.35);
+            cursor: pointer;
+            transition: all 220ms cubic-bezier(.2,.8,.2,1);
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+            user-select: none;
+        }
+
+        .addon-option:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px rgba(37, 99, 235, 0.10);
+            border-color: rgba(37, 99, 235, 0.25);
+        }
+
+        .addon-option input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-600);
+            flex: 0 0 auto;
+        }
+
+        .addon-name {
+            flex: 1;
+            min-width: 0;
+            font-weight: var(--font-weight-semibold);
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .addon-meta {
+            font-size: var(--font-size-xs);
+            color: var(--text-muted);
+            font-weight: var(--font-weight-bold);
+            padding: 0.25rem 0.5rem;
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.12);
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            white-space: nowrap;
+        }
+
+        .addon-option.is-disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            filter: grayscale(0.2);
+        }
+
+        .addon-option.is-locked:not(.is-disabled) {
+            opacity: 0.75;
+        }
+
+        @media (max-width: 640px) {
+            .addons-options { grid-template-columns: 1fr; }
+            .addons-head { flex-direction: column; align-items: flex-start; }
+        }
         
         .menu-card-action-btn { 
             width: 40px; 
@@ -321,6 +433,7 @@
             color: var(--text-primary);
             margin-bottom: 0.75rem;
             display: -webkit-box;
+            line-clamp: 2;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
@@ -333,11 +446,28 @@
             color: var(--text-muted);
             margin-bottom: var(--spacing-lg);
             display: -webkit-box;
+            line-clamp: 2;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             min-height: 2.5rem;
             line-height: 1.6;
+        }
+
+        .menu-card-addons {
+            margin-top: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: -webkit-box;
+            line-clamp: 2;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5;
+        }
+
+        .menu-card-addons strong {
+            color: var(--primary-700);
         }
         
         .menu-card-footer {
@@ -701,6 +831,10 @@
             <div class="modal-body">
                 <form id="item-form">
                     <input type="hidden" id="item-id">
+
+                    <div class="form-group" id="item-form-error" style="display:none;">
+                        <div class="alert alert-error" style="margin:0;"></div>
+                    </div>
                     
                     <div class="form-group">
                         <label for="item-name">Nome do Item *</label>
@@ -720,6 +854,15 @@
                     <div class="form-group">
                         <label for="item-description">Descrição</label>
                         <textarea id="item-description" rows="3" placeholder="Descreva os ingredientes e características do item..."></textarea>
+                    </div>
+
+                    <div class="addons-section" id="product-addons-section">
+                        <div class="addons-head">
+                            <span class="addons-title">Acompanhamentos/Ingredientes (até 4)</span>
+                            <span class="addons-count" id="product-addons-count">0/4</span>
+                        </div>
+                        <div class="addons-hint">Selecione os ingredientes/acompanhamentos que este produto permite (ex.: Queijo, Presunto, Salame, Carne, Catupiry).</div>
+                        <div class="addons-options" id="product-addons-options" aria-label="Selecionar acompanhamentos do produto"></div>
                     </div>
                 </form>
             </div>

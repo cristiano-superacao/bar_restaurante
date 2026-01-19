@@ -140,7 +140,14 @@ function loadDashboardData() {
 
     // Itens em Baixa no Estoque
     const estoque = STORE.get('estoque', [], ['estoque']) || [];
-    const itensEmBaixa = estoque.filter(item => item.quantidade < item.quantidadeMinima).length;
+    const itensEmBaixa = (estoque || []).filter(item => {
+        const q = Number(item?.quantity ?? item?.quantidade ?? 0);
+        const min = Number(item?.minQuantity ?? item?.quantidadeMinima ?? item?.min_quantity ?? 0);
+        // considera “em baixa” quando está <= mínimo, exceto quando mínimo é 0
+        if (!Number.isFinite(q) || !Number.isFinite(min)) return false;
+        if (min <= 0) return q === 0;
+        return q <= min;
+    }).length;
     const estoqueEl = document.getElementById('estoque-baixo-valor');
     if(estoqueEl) estoqueEl.textContent = itensEmBaixa;
 }

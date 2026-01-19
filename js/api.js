@@ -460,7 +460,11 @@
     menu: {
       async list() {
         if (!enabled) return APP_STORAGE.get('menuItems', [], ['menuItems']);
-        return fetchWithTimeout('/api/menu-items');
+        const rows = await fetchWithTimeout('/api/menu-items');
+        return (rows || []).map(r => ({
+          ...r,
+          addonStockIds: Array.isArray(r.addon_stock_ids) ? r.addon_stock_ids : (Array.isArray(r.addonStockIds) ? r.addonStockIds : [])
+        }));
       },
       async create(data) {
         if (!enabled) {
@@ -468,7 +472,11 @@
           const item = { id: Date.now(), ...data };
           curr.push(item); APP_STORAGE.set('menuItems', curr); return item;
         }
-        return fetchWithTimeout('/api/menu-items', { method: 'POST', body: JSON.stringify(data) });
+        const res = await fetchWithTimeout('/api/menu-items', { method: 'POST', body: JSON.stringify(data) });
+        if (res && typeof res === 'object') {
+          res.addonStockIds = Array.isArray(res.addon_stock_ids) ? res.addon_stock_ids : (Array.isArray(res.addonStockIds) ? res.addonStockIds : []);
+        }
+        return res;
       },
       async update(id, data) {
         if (!enabled) {
@@ -476,7 +484,11 @@
           const upd = curr.map(m => m.id === id ? { ...m, ...data, id } : m);
           APP_STORAGE.set('menuItems', upd); return upd.find(m => m.id === id) || null;
         }
-        return fetchWithTimeout(`/api/menu-items/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+        const res = await fetchWithTimeout(`/api/menu-items/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+        if (res && typeof res === 'object') {
+          res.addonStockIds = Array.isArray(res.addon_stock_ids) ? res.addon_stock_ids : (Array.isArray(res.addonStockIds) ? res.addonStockIds : []);
+        }
+        return res;
       },
       async remove(id) {
         if (!enabled) {

@@ -33,10 +33,25 @@
         .quantity-unit { font-size: var(--font-size-sm); color: var(--text-muted); display: block; margin-top: 0.25rem; }
         .quantity-status { font-size: var(--font-size-xs); color: var(--text-muted); margin-top: 0.25rem; }
         .estoque-actions { display: flex; gap: var(--spacing-xs); }
-        
-        .estoque-action-btn.edit:hover { background-color: var(--primary-50); color: var(--primary-600); }
-        .estoque-action-btn.delete:hover { background-color: var(--error-50); color: var(--error-600); }
-        .empty-state { text-align: center; padding: var(--spacing-2xl); }
+
+        .estoque-action-btn {
+            width: 40px;
+            height: 40px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all var(--transition);
+        }
+        .estoque-action-btn:hover { background-color: var(--bg-hover); border-color: var(--border-hover); color: var(--text-primary); transform: translateY(-1px); }
+        .estoque-action-btn.edit:hover { background-color: var(--primary-50); border-color: rgba(37,99,235,.25); color: var(--primary-700); }
+        .estoque-action-btn.delete:hover { background-color: var(--error-50); border-color: rgba(220,38,38,.25); color: var(--error-700); }
+
+        .empty-state { text-align: center; padding: var(--spacing-2xl); display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .empty-state-icon { width: 80px; height: 80px; margin: 0 auto var(--spacing-lg); display: flex; align-items: center; justify-content: center; background-color: var(--bg-hover); border-radius: var(--radius-full); color: var(--text-muted); font-size: 2rem; }
         .empty-state h3 { font-size: var(--font-size-xl); color: var(--text-primary); margin-bottom: 0.5rem; }
         .empty-state p { font-size: var(--font-size-sm); color: var(--text-muted); }
@@ -168,7 +183,6 @@
     <script src="js/layout.js"></script>
     <script src="js/auth-neon.js"></script>
     <script src="js/rbac.js"></script>
-    <script src="js/dashboard.js"></script>
     <script src="js/estoque.js"></script>
 
     <!-- Footer -->

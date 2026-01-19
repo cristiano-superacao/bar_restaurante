@@ -9,8 +9,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const categoryFilter = document.getElementById('category-filter');
 
-    let estoque = STORE.get('estoque', [], ['estoque']) || [];
+    let estoque = STORE.get('estoque', [], ['estoque', 'stock']) || [];
     let editingProdutoId = null;
+
+    const toInt = (v, fallback = 0) => {
+        const n = Number.parseInt(String(v ?? ''), 10);
+        return Number.isFinite(n) ? n : fallback;
+    };
+
+    const normalizeProduto = (p) => {
+        if (!p || typeof p !== 'object') return null;
+        const id = p.id ?? p.stockId ?? p.stock_id ?? p.menuItemId ?? p.menu_item_id;
+        const name = p.name ?? p.nome ?? '';
+        const category = p.category ?? p.categoria ?? 'Outros';
+        const unit = p.unit ?? p.unidade ?? 'un';
+        const quantity = Number(p.quantity ?? p.quantidade ?? 0);
+        const minQuantity = Number(p.minQuantity ?? p.min_quantity ?? p.quantidadeMinima ?? p.quantidade_minima ?? 0);
+        const isAddon = p.isAddon ?? p.is_addon ?? false;
+        return {
+            ...p,
+            id: id != null ? String(id) : String(Date.now()),
+            name: String(name || '').trim(),
+            category: String(category || 'Outros').trim(),
+            unit: String(unit || 'un').trim(),
+            quantity: Number.isFinite(quantity) ? quantity : 0,
+            minQuantity: Number.isFinite(minQuantity) ? minQuantity : 0,
+            isAddon: !!isAddon,
+        };
+    };
+
+    const normalizeEstoqueList = (list) => {
+        const arr = Array.isArray(list) ? list : [];
+        return arr.map(normalizeProduto).filter(Boolean);
+    };
 
     const saveEstoque = () => {
         if (!apiEnabled) {
@@ -21,30 +52,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const loadEstoque = async () => {
         if (apiEnabled && window.API) {
             try {
-                estoque = await window.API.stock.list();
+                estoque = normalizeEstoqueList(await window.API.stock.list());
             } catch (e) {
                 console.warn('Falha ao carregar estoque da API, usando LocalStorage.', e);
-                estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
+                estoque = normalizeEstoqueList(STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque);
             }
         } else {
-            estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
+            estoque = normalizeEstoqueList(STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque);
         }
     };
 
     const renderEstoque = () => {
-        estoqueList.innerHTML = `
-            <div class="estoque-header">
-                <div>Produto</div>
-                <div>Categoria</div>
-                <div>Qtd</div>
-                <div>Est. Mín.</div>
-                <div>Status</div>
-                <div>Ações</div>
-            </div>
-        `;
-        const filteredEstoque = estoque.filter(produto => {
-            const searchMatch = produto.name.toLowerCase().includes(searchInput.value.toLowerCase());
-            const categoryMatch = categoryFilter.value === 'all' || produto.category === categoryFilter.value;
+        estoqueList.innerHTML = '';
+
+        const q = String(searchInput?.value || '').trim().toLowerCase();
+        const cat = String(categoryFilter?.value || 'all');
+
+        const filteredEstoque = (Array.isArray(estoque) ? estoque : []).filter((produto) => {
+            const name = String(produto?.name || '').toLowerCase();
+            const searchMatch = !q || name.includes(q);
+            const categoryMatch = cat === 'all' || String(produto?.category || '') === cat;
             return searchMatch && categoryMatch;
         });
 
@@ -52,8 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const total = filteredEstoque.length;
         let baixo = 0, critico = 0, ok = 0;
         filteredEstoque.forEach(produto => {
-            if (produto.quantity === 0) critico++;
-            else if (produto.quantity <= produto.minQuantity) baixo++;
+            const quantity = Number(produto.quantity ?? 0);
+            const minQuantity = Number(produto.minQuantity ?? 0);
+            if (quantity === 0) critico++;
+            else if (quantity <= minQuantity) baixo++;
             else ok++;
         });
         const el = id => document.getElementById(id);
@@ -67,34 +96,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (filteredEstoque.length === 0) {
             if (emptyEl) emptyEl.style.display = 'flex';
             return;
-        } else {
-            if (emptyEl) emptyEl.style.display = 'none';
         }
+        if (emptyEl) emptyEl.style.display = 'none';
+
+        const iconByCategory = (category) => {
+            switch (String(category || '').toLowerCase()) {
+                case 'bebidas': return 'fa-wine-bottle';
+                case 'ingredientes': return 'fa-carrot';
+                case 'limpeza': return 'fa-broom';
+                default: return 'fa-box-open';
+            }
+        };
 
         filteredEstoque.forEach(produto => {
             const item = document.createElement('div');
-            item.className = 'estoque-item';
+
+            const quantity = Number(produto.quantity ?? 0);
+            const minQuantity = Number(produto.minQuantity ?? 0);
 
             let statusClass = 'ok';
             let statusText = 'OK';
-            if (produto.quantity <= produto.minQuantity) {
-                statusClass = 'baixo';
+            if (quantity === 0) {
+                statusClass = 'critical';
+                statusText = 'Crítico';
+            } else if (quantity <= minQuantity) {
+                statusClass = 'low';
                 statusText = 'Baixo';
             }
-            if (produto.quantity == 0) {
-                statusClass = 'critico';
-                statusText = 'Crítico';
-            }
+
+            item.className = `estoque-item ${statusClass}`;
 
             item.innerHTML = `
-                <div>${produto.name}</div>
-                <div>${produto.category}</div>
-                <div>${produto.quantity} ${produto.unit}</div>
-                <div>${produto.minQuantity} ${produto.unit}</div>
-                <div><span class="status ${statusClass}">${statusText}</span></div>
-                <div class="item-actions">
-                    <button class="btn btn-secondary edit-btn" data-id="${produto.id}"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-danger delete-btn" data-id="${produto.id}"><i class="fas fa-trash"></i></button>
+                <div class="estoque-icon" aria-hidden="true"><i class="fas ${iconByCategory(produto.category)}"></i></div>
+                <div class="estoque-info">
+                    <div class="estoque-name">${String(produto.name || '')}</div>
+                    <span class="estoque-category">${String(produto.category || 'Outros')}</span>
+                </div>
+                <div class="estoque-quantity">
+                    <span class="quantity-value">${Number.isFinite(quantity) ? quantity : 0}</span>
+                    <span class="quantity-unit">${String(produto.unit || 'un')}</span>
+                    <div class="quantity-status">Mín: ${Number.isFinite(minQuantity) ? minQuantity : 0} ${String(produto.unit || 'un')} • ${statusText}</div>
+                </div>
+                <div class="estoque-actions">
+                    <button class="estoque-action-btn edit" type="button" title="Editar" aria-label="Editar" data-id="${produto.id}"><i class="fas fa-pen"></i></button>
+                    <button class="estoque-action-btn delete" type="button" title="Excluir" aria-label="Excluir" data-id="${produto.id}"><i class="fas fa-trash"></i></button>
                 </div>
             `;
             estoqueList.appendChild(item);
@@ -107,13 +152,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
         if (produto) {
             document.getElementById('produto-modal-title').textContent = 'Editar Produto';
-            editingProdutoId = produto.id;
-            document.getElementById('produto-id').value = produto.id;
-            document.getElementById('produto-name').value = produto.name;
-            document.getElementById('produto-category').value = produto.category;
-            document.getElementById('produto-quantity').value = produto.quantity;
-            document.getElementById('produto-unit').value = produto.unit;
-            document.getElementById('produto-min-quantity').value = produto.minQuantity;
+            const p = normalizeProduto(produto);
+            editingProdutoId = p.id;
+            document.getElementById('produto-id').value = p.id;
+            document.getElementById('produto-name').value = p.name;
+            document.getElementById('produto-category').value = p.category;
+            document.getElementById('produto-quantity').value = String(toInt(p.quantity, 0));
+            document.getElementById('produto-unit').value = p.unit;
+            document.getElementById('produto-min-quantity').value = String(toInt(p.minQuantity, 0));
         } else {
             document.getElementById('produto-modal-title').textContent = 'Novo Produto';
             editingProdutoId = null;
@@ -172,9 +218,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (apiEnabled && window.API) {
             try {
                 if (editingProdutoId) {
-                    await window.API.stock.update(Number(editingProdutoId), produtoData);
+                    await window.API.stock.update(Number(editingProdutoId), normalizeProduto(produtoData));
                 } else {
-                    await window.API.stock.create(produtoData);
+                    await window.API.stock.create(normalizeProduto(produtoData));
                 }
                 await loadEstoque();
                 renderEstoque();
@@ -192,10 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             if (editingProdutoId) {
-                estoque = estoque.map(p => p.id === editingProdutoId ? produtoData : p);
+                estoque = (estoque || []).map(p => String(p.id) === String(editingProdutoId) ? normalizeProduto(produtoData) : normalizeProduto(p)).filter(Boolean);
             } else {
-                estoque.push(produtoData);
+                estoque.push(normalizeProduto(produtoData));
             }
+            estoque = normalizeEstoqueList(estoque);
             saveEstoque();
             renderEstoque();
             closeModal();
@@ -203,13 +250,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     estoqueList.addEventListener('click', async (e) => {
-        if (e.target.closest('.edit-btn')) {
-            const id = e.target.closest('.edit-btn').dataset.id;
-            const produto = estoque.find(p => p.id === id);
+        const editBtn = e.target.closest('.estoque-action-btn.edit');
+        if (editBtn) {
+            const id = String(editBtn.dataset.id || '');
+            const produto = (estoque || []).find(p => String(p.id) === String(id));
             openModal(produto);
         }
-        if (e.target.closest('.delete-btn')) {
-            const id = e.target.closest('.delete-btn').dataset.id;
+        const delBtn = e.target.closest('.estoque-action-btn.delete');
+        if (delBtn) {
+            const id = String(delBtn.dataset.id || '');
             if (apiEnabled && window.API) {
                 try {
                     await window.API.stock.remove(Number(id));
@@ -218,7 +267,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('Erro ao excluir item de estoque via API.');
                 }
             } else {
-                estoque = estoque.filter(p => p.id !== id);
+                estoque = (estoque || []).filter(p => String(p.id) !== String(id));
                 saveEstoque();
             }
             renderEstoque();

@@ -44,9 +44,11 @@ CREATE TABLE IF NOT EXISTS menu_items (
   category TEXT NOT NULL,
   price NUMERIC(12,2) NOT NULL DEFAULT 0,
   description TEXT,
-  image TEXT
+  image TEXT,
+  addon_stock_ids INT[]
 );
 ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS company_id INT REFERENCES companies(id) ON DELETE CASCADE;
+ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS addon_stock_ids INT[];
 
 -- Mesas
 CREATE TABLE IF NOT EXISTS tables (
