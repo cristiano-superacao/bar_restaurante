@@ -821,54 +821,129 @@
         </main>
     </div>
     
-    <!-- Modal Adicionar/Editar Item -->
-    <div id="item-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modal-title">Adicionar Novo Item</h2>
-                <button class="close-btn" aria-label="Fechar modal">&times;</button>
+    <!-- Modal Adicionar/Editar Item - Premium Design -->
+    <div id="item-modal" class="modal modal-premium">
+        <div class="modal-content modal-premium-content">
+            <!-- Premium Header com Gradiente -->
+            <div class="modal-header modal-premium-header">
+                <div class="modal-title-wrapper">
+                    <div class="modal-icon-badge">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <div>
+                        <h2 id="modal-title" class="modal-premium-title">Adicionar Novo Item</h2>
+                        <p class="modal-premium-subtitle">Preencha os dados do produto do cardápio</p>
+                    </div>
+                </div>
+                <button class="close-btn premium-close-btn" aria-label="Fechar modal">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <form id="item-form">
+            
+            <!-- Modal Body com Seções Organizadas -->
+            <div class="modal-body modal-premium-body">
+                <form id="item-form" class="premium-form">
                     <input type="hidden" id="item-id">
 
+                    <!-- Alert de Erro -->
                     <div class="form-group" id="item-form-error" style="display:none;">
-                        <div class="alert alert-error" style="margin:0;"></div>
+                        <div class="alert alert-error premium-alert" style="margin:0;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span></span>
+                        </div>
                     </div>
                     
-                    <div class="form-group">
-                        <label for="item-name">Nome do Item *</label>
-                        <input type="text" id="item-name" placeholder="Ex: Hambúrguer Artesanal" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="item-category">Categoria *</label>
-                        <input type="text" id="item-category" placeholder="Ex: Lanches, Bebidas, Pratos" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="item-price">Preço (R$) *</label>
-                        <input type="number" id="item-price" step="0.01" min="0" placeholder="0.00" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="item-description">Descrição</label>
-                        <textarea id="item-description" rows="3" placeholder="Descreva os ingredientes e características do item..."></textarea>
+                    <!-- Seção: Informações Básicas -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="fas fa-info-circle"></i>
+                            <h3>Informações Básicas</h3>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group form-group-premium full-width">
+                                <label for="item-name" class="premium-label">
+                                    <i class="fas fa-tag"></i>
+                                    Nome do Item *
+                                </label>
+                                <input type="text" id="item-name" class="premium-input" 
+                                       placeholder="Ex: Hambúrguer Artesanal" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row two-columns">
+                            <div class="form-group form-group-premium">
+                                <label for="item-category" class="premium-label">
+                                    <i class="fas fa-list"></i>
+                                    Categoria *
+                                </label>
+                                <input type="text" id="item-category" class="premium-input" 
+                                       placeholder="Ex: Lanches, Bebidas, Pratos" required>
+                            </div>
+                            
+                            <div class="form-group form-group-premium">
+                                <label for="item-price" class="premium-label">
+                                    <i class="fas fa-dollar-sign"></i>
+                                    Preço (R$) *
+                                </label>
+                                <div class="input-with-icon">
+                                    <span class="input-prefix">R$</span>
+                                    <input type="number" id="item-price" class="premium-input with-prefix" 
+                                           step="0.01" min="0" placeholder="0,00" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group form-group-premium full-width">
+                                <label for="item-description" class="premium-label">
+                                    <i class="fas fa-align-left"></i>
+                                    Descrição
+                                </label>
+                                <textarea id="item-description" class="premium-textarea" rows="4" 
+                                          placeholder="Descreva os ingredientes e características do item..."></textarea>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="addons-section" id="product-addons-section">
-                        <div class="addons-head">
-                            <span class="addons-title">Acompanhamentos/Ingredientes (até 4)</span>
-                            <span class="addons-count" id="product-addons-count">0/4</span>
+                    <!-- Seção: Acompanhamentos -->
+                    <div class="form-section addons-section-premium" id="product-addons-section">
+                        <div class="section-header addons-section-header">
+                            <div class="addons-header-left">
+                                <i class="fas fa-puzzle-piece"></i>
+                                <h3>Acompanhamentos/Ingredientes</h3>
+                            </div>
+                            <div class="addons-counter-badge">
+                                <i class="fas fa-check-circle"></i>
+                                <span id="product-addons-count">0/4</span>
+                            </div>
                         </div>
-                        <div class="addons-hint">Selecione os ingredientes/acompanhamentos que este produto permite (ex.: Queijo, Presunto, Salame, Carne, Catupiry).</div>
-                        <div class="addons-options" id="product-addons-options" aria-label="Selecionar acompanhamentos do produto"></div>
+                        
+                        <div class="addons-hint-premium">
+                            <i class="fas fa-lightbulb"></i>
+                            <div>
+                                <strong>Cadastre itens no estoque e marque como Acompanhamento.</strong>
+                                <p>Selecione até 4 ingredientes que este produto permite (ex.: Queijo, Presunto, Salame, Carne, Catupiry).</p>
+                            </div>
+                        </div>
+                        
+                        <div class="addons-options-premium" id="product-addons-options" 
+                             aria-label="Selecionar acompanhamentos do produto">
+                            <!-- Opções serão preenchidas dinamicamente -->
+                        </div>
                     </div>
                 </form>
             </div>
-            <div class="modal-footer">
-                <button type="submit" form="item-form" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Salvar Item
+            
+            <!-- Premium Footer com Ações -->
+            <div class="modal-footer modal-premium-footer">
+                <button type="button" class="btn btn-secondary-premium" onclick="document.getElementById('item-modal').classList.remove('show')">
+                    <i class="fas fa-times"></i>
+                    Cancelar
+                </button>
+                <button type="submit" form="item-form" class="btn btn-primary-premium">
+                    <i class="fas fa-save"></i>
+                    Salvar Item
                 </button>
             </div>
         </div>
