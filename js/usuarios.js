@@ -106,7 +106,6 @@
     const emailEl = document.getElementById('user-email-input');
     const passwordEl = document.getElementById('user-password-input');
     const roleEl = document.getElementById('user-role-input');
-    const funcEl = document.getElementById('user-function-input');
     const statusEl = document.getElementById('user-status-input');
     const errEl = document.getElementById('user-form-error');
 
@@ -115,17 +114,33 @@
     const username = (nameEl.value || '').trim();
     const email = (emailEl.value || '').trim();
     const password = (passwordEl?.value || '').trim();
-    const role = (roleEl.value || 'staff').trim();
-    const func = (funcEl?.value || '').trim();
+    const selectedFunction = (roleEl.value || '').trim(); // Agora é a função operacional
     const status = (statusEl.value || 'active');
 
     const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
     if (!username || !email) { showError('Preencha nome e email.'); return; }
     if (!password) { showError('Informe uma senha.'); return; }
+    if (!selectedFunction) { showError('Selecione uma função.'); return; }
+
+    // Mapeia função operacional para role técnico do sistema
+    const functionToRoleMap = {
+      'Gerente': 'admin',
+      'Supervisor': 'admin',
+      'Caixa': 'staff',
+      'Cozinheira': 'staff',
+      'Garçom': 'staff'
+    };
+
+    const role = functionToRoleMap[selectedFunction] || 'staff';
 
     const isSuperadmin = localStorage.getItem('userRole') === 'superadmin';
-    const payload = { username, email, password, role };
-    if (func) payload.function = func;
+    const payload = { 
+      username, 
+      email, 
+      password, 
+      role,
+      function: selectedFunction // Armazena a função operacional
+    };
 
     if (isSuperadmin) {
       const cid = getSelectedCompanyId();
