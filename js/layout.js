@@ -115,6 +115,7 @@
                 <li class="nav-item"><a href="pedidos.html"><i class="fas fa-receipt"></i><span>Pedidos</span>${showPendingBadge ? '<span class="nav-badge" id="pending-badge">0</span>' : ''}</a></li>
                 <li class="nav-item"><a href="mesas.html"><i class="fas fa-chair"></i><span>Mesas</span></a></li>
                 <li class="nav-item"><a href="cardapio.html"><i class="fas fa-book-open"></i><span>Cardápio</span></a></li>
+                <li class="nav-item"><a href="estoque.html"><i class="fas fa-boxes"></i><span>Estoque</span></a></li>
             </ul>
         </div>
 
@@ -130,7 +131,6 @@
         <div class="nav-section">
             <div class="nav-section-title">Gestão</div>
             <ul class="nav-list">
-                <li class="nav-item"><a href="estoque.html"><i class="fas fa-boxes"></i><span>Estoque</span></a></li>
                 <li class="nav-item"><a href="financeiro.html"><i class="fas fa-dollar-sign"></i><span>Financeiro</span></a></li>
                 <li class="nav-item"><a href="relatorios.html"><i class="fas fa-chart-bar"></i><span>Relatórios</span></a></li>
                 <li class="nav-item"><a href="cupom.html"><i class="fas fa-ticket-alt"></i><span>Cupons</span></a></li>
