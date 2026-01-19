@@ -147,8 +147,17 @@
       async register({ username, email, password, name, companyName }) {
         if (!enabled) {
           const users = LS.get('users', []);
-          const exists = (users || []).some(u => String(u.username).toLowerCase() === String(username).toLowerCase())
-            || Object.values((window.CONFIG && window.CONFIG.USERS) || {}).some(u => String(u.username).toLowerCase() === String(username).toLowerCase());
+          const uName = String(username || '').trim().toLowerCase();
+          const uEmail = String(email || '').trim().toLowerCase();
+          const exists = (users || []).some(u => {
+            const exU = String(u.username || '').trim().toLowerCase();
+            const exE = String(u.email || '').trim().toLowerCase();
+            return (uName && exU === uName) || (uEmail && exE === uEmail);
+          }) || Object.values((window.CONFIG && window.CONFIG.USERS) || {}).some(u => {
+            const exU = String(u.username || '').trim().toLowerCase();
+            const exE = String(u.email || '').trim().toLowerCase();
+            return (uName && exU === uName) || (uEmail && exE === uEmail);
+          });
           if (exists) throw new Error('Usuário já existe');
           const item = {
             id: Date.now(),

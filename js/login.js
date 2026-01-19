@@ -157,11 +157,19 @@ document.addEventListener('DOMContentLoaded', () => {
             ...Object.values(builtins || {}),
             ...lsUsers.map(u => ({ username: u.username, password: u.password, role: u.role || 'admin' }))
         ];
-        const found = list.find(u => String(u.username || '') === username && String(u.password || '') === String(password || ''));
+
+        const loginId = String(username || '').trim().toLowerCase();
+        const found = list.find(u => {
+            const uName = String(u.username || '').trim().toLowerCase();
+            const uEmail = String(u.email || '').trim().toLowerCase();
+            const okId = (uName && uName === loginId) || (uEmail && uEmail === loginId);
+            const okPass = String(u.password || '') === String(password || '');
+            return okId && okPass;
+        });
 
         if (found) {
             localStorage.setItem('authToken', 'dummy_token_' + Date.now());
-            localStorage.setItem('username', found.username);
+            localStorage.setItem('username', found.username || '');
             localStorage.setItem('userRole', found.role || 'admin');
             // Em modo local, mantém uma empresa ativa padrão para não travar navegação
             localStorage.setItem('activeCompanyId', localStorage.getItem('activeCompanyId') || '1');
@@ -175,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     nome: found.name || found.nome || found.username,
                     name: found.name || found.nome || found.username,
                     email: found.email || '',
-                    username: found.username,
+                    username: found.username || username,
                     role: found.role || 'admin',
                     company_id: companyId != null ? Number(companyId) : null,
                     permissions: Array.isArray(found.permissions) ? found.permissions : []
@@ -196,7 +204,18 @@ document.addEventListener('DOMContentLoaded', () => {
     if (signupForm) {
         signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            if (signupError) { signupError.textContent = ''; }
+            function clearSignupError() {
+                if (!signupError) return;
+                signupError.textContent = '';
+                signupError.classList.remove('show');
+            }
+            function showSignupError(msg) {
+                if (!signupError) return;
+                signupError.textContent = msg;
+                signupError.classList.add('show');
+            }
+
+            clearSignupError();
 
             const companyName = (document.getElementById('su-company')?.value || '').trim();
             const name = (document.getElementById('su-name')?.value || '').trim();
@@ -205,14 +224,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const pass1 = (document.getElementById('su-password')?.value || '');
             const pass2 = (document.getElementById('su-password2')?.value || '');
 
-            if (!cfg.UTILS.validateEmail(email)) { if (signupError) signupError.textContent = 'E-mail inválido.'; return; }
-            if (pass1.length < 6) { if (signupError) signupError.textContent = 'Use ao menos 6 caracteres na senha.'; return; }
-            if (pass1 !== pass2) { if (signupError) signupError.textContent = 'As senhas não conferem.'; return; }
+            if (!cfg?.UTILS?.validateEmail?.(email)) { showSignupError('E-mail inválido.'); return; }
+            if (pass1.length < 6) { showSignupError('Use ao menos 6 caracteres na senha.'); return; }
+            if (pass1 !== pass2) { showSignupError('As senhas não conferem.'); return; }
 
             function createLocalUser() {
                 const existing = JSON.parse(localStorage.getItem('users') || '[]');
-                const conflict = existing.some(u => String(u.username).toLowerCase() === username.toLowerCase()) ||
-                    Object.values(cfg.USERS || {}).some(u => String(u.username).toLowerCase() === username.toLowerCase());
+                const uName = String(username || '').trim().toLowerCase();
+                const uEmail = String(email || '').trim().toLowerCase();
+                const conflict = existing.some(u => {
+                    const exU = String(u.username || '').trim().toLowerCase();
+                    const exE = String(u.email || '').trim().toLowerCase();
+                    return (uName && exU === uName) || (uEmail && exE === uEmail);
+                }) || Object.values(cfg.USERS || {}).some(u => {
+                    const exU = String(u.username || '').trim().toLowerCase();
+                    const exE = String(u.email || '').trim().toLowerCase();
+                    return (uName && exU === uName) || (uEmail && exE === uEmail);
+                });
                 if (conflict) {
                     const e = new Error('Usuário já existe');
                     e.code = 'CONFLICT';
@@ -234,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (window.API && typeof window.API.auth?.register === 'function') {
                     // Em modo API, empresa é obrigatória para criar o tenant
                     if (cfg.API && cfg.API.enabled && !companyName) {
-                        if (signupError) signupError.textContent = 'Informe o nome da empresa.';
+                        showSignupError('Informe o nome da empresa.');
                         return;
                     }
                     await window.API.auth.register({ username, email, password: pass1, name, companyName });
@@ -265,19 +293,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         err = e2;
                     }
                 }
-                if (signupError) {
-                    const msg = String(err && (err.code || err.message) || '').toUpperCase();
-                    if (msg.includes('TIMEOUT') || msg.includes('ABORT')) {
-                        signupError.textContent = 'Conexão com o servidor expirou. Tente novamente.';
-                    } else if (msg.includes('NETWORK') || msg.includes('HTTP 502') || msg.includes('HTTP 503') || msg.includes('HTTP 504')) {
-                        signupError.textContent = 'Servidor indisponível (API offline). Tente novamente em instantes.';
-                    } else if (msg.includes('HTTP 409') || msg.includes('USUÁRIO JÁ EXISTE') || msg.includes('UNIQUE')) {
-                        signupError.textContent = 'Usuário/email/empresa já existe.';
-                    } else if (msg.includes('HTTP 400')) {
-                        signupError.textContent = 'Dados inválidos. Verifique os campos informados.';
-                    } else {
-                        signupError.textContent = (err && err.message) ? err.message : 'Falha ao criar conta.';
-                    }
+                const msg = String(err && (err.code || err.message) || '').toUpperCase();
+                if (msg.includes('TIMEOUT') || msg.includes('ABORT')) {
+                    showSignupError('Conexão com o servidor expirou. Tente novamente.');
+                } else if (msg.includes('NETWORK') || msg.includes('HTTP 502') || msg.includes('HTTP 503') || msg.includes('HTTP 504')) {
+                    showSignupError('Servidor indisponível (API offline). Tente novamente em instantes.');
+                } else if (msg.includes('HTTP 409') || msg.includes('USUÁRIO JÁ EXISTE') || msg.includes('UNIQUE') || msg.includes('CONFLICT')) {
+                    showSignupError('Usuário/e-mail já existe.');
+                } else if (msg.includes('HTTP 400')) {
+                    showSignupError('Dados inválidos. Verifique os campos informados.');
+                } else {
+                    showSignupError((err && err.message) ? err.message : 'Falha ao criar conta.');
                 }
             }
         });
