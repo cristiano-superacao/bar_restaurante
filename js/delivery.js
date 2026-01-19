@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    // LocalStorage
+    // LocalStorage + Baixa de Estoque
     const now = new Date().toISOString();
     const order = {
       id: id || Date.now(),
@@ -345,6 +345,18 @@ document.addEventListener('DOMContentLoaded', function () {
       data: now,
       paidAt: payload.status === 'Pago' ? now : null
     };
+
+    // BAIXA AUTOMÁTICA DE ESTOQUE (igual aos pedidos)
+    if (!id) { // Apenas para pedidos novos
+      const estoque = STORE.get('stock', [], ['stock', 'estoque']) || [];
+      currentItems.forEach(item => {
+        const stockItem = estoque.find(s => Number(s.id) === Number(item.id));
+        if (stockItem && Number(stockItem.quantity) >= Number(item.quantity)) {
+          stockItem.quantity = Number(stockItem.quantity) - Number(item.quantity);
+        }
+      });
+      STORE.set('stock', estoque);
+    }
 
     const allOrders = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
     const merged = id ? allOrders.map(o => (o.id === id ? order : o)) : [...allOrders, order];
