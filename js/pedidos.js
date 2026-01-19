@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let menuItems = STORE.get('menuItems', [], ['menuItems']) || [];
     let mesas = STORE.get('tables', [], ['tables', 'mesas']) || [];
     let pedidos = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
+    let estoque = STORE.get('estoque', [], ['estoque']) || [];
 
     // --- Elementos do DOM ---
     const ordersGrid = document.getElementById('orders-grid');
@@ -22,6 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const menuItemSelect = document.getElementById('menu-item-select');
     const itemQuantityInput = document.getElementById('item-quantity');
     const addItemToOrderBtn = document.getElementById('add-item-to-order-btn');
+    const addonsSection = document.getElementById('addons-section');
+    const addonsOptions = document.getElementById('addons-options');
     const orderItemsContainer = document.getElementById('order-items-container');
     const orderTotalPriceEl = document.getElementById('order-total-price');
     const orderDiscountInput = document.getElementById('order-discount');
@@ -71,17 +74,125 @@ document.addEventListener('DOMContentLoaded', function () {
                     window.API.tables.list(),
                     window.API.orders.listWithItems({ type: 'Mesa' })
                 ]);
+                try {
+                    estoque = await window.API.stock.list();
+                } catch (e) {
+                    estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
+                }
             } catch (e) {
                 console.warn('Falha ao carregar via API, usando LocalStorage.', e);
                 menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
                 mesas = STORE.get('tables', mesas, ['tables', 'mesas']) || mesas;
                 pedidos = (STORE.get('pedidos', pedidos, ['pedidos', 'orders']) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
+                estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
             }
         } else {
             menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
             mesas = STORE.get('tables', mesas, ['tables', 'mesas']) || mesas;
             pedidos = (STORE.get('pedidos', pedidos, ['pedidos', 'orders']) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
+            estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
         }
+    }
+
+    function normalizeText(v) {
+        try {
+            return String(v || '')
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .toLowerCase();
+        } catch {
+            return String(v || '').toLowerCase();
+        }
+    }
+
+    function menuItemAllowsAddons(menuItem) {
+        const base = `${menuItem?.category || ''} ${menuItem?.name || ''}`;
+        const t = normalizeText(base);
+        return ['pastel', 'hamburguer', 'crepe', 'tapioca'].some(k => t.includes(k));
+    }
+
+    function isAddonStockItem(stockItem) {
+        const cat = normalizeText(stockItem?.category);
+        return stockItem?.isAddon === true || stockItem?.is_addon === true || cat.includes('acomp');
+    }
+
+    function getAddonStockOptions() {
+        const list = Array.isArray(estoque) ? estoque : [];
+        return list
+            .filter(isAddonStockItem)
+            .map(s => ({
+                id: s.id,
+                name: s.name,
+                quantity: Number(s.quantity ?? s.quantidade ?? 0),
+                unit: s.unit || s.unidade || 'un',
+            }))
+            .sort((a, b) => String(a.name).localeCompare(String(b.name), 'pt-BR'));
+    }
+
+    function clearAddonSelection() {
+        if (!addonsOptions) return;
+        const inputs = addonsOptions.querySelectorAll('input[type="checkbox"]');
+        inputs.forEach(i => { i.checked = false; });
+    }
+
+    function renderAddonOptions() {
+        if (!addonsOptions) return;
+        const opts = getAddonStockOptions();
+        if (opts.length === 0) {
+            addonsOptions.innerHTML = '<div class="empty-message" style="margin:0;">Cadastre itens no estoque com categoria "Acompanhamentos".</div>';
+            return;
+        }
+        addonsOptions.innerHTML = '';
+        opts.forEach((s) => {
+            const label = document.createElement('label');
+            label.className = `addon-option${(s.quantity <= 0) ? ' is-disabled' : ''}`;
+            label.innerHTML = `
+                <input type="checkbox" value="${String(s.id)}" ${(s.quantity <= 0) ? 'disabled' : ''}>
+                <span class="addon-name">${String(s.name)}</span>
+                <span class="addon-meta">${Number.isFinite(s.quantity) ? s.quantity : 0} ${String(s.unit)}</span>
+            `;
+            addonsOptions.appendChild(label);
+        });
+    }
+
+    function syncAddonsVisibility() {
+        if (!addonsSection || !menuItemSelect) return;
+        const selectedOption = menuItemSelect.options[menuItemSelect.selectedIndex];
+        const itemId = selectedOption && selectedOption.value ? Number(selectedOption.value) : null;
+        const menuItem = (Array.isArray(menuItems) ? menuItems : []).find(mi => Number(mi.id) === Number(itemId));
+        const show = !!menuItem && menuItemAllowsAddons(menuItem);
+
+        addonsSection.style.display = show ? 'block' : 'none';
+        if (show) {
+            renderAddonOptions();
+        } else {
+            clearAddonSelection();
+        }
+    }
+
+    function getSelectedAddons() {
+        if (!addonsSection || addonsSection.style.display === 'none' || !addonsOptions) return [];
+        const checked = Array.from(addonsOptions.querySelectorAll('input[type="checkbox"]:checked'));
+        const ids = checked.map(i => i.value).filter(Boolean);
+        const opts = getAddonStockOptions();
+        const selected = ids.map((raw) => {
+            const match = opts.find(o => String(o.id) === String(raw));
+            return match ? { stockId: match.id, name: match.name, quantity: 1 } : null;
+        }).filter(Boolean);
+        return selected;
+    }
+
+    function orderItemKey(menuItemId, addons = []) {
+        const addonIds = (addons || []).map(a => String(a.stockId)).sort().join(',');
+        return `${String(menuItemId)}|${addonIds}`;
+    }
+
+    function ensureOrderItemKeys() {
+        currentOrderItems = (currentOrderItems || []).map(it => {
+            if (it && it.key) return it;
+            const addons = Array.isArray(it.addons) ? it.addons : [];
+            return { ...it, addons, key: orderItemKey(it.id, addons) };
+        });
     }
 
     function renderOrders(filteredOrders) {
@@ -172,8 +283,15 @@ document.addEventListener('DOMContentLoaded', function () {
             currentOrderItems.forEach((item, index) => {
                 const itemRow = document.createElement('div');
                 itemRow.className = 'order-item-row';
+                const addons = Array.isArray(item.addons) ? item.addons : [];
+                const addonText = addons.length
+                    ? `<div class="order-item-addons">Acomp: ${addons.map(a => a.name).join(', ')}</div>`
+                    : '';
                 itemRow.innerHTML = `
-                    <span>${item.quantity}x ${item.name}</span>
+                    <div class="order-item-main">
+                        <span>${item.quantity}x ${item.name}</span>
+                        ${addonText}
+                    </div>
                     <span>${formatCurrency(item.price * item.quantity)}</span>
                     <button type="button" class="btn-remove-item" data-index="${index}" title="Remover item">&times;</button>
                 `;
@@ -201,17 +319,27 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (quantity <= 0) return;
 
-        const existingItem = currentOrderItems.find(item => item.id === itemId);
+        const selectedAddons = getSelectedAddons();
+        if (selectedAddons.length > 4) {
+            const errEl = document.getElementById('order-form-error');
+            if (errEl) { errEl.textContent = 'Selecione no máximo 4 acompanhamentos.'; errEl.style.display = 'block'; }
+            return;
+        }
+
+        const key = orderItemKey(itemId, selectedAddons);
+        const existingItem = currentOrderItems.find(item => item.key === key);
 
         if (existingItem) {
             existingItem.quantity += quantity;
         } else {
-            currentOrderItems.push({ id: itemId, name: itemName, price: itemPrice, quantity: quantity });
+            currentOrderItems.push({ key, id: itemId, name: itemName, price: itemPrice, quantity: quantity, addons: selectedAddons });
         }
 
         renderCurrentOrderItems();
         menuItemSelect.value = '';
         itemQuantityInput.value = 1;
+        clearAddonSelection();
+        syncAddonsVisibility();
     }
 
     function handleRemoveOrderItem(e) {
@@ -244,6 +372,7 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             document.getElementById('order-status').value = order.status;
             currentOrderItems = JSON.parse(JSON.stringify(order.items)); // Deep copy
+            ensureOrderItemKeys();
 
             const isClosable = order.status !== 'Pago' && order.status !== 'Cancelado';
             if (orderCloseBtn) orderCloseBtn.style.display = isClosable ? 'inline-flex' : 'none';
@@ -256,6 +385,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (orderCloseBtn) orderCloseBtn.style.display = 'none';
         }
         renderCurrentOrderItems();
+        syncAddonsVisibility();
         modal.classList.add('show');
     }
 
@@ -286,7 +416,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     await window.API.orders.update(parseInt(id), { status, discount, paymentMethod });
                 } else {
                     const tableId = parseInt(document.getElementById('order-table').value);
-                    const items = currentOrderItems.map(it => ({ menuItemId: it.id, quantity: it.quantity, price: it.price }));
+                    const items = currentOrderItems.map(it => ({
+                        menuItemId: it.id,
+                        quantity: it.quantity,
+                        price: it.price,
+                        addons: (Array.isArray(it.addons) ? it.addons : []).map(a => ({ stockId: a.stockId, quantity: a.quantity || 1 }))
+                    }));
                     await window.API.orders.create({ tableId, status, items, orderType: 'Mesa', discount, paymentMethod });
                 }
                 pedidos = await window.API.orders.listWithItems({ type: 'Mesa' });
@@ -300,6 +435,37 @@ document.addEventListener('DOMContentLoaded', function () {
                 showError(msg);
             }
         } else {
+            // Baixa no estoque (modo LocalStorage) para acompanhamentos
+            const needed = new Map();
+            currentOrderItems.forEach(it => {
+                const addons = Array.isArray(it.addons) ? it.addons : [];
+                addons.forEach(a => {
+                    const k = String(a.stockId);
+                    const prev = needed.get(k) || 0;
+                    needed.set(k, prev + (Number(it.quantity) || 1) * (Number(a.quantity) || 1));
+                });
+            });
+            const estoqueAtual = STORE.get('estoque', estoque, ['estoque']) || estoque;
+            for (const [stockId, qNeed] of needed.entries()) {
+                const item = (estoqueAtual || []).find(s => String(s.id) === String(stockId));
+                const qHave = Number(item?.quantity ?? item?.quantidade ?? 0);
+                if (!item || qHave < qNeed) {
+                    showError(`Estoque insuficiente para acompanhamento (ID: ${stockId}).`);
+                    return;
+                }
+            }
+            const estoqueNovo = (estoqueAtual || []).map(s => {
+                const key = String(s.id);
+                const dec = needed.get(key) || 0;
+                if (!dec) return s;
+                const qHave = Number(s.quantity ?? s.quantidade ?? 0);
+                const next = Math.max(0, qHave - dec);
+                if (s.quantity !== undefined) return { ...s, quantity: next };
+                return { ...s, quantidade: next };
+            });
+            STORE.set('estoque', estoqueNovo);
+            estoque = estoqueNovo;
+
             const newOrder = {
                 id: id ? parseInt(id) : Date.now(),
                 table: document.getElementById('order-table').value,
@@ -397,6 +563,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target === modal) closeModal();
     });
     addItemToOrderBtn.addEventListener('click', handleAddItemToOrder);
+    if (menuItemSelect) menuItemSelect.addEventListener('change', syncAddonsVisibility);
     orderItemsContainer.addEventListener('click', handleRemoveOrderItem);
     if (orderDiscountInput) orderDiscountInput.addEventListener('input', updateOrderTotal);
     orderForm.addEventListener('submit', handleFormSubmit);
@@ -409,5 +576,6 @@ document.addEventListener('DOMContentLoaded', function () {
         await loadData();
         populateMenuItemSelect();
         filterAndRenderOrders();
+        syncAddonsVisibility();
     })();
 });

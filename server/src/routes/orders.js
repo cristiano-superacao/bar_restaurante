@@ -33,6 +33,19 @@ function calcTotals({ items = [], discount = 0, deliveryFee = 0 }) {
   };
 }
 
+function normalizeText(v) {
+  return String(v || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase();
+}
+
+function itemAllowsAddons(menuItemRow) {
+  const base = `${menuItemRow?.category || ''} ${menuItemRow?.name || ''}`;
+  const t = normalizeText(base);
+  return ['pastel', 'hamburguer', 'crepe', 'tapioca'].some((k) => t.includes(k));
+}
+
 router.get('/', async (req, res) => {
   try {
     const type = normalizeOrderType(req.query.type);
@@ -73,11 +86,26 @@ router.get('/:id/items', async (req, res) => {
   try {
     const { id } = req.params;
     const { rows } = await query(
-      `SELECT oi.id, oi.menu_item_id, oi.quantity, oi.price, mi.name
+      `SELECT oi.id,
+              oi.menu_item_id,
+              oi.quantity,
+              oi.price,
+              mi.name,
+              COALESCE(
+                json_agg(DISTINCT jsonb_build_object(
+                  'stock_id', s.id,
+                  'name', s.name,
+                  'quantity', oia.quantity
+                )) FILTER (WHERE s.id IS NOT NULL),
+                '[]'
+              ) AS addons
        FROM order_items oi
        INNER JOIN orders o ON o.id = oi.order_id
        LEFT JOIN menu_items mi ON mi.id = oi.menu_item_id
+       LEFT JOIN order_item_addons oia ON oia.order_item_id = oi.id
+       LEFT JOIN stock s ON s.id = oia.stock_id
        WHERE oi.order_id = $1 AND o.company_id = $2
+       GROUP BY oi.id, oi.menu_item_id, oi.quantity, oi.price, mi.name
        ORDER BY oi.id ASC`,
       [id, req.companyId]
     );
@@ -93,6 +121,9 @@ router.post('/', [
   body('items.*.menuItemId').isInt({ min: 1 }),
   body('items.*.quantity').isInt({ min: 1 }),
   body('items.*.price').isFloat({ min: 0 }),
+  body('items.*.addons').optional().isArray({ max: 4 }),
+  body('items.*.addons.*.stockId').optional().isInt({ min: 1 }),
+  body('items.*.addons.*.quantity').optional().isInt({ min: 1 }),
   body('customerName').optional().isString().trim().isLength({ min: 2 }),
   body('customerPhone').optional().isString().trim().isLength({ min: 8 }),
   body('customerAddress').optional().isString().trim().isLength({ min: 5 }),
@@ -156,13 +187,18 @@ router.post('/', [
       }
     }
 
-    // Valida itens pertencem à empresa
+    // Valida itens pertencem à empresa (e guarda metadados para regras de acompanhamentos)
+    const menuMetaById = new Map();
     for (const it of items) {
-      const mi = await client.query('SELECT id FROM menu_items WHERE id=$1 AND company_id=$2', [it.menuItemId, req.companyId]);
+      const mi = await client.query(
+        'SELECT id, name, category FROM menu_items WHERE id=$1 AND company_id=$2',
+        [it.menuItemId, req.companyId]
+      );
       if (mi.rowCount === 0) {
         await client.query('ROLLBACK');
         return res.status(400).json({ error: 'Item de cardápio inválido para esta empresa' });
       }
+      menuMetaById.set(Number(it.menuItemId), mi.rows[0]);
     }
 
     const totals = calcTotals({ items, discount, deliveryFee });
@@ -202,16 +238,91 @@ router.post('/', [
     );
     const order = rows[0];
     for (const it of items) {
-      await client.query(
-        'INSERT INTO order_items(order_id, menu_item_id, quantity, price) VALUES ($1,$2,$3,$4)',
+      const inserted = await client.query(
+        'INSERT INTO order_items(order_id, menu_item_id, quantity, price) VALUES ($1,$2,$3,$4) RETURNING id',
         [order.id, it.menuItemId, it.quantity, it.price]
       );
+      const orderItemId = inserted.rows[0]?.id;
+
+      const addons = Array.isArray(it.addons) ? it.addons : [];
+      const meta = menuMetaById.get(Number(it.menuItemId));
+      const allowAddons = itemAllowsAddons(meta);
+
+      if (addons.length > 0 && !allowAddons) {
+        const e = new Error('Este item não permite acompanhamentos.');
+        e.status = 400;
+        throw e;
+      }
+      if (addons.length > 4) {
+        const e = new Error('Você pode selecionar no máximo 4 acompanhamentos por item.');
+        e.status = 400;
+        throw e;
+      }
+
+      const seen = new Set();
+      for (const ad of addons) {
+        const stockId = Number(ad?.stockId);
+        const perItemQty = Number(ad?.quantity) || 1;
+        if (!Number.isFinite(stockId) || stockId < 1) {
+          const e = new Error('Acompanhamento inválido.');
+          e.status = 400;
+          throw e;
+        }
+        if (!Number.isFinite(perItemQty) || perItemQty < 1) {
+          const e = new Error('Quantidade do acompanhamento inválida.');
+          e.status = 400;
+          throw e;
+        }
+        if (seen.has(stockId)) {
+          const e = new Error('Acompanhamento duplicado no mesmo item.');
+          e.status = 400;
+          throw e;
+        }
+        seen.add(stockId);
+
+        // Valida item do estoque (e garante que é um acompanhamento)
+        const s = await client.query(
+          'SELECT id, name, category, quantity, COALESCE(is_addon,false) AS is_addon FROM stock WHERE id=$1 AND company_id=$2',
+          [stockId, req.companyId]
+        );
+        if (s.rowCount === 0) {
+          const e = new Error('Acompanhamento não encontrado no estoque.');
+          e.status = 400;
+          throw e;
+        }
+        const stockRow = s.rows[0];
+        const looksAddon = !!stockRow.is_addon || normalizeText(stockRow.category).includes('acomp');
+        if (!looksAddon) {
+          const e = new Error(`O item de estoque "${stockRow.name}" não está marcado como acompanhamento.`);
+          e.status = 400;
+          throw e;
+        }
+
+        const totalAddonQty = Math.max(1, Math.floor(perItemQty)) * Math.max(1, Math.floor(Number(it.quantity) || 1));
+
+        // Baixa no estoque de forma atômica (não deixa ficar negativo)
+        const upd = await client.query(
+          'UPDATE stock SET quantity = quantity - $1 WHERE company_id=$2 AND id=$3 AND quantity >= $1 RETURNING quantity',
+          [totalAddonQty, req.companyId, stockId]
+        );
+        if (upd.rowCount === 0) {
+          const e = new Error(`Estoque insuficiente para o acompanhamento "${stockRow.name}".`);
+          e.status = 400;
+          throw e;
+        }
+
+        await client.query(
+          'INSERT INTO order_item_addons(order_item_id, stock_id, quantity) VALUES ($1,$2,$3)',
+          [orderItemId, stockId, totalAddonQty]
+        );
+      }
     }
     await client.query('COMMIT');
     res.status(201).json(order);
   } catch (e) {
     await client.query('ROLLBACK');
-    res.status(500).json({ error: 'Erro ao criar pedido' });
+    const status = e?.status || 500;
+    res.status(status).json({ error: status === 500 ? 'Erro ao criar pedido' : String(e?.message || 'Erro') });
   } finally {
     client.release();
   }

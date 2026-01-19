@@ -364,7 +364,14 @@
             orderItemId: it.id,
             name: it.name,
             price: Number(it.price),
-            quantity: it.quantity
+            quantity: it.quantity,
+            addons: Array.isArray(it.addons)
+              ? it.addons.map(a => ({
+                stockId: a.stock_id,
+                name: a.name,
+                quantity: a.quantity
+              }))
+              : []
           }))
         }));
       },
@@ -488,7 +495,7 @@
         if (!enabled) return APP_STORAGE.get('estoque', [], ['estoque']);
         const rows = await fetchWithTimeout('/api/stock');
         // mapear min_quantity -> minQuantity
-        return rows.map(r => ({ ...r, minQuantity: r.min_quantity }));
+        return rows.map(r => ({ ...r, minQuantity: r.min_quantity, isAddon: !!r.is_addon }));
       },
       async create(data) {
         if (!enabled) {

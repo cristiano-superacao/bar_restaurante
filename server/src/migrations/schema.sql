@@ -160,6 +160,28 @@ CREATE TABLE IF NOT EXISTS stock (
 );
 ALTER TABLE stock ADD COLUMN IF NOT EXISTS company_id INT REFERENCES companies(id) ON DELETE CASCADE;
 
+-- Marca itens do estoque que podem ser usados como acompanhamentos
+ALTER TABLE stock ADD COLUMN IF NOT EXISTS is_addon BOOLEAN NOT NULL DEFAULT false;
+UPDATE stock
+SET is_addon = true
+WHERE COALESCE(is_addon, false) = false
+  AND LOWER(COALESCE(category, '')) LIKE '%acomp%';
+
+-- Acompanhamentos do item do pedido (baixa no estoque)
+-- Importante: criado após stock existir (para rodar em bancos novos)
+CREATE TABLE IF NOT EXISTS order_item_addons (
+  id SERIAL PRIMARY KEY,
+  order_item_id INT NOT NULL REFERENCES order_items(id) ON DELETE CASCADE,
+  stock_id INT NOT NULL REFERENCES stock(id) ON DELETE RESTRICT,
+  quantity INT NOT NULL DEFAULT 1
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS order_item_addons_unique
+  ON order_item_addons(order_item_id, stock_id);
+
+CREATE INDEX IF NOT EXISTS order_item_addons_stock_idx
+  ON order_item_addons(stock_id);
+
 -- Clientes (por empresa)
 CREATE TABLE IF NOT EXISTS customers (
   id SERIAL PRIMARY KEY,
