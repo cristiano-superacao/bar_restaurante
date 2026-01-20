@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', function () {
     let menuItems = STORE.get('menuItems', [], ['menuItems']) || [];
     let mesas = STORE.get('tables', [], ['tables', 'mesas']) || [];
     let pedidos = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
-    let estoque = STORE.get('estoque', [], ['estoque']) || [];
+    let estoque = STORE.get('estoque', [], ['estoque', 'stock']) || [];
 
     // --- Elementos do DOM ---
     const ordersGrid = document.getElementById('orders-grid');
@@ -79,20 +79,20 @@ document.addEventListener('DOMContentLoaded', function () {
                 try {
                     estoque = await window.API.stock.list();
                 } catch (e) {
-                    estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
+                    estoque = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
                 }
             } catch (e) {
                 console.warn('Falha ao carregar via API, usando LocalStorage.', e);
                 menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
                 mesas = STORE.get('tables', mesas, ['tables', 'mesas']) || mesas;
                 pedidos = (STORE.get('pedidos', pedidos, ['pedidos', 'orders']) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
-                estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
+                estoque = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
             }
         } else {
             menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
             mesas = STORE.get('tables', mesas, ['tables', 'mesas']) || mesas;
             pedidos = (STORE.get('pedidos', pedidos, ['pedidos', 'orders']) || pedidos).filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
-            estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
+            estoque = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
         }
     }
 
@@ -381,6 +381,19 @@ document.addEventListener('DOMContentLoaded', function () {
             if (errEl) { errEl.textContent = `Selecione no máximo ${ADDONS_MAX} acompanhamentos.`; errEl.style.display = 'block'; }
             return;
         }
+        
+        // Validar disponibilidade de acompanhamentos no estoque
+        const estoqueAtual = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
+        for (const addon of selectedAddons) {
+            const stockItem = estoqueAtual.find(s => String(s.id) === String(addon.stockId));
+            const qtyAvailable = Number(stockItem?.quantity ?? stockItem?.quantidade ?? 0);
+            const qtyNeeded = quantity * (addon.quantity || 1);
+            if (qtyAvailable < qtyNeeded) {
+                const errEl = document.getElementById('order-form-error');
+                if (errEl) { errEl.textContent = `Estoque insuficiente de "${addon.name}". Disponível: ${qtyAvailable}, Necessário: ${qtyNeeded}`; errEl.style.display = 'block'; }
+                return;
+            }
+        }
 
         const key = orderItemKey(itemId, selectedAddons);
         const existingItem = currentOrderItems.find(item => item.key === key);
@@ -495,7 +508,7 @@ document.addEventListener('DOMContentLoaded', function () {
             // Movimentação de saída do estoque (modo LocalStorage)
             // Regra: deduz somente na criação do pedido (evita dupla baixa ao editar).
             if (!id) {
-                const estoqueAtual = STORE.get('estoque', estoque, ['estoque']) || estoque;
+                const estoqueAtual = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
 
                 const safeNumber = (v) => {
                     const n = Number(v);
@@ -566,9 +579,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 estoque = estoqueNovo;
             }
 
+            const tableName = document.getElementById('order-table').value;
             const newOrder = {
                 id: id ? parseInt(id) : Date.now(),
-                table: document.getElementById('order-table').value,
+                table: tableName,
                 items: currentOrderItems,
                 orderType: 'Mesa',
                 paymentMethod,
@@ -582,6 +596,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 pedidos = pedidos.map(order => order.id === parseInt(id) ? newOrder : order);
             } else {
                 pedidos.push(newOrder);
+                
+                // Atualizar status da mesa para 'Ocupada'
+                const mesasAtuais = STORE.get('tables', mesas, ['tables', 'mesas']) || mesas;
+                const mesasAtualizadas = mesasAtuais.map(m => {
+                    if (m.name === tableName || String(m.id) === tableName) {
+                        return { ...m, status: 'Ocupada' };
+                    }
+                    return m;
+                });
+                STORE.set('tables', mesasAtualizadas);
+                mesas = mesasAtualizadas;
             }
             saveOrders();
             filterAndRenderOrders();
@@ -626,7 +651,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // MOVIMENTAÇÃO DE ESTOQUE AO FINALIZAR PEDIDO
         if (closedOrder && closedOrder.items) {
-            const estoqueAtual = STORE.get('estoque', estoque, ['estoque']) || estoque;
+            const estoqueAtual = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
             const safeNumber = (v) => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
             
             closedOrder.items.forEach(orderItem => {
@@ -649,13 +674,26 @@ document.addEventListener('DOMContentLoaded', function () {
         
         pedidos = updated;
         saveOrders();
+        
+        // Liberar mesa (status 'Livre') ao fechar conta
+        if (closedOrder && closedOrder.table) {
+            const mesasAtuais = STORE.get('tables', mesas, ['tables', 'mesas']) || mesas;
+            const mesasAtualizadas = mesasAtuais.map(m => {
+                if (m.name === closedOrder.table || String(m.id) === closedOrder.table) {
+                    return { ...m, status: 'Livre' };
+                }
+                return m;
+            });
+            STORE.set('tables', mesasAtualizadas);
+            mesas = mesasAtualizadas;
+        }
 
         // Gera transação de receita no financeiro (LocalStorage)
         const transacoes = STORE.get('transacoes', [], ['transacoes']) || [];
-        const orderTotal = updated.find(o => String(o.id) === String(id))?.total || 0;
+        const orderTotal = closedOrder?.total || 0;
         transacoes.push({
             id: String(Date.now()),
-            descricao: `Pedido #${String(id).padStart(4, '0')} (Mesa)`,
+            descricao: `Pedido #${String(id).padStart(4, '0')} - Mesa: ${closedOrder?.table || 'N/A'}`,
             valor: Number(orderTotal) || 0,
             tipo: 'Receita',
             data: new Date().toISOString().slice(0, 10),
@@ -695,6 +733,63 @@ document.addEventListener('DOMContentLoaded', function () {
     orderForm.addEventListener('submit', handleFormSubmit);
     if (orderCloseBtn) orderCloseBtn.addEventListener('click', handleCloseAccount);
     ordersGrid.addEventListener('click', handleGridClick);
+
+
+    // --- Sync entre abas (LocalStorage) ---
+    // Faz Pedidos refletir alterações feitas em Cardápio/Estoque/Mesas/Delivery em outra aba.
+    function getActiveCompanyId() {
+        try { return localStorage.getItem('activeCompanyId') || 'default'; } catch { return 'default'; }
+    }
+
+    window.addEventListener('storage', (ev) => {
+        if (!ev || !ev.key) return;
+
+        const cid = getActiveCompanyId();
+        const scoped = (k) => `${String(k)}_${cid}`;
+        const k = String(ev.key);
+
+        // Troca de empresa ativa: recarrega tudo
+        if (k === 'activeCompanyId') {
+            void (async () => {
+                await loadData();
+                populateTableSelect();
+                populateMenuItemSelect();
+                filterAndRenderOrders();
+                syncAddonsVisibility();
+            })();
+            return;
+        }
+
+        // Cardápio
+        if (k === 'menuItems' || k === scoped('menuItems')) {
+            menuItems = STORE.get('menuItems', menuItems, ['menuItems']) || menuItems;
+            populateMenuItemSelect();
+            syncAddonsVisibility();
+            return;
+        }
+
+        // Estoque (inclui chaves legadas)
+        if (k === 'estoque' || k === scoped('estoque') || k === 'stock' || k === scoped('stock')) {
+            estoque = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
+            syncAddonsVisibility();
+            updateAddonsLimitUI();
+            return;
+        }
+
+        // Mesas (inclui chaves legadas)
+        if (k === 'tables' || k === scoped('tables') || k === 'mesas' || k === scoped('mesas')) {
+            mesas = STORE.get('tables', mesas, ['tables', 'mesas']) || mesas;
+            populateTableSelect();
+            return;
+        }
+
+        // Pedidos (inclui chaves legadas)
+        if (k === 'pedidos' || k === scoped('pedidos') || k === 'orders' || k === scoped('orders')) {
+            pedidos = (STORE.get('pedidos', pedidos, ['pedidos', 'orders']) || pedidos)
+                .filter(o => (o.orderType || o.order_type || 'Mesa') !== 'Delivery');
+            filterAndRenderOrders();
+        }
+    });
 
 
     // --- Inicialização ---
