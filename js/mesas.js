@@ -74,10 +74,29 @@ document.addEventListener('DOMContentLoaded', function () {
             card.dataset.id = table.id;
 
             card.innerHTML = `
-                <i class="fas fa-chair table-icon"></i>
-                <h3>${table.name}</h3>
-                <p>Capacidade: ${table.capacity}</p>
-                <p class="table-status-text">${table.status}</p>
+                <div class="table-actions">
+                    <button class="table-action-btn edit" data-id="${table.id}" title="Editar">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="table-action-btn delete" data-id="${table.id}" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="table-card-header">
+                    <div class="table-icon">
+                        <i class="fas fa-chair"></i>
+                    </div>
+                    <div class="table-card-info">
+                        <h3 class="table-name">${table.name}</h3>
+                        <p class="table-capacity">
+                            <i class="fas fa-users"></i>
+                            Capacidade: ${table.capacity}
+                        </p>
+                    </div>
+                </div>
+                <div class="table-card-body">
+                    <span class="table-status-badge">${table.status}</span>
+                </div>
             `;
             tablesGrid.appendChild(card);
         });
@@ -146,6 +165,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleGridClick(e) {
+        const btn = e.target.closest('button');
+        
+        // Se clicou em botão de ação (edit/delete)
+        if (btn) {
+            e.stopPropagation();
+            const tableId = parseInt(btn.dataset.id);
+            const table = tables.find(t => t.id === tableId);
+            
+            if (btn.classList.contains('edit') && table) {
+                openModal(table);
+            } else if (btn.classList.contains('delete')) {
+                handleDeleteTable(tableId);
+            }
+            return;
+        }
+        
+        // Se clicou no card (mas não no botão)
         const card = e.target.closest('.table-card');
         if (card) {
             const tableId = parseInt(card.dataset.id);
@@ -154,6 +190,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 openModal(table);
             }
         }
+    }
+    
+    async function handleDeleteTable(id) {
+        if (!confirm('Tem certeza que deseja excluir esta mesa?')) return;
+        
+        if (apiEnabled && window.API) {
+            try {
+                await window.API.tables.remove(id);
+                await loadTables();
+            } catch (err) {
+                alert('Erro ao excluir mesa via API.');
+            }
+        } else {
+            tables = tables.filter(t => t.id !== id);
+            saveTables();
+        }
+        filterAndRenderTables();
     }
 
     // --- Event Listeners ---
