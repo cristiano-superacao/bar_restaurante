@@ -567,7 +567,13 @@
     transactions: {
       async list() {
         if (!enabled) return APP_STORAGE.get('transacoes', [], ['transacoes']);
-        return fetchWithTimeout('/api/transactions');
+        const rows = await fetchWithTimeout('/api/transactions');
+        return (rows || []).map((r) => ({
+          ...r,
+          id: r && r.id != null ? Number(r.id) : r?.id,
+          valor: Number(r && r.valor != null ? r.valor : 0) || 0,
+          status: r && r.status ? r.status : 'pago',
+        }));
       },
       async create(data) {
         if (!enabled) {
@@ -575,7 +581,13 @@
           const item = { id: Date.now().toString(), ...data };
           curr.push(item); APP_STORAGE.set('transacoes', curr); return item;
         }
-        return fetchWithTimeout('/api/transactions', { method: 'POST', body: JSON.stringify(data) });
+        const res = await fetchWithTimeout('/api/transactions', { method: 'POST', body: JSON.stringify(data) });
+        if (res && typeof res === 'object') {
+          res.id = res.id != null ? Number(res.id) : res.id;
+          res.valor = Number(res.valor) || 0;
+          if (!res.status) res.status = 'pago';
+        }
+        return res;
       },
       async update(id, data) {
         if (!enabled) {
@@ -583,7 +595,13 @@
           const upd = curr.map(t => t.id === id ? { ...data, id } : t);
           APP_STORAGE.set('transacoes', upd); return upd.find(t => t.id === id) || null;
         }
-        return fetchWithTimeout(`/api/transactions/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+        const res = await fetchWithTimeout(`/api/transactions/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+        if (res && typeof res === 'object') {
+          res.id = res.id != null ? Number(res.id) : res.id;
+          res.valor = Number(res.valor) || 0;
+          if (!res.status) res.status = 'pago';
+        }
+        return res;
       },
       async remove(id) {
         if (!enabled) {

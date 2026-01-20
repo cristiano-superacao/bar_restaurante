@@ -69,11 +69,13 @@ document.addEventListener('DOMContentLoaded', () => {
         filtered.forEach(transacao => {
             const config = tipoConfig[transacao.tipo] || tipoConfig['Receita'];
             const isPago = (transacao.status || 'pago') === 'pago';
+
+            const valorNum = Number(transacao.valor) || 0;
             
             if(transacao.tipo === 'Receita') {
-                totalReceitas += transacao.valor;
+                totalReceitas += valorNum;
             } else {
-                totalDespesas += transacao.valor;
+                totalDespesas += valorNum;
             }
 
             const item = document.createElement('div');
@@ -116,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="transacao-card-valor-wrapper">
                         <span class="valor-label">Valor</span>
                         <span class="transacao-card-valor" style="background: linear-gradient(135deg, ${config.color}, ${config.color}dd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                            ${transacao.tipo === 'Receita' ? '+' : '-'} ${formatCurrency(transacao.valor)}
+                            ${transacao.tipo === 'Receita' ? '+' : '-'} ${formatCurrency(valorNum)}
                         </span>
                     </div>
                 </div>
