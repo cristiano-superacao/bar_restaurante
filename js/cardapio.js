@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const apiEnabled = typeof window !== 'undefined' && window.API && window.API.enabled;
     const STORE = window.APP_STORAGE;
 
-    let estoque = STORE.get('estoque', [], ['estoque']) || [];
+    let estoque = STORE.get('estoque', [], ['estoque', 'stock']) || [];
 
     let menuItems = STORE.get('menuItems', null, ['menuItems']);
     if (!menuItems) menuItems = [
@@ -94,10 +94,10 @@ document.addEventListener('DOMContentLoaded', function () {
                 estoque = await window.API.stock.list();
             } catch (e) {
                 console.warn('Falha ao carregar estoque via API, usando LocalStorage.', e);
-                estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
+                estoque = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
             }
         } else {
-            estoque = STORE.get('estoque', estoque, ['estoque']) || estoque;
+            estoque = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
         }
     }
 
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .filter(isAddonStockItem)
             .map(s => ({
                 id: s.id,
-                name: s.name,
+                name: s.name || s.nome || `Item ${s.id}`,
                 quantity: Number(s.quantity ?? s.quantidade ?? 0),
                 unit: s.unit || s.unidade || 'un',
             }))
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!productAddonsOptions) return;
         const opts = getAddonStockOptions();
         if (opts.length === 0) {
-            productAddonsOptions.innerHTML = '<div class="empty-message" style="margin:0;">Cadastre itens no estoque e marque como Acompanhamento.</div>';
+            productAddonsOptions.innerHTML = '<div class="empty-message" style="margin:0; padding: 16px; text-align: center; color: #64748b; font-size: 14px;"><i class="fas fa-info-circle" style="margin-right: 8px;"></i>Cadastre itens no estoque e marque como Acompanhamento.</div>';
             if (productAddonsCount) productAddonsCount.textContent = `0/${ADDONS_MAX}`;
             return;
         }
@@ -154,11 +154,11 @@ document.addEventListener('DOMContentLoaded', function () {
             const isOut = s.quantity <= 0;
             const isChecked = selectedSet.has(String(s.id));
             const label = document.createElement('label');
-            label.className = `addon-option${isOut ? ' is-disabled' : ''}`;
+            label.className = `addon-option${isOut ? ' is-disabled' : ''}${isChecked ? ' is-selected' : ''}`;
             label.innerHTML = `
                 <input type="checkbox" value="${String(s.id)}" ${(isOut && !isChecked) ? 'disabled' : ''} ${isChecked ? 'checked' : ''}>
-                <span class="addon-name">${String(s.name)}</span>
-                <span class="addon-meta">${Number.isFinite(s.quantity) ? s.quantity : 0} ${String(s.unit)}</span>
+                <span class="addon-name">${String(s.name || 'Sem nome')}</span>
+                <span class="addon-meta">${Number.isFinite(s.quantity) ? s.quantity : 0} ${String(s.unit || 'un')}</span>
             `;
             productAddonsOptions.appendChild(label);
         });
@@ -221,31 +221,69 @@ document.addEventListener('DOMContentLoaded', function () {
             menuGrid.innerHTML = '<p>Nenhum item encontrado com os filtros atuais.</p>';
             return;
         }
+        
+        // Mapeamento de categorias para ícones e cores
+        const categoryConfig = {
+            'Lanches': { icon: '🍔', color: '#ef4444' },
+            'Pizzas': { icon: '🍕', color: '#f59e0b' },
+            'Bebidas': { icon: '🥤', color: '#3b82f6' },
+            'Sobremesas': { icon: '🍰', color: '#8b5cf6' },
+            'Acompanhamento': { icon: '🍟', color: '#10b981' },
+            'Entradas': { icon: '🥗', color: '#06b6d4' },
+            'Pratos': { icon: '🍽️', color: '#ec4899' },
+            'default': { icon: '🍴', color: '#6366f1' }
+        };
+        
         items.forEach(item => {
             const addonIds = item.addonStockIds || item.addon_stock_ids || [];
+            const addonsCount = Array.isArray(addonIds) ? addonIds.length : 0;
             const addonsText = (Array.isArray(addonIds) && addonIds.length)
                 ? addonIds
-                    .slice(0, 4)
+                    .slice(0, 3)
                     .map(id => stockNameById.get(String(id)) || '')
                     .filter(Boolean)
                     .join(', ')
                 : '';
 
-            const card = document.createElement('div');
+            const config = categoryConfig[item.category] || categoryConfig['default'];
             const catClass = `cat-${(item.category||'').replace(/\s+/g,'')}`;
+            
+            const card = document.createElement('div');
             card.className = `menu-item-card ${catClass}`;
+            card.setAttribute('data-category-color', config.color);
             card.innerHTML = `
-                <div class="card-content">
-                    <span class="card-category">${item.category}</span>
-                    <h3 class="card-title">${item.name}</h3>
-                    <p class="card-description">${item.description}</p>
-                    ${addonsText ? `<div class="menu-card-addons"><strong>Acomp:</strong> ${addonsText}</div>` : ''}
-                    <div class="card-footer">
-                        <span class="card-price">${formatBRL(item.price)}</span>
-                        <div class="card-actions">
-                            <button class="btn btn-secondary btn-edit" data-id="${item.id}" title="Editar"><i class="fas fa-pen"></i> Editar</button>
-                            <button class="btn btn-secondary btn-delete" data-id="${item.id}" title="Excluir"><i class="fas fa-trash"></i> Excluir</button>
-                        </div>
+                <div class="menu-card-actions">
+                    <button class="menu-card-action-btn edit" data-id="${item.id}" title="Editar">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="menu-card-action-btn delete" data-id="${item.id}" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="menu-card-header">
+                    <div class="menu-card-icon" style="background: linear-gradient(135deg, ${config.color}15, ${config.color}25); color: ${config.color};">
+                        <span class="icon-emoji">${config.icon}</span>
+                    </div>
+                    <div class="menu-card-info">
+                        <span class="menu-card-category" style="background: linear-gradient(135deg, ${config.color}15, ${config.color}25); color: ${config.color}; border-color: ${config.color}30;">${item.category}</span>
+                        <h3 class="menu-card-name">${item.name}</h3>
+                    </div>
+                </div>
+                <div class="menu-card-body">
+                    <p class="menu-card-description">${item.description || 'Sem descrição'}</p>
+                    ${addonsText ? `
+                    <div class="menu-card-addons-info">
+                        <span class="addons-badge" style="background: ${config.color}20; color: ${config.color}; border-color: ${config.color}40;">
+                            <i class="fas fa-plus-circle"></i> ${addonsCount} ${addonsCount === 1 ? 'acompanhamento' : 'acompanhamentos'}
+                        </span>
+                        <span class="addons-preview">${addonsText}${addonIds.length > 3 ? '...' : ''}</span>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="menu-card-footer">
+                    <div class="menu-card-price-wrapper">
+                        <span class="price-label">Valor</span>
+                        <span class="menu-card-price" style="background: linear-gradient(135deg, ${config.color}, ${config.color}dd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">${formatBRL(item.price)}</span>
                     </div>
                 </div>
             `;
@@ -370,12 +408,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const id = parseInt(target.dataset.id);
 
-        if (target.classList.contains('btn-edit')) {
+        if (target.classList.contains('btn-edit') || target.classList.contains('edit')) {
             const itemToEdit = menuItems.find(item => item.id === id);
             openModal(itemToEdit);
         }
 
-        if (target.classList.contains('btn-delete')) {
+        if (target.classList.contains('btn-delete') || target.classList.contains('delete')) {
             if (confirm('Tem certeza que deseja excluir este item?')) {
                 if (apiEnabled && window.API) {
                     try {
@@ -407,6 +445,56 @@ document.addEventListener('DOMContentLoaded', function () {
     itemForm.addEventListener('submit', handleFormSubmit);
     menuGrid.addEventListener('click', handleGridClick);
     if (productAddonsOptions) productAddonsOptions.addEventListener('change', onProductAddonToggle);
+
+    // --- Sync entre abas (LocalStorage) ---
+    // Atualiza cardápio/estoque quando outra aba salvar dados.
+    function getActiveCompanyId() {
+        try { return localStorage.getItem('activeCompanyId') || 'default'; } catch { return 'default'; }
+    }
+
+    window.addEventListener('storage', (ev) => {
+        if (!ev || !ev.key) return;
+
+        const cid = getActiveCompanyId();
+        const scoped = (k) => `${String(k)}_${cid}`;
+        const k = String(ev.key);
+
+        const refreshAddonsIfModalOpen = () => {
+            try {
+                if (modal && modal.classList.contains('show')) {
+                    renderProductAddonOptions(getSelectedAddonIds());
+                }
+            } catch {}
+        };
+
+        // Troca de empresa ativa: recarrega tudo
+        if (k === 'activeCompanyId') {
+            void (async () => {
+                await loadStock();
+                await loadItems();
+                populateCategoryFilter();
+                filterAndRender();
+                refreshAddonsIfModalOpen();
+            })();
+            return;
+        }
+
+        // Estoque (inclui chaves legadas)
+        if (k === 'estoque' || k === scoped('estoque') || k === 'stock' || k === scoped('stock')) {
+            estoque = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
+            refreshAddonsIfModalOpen();
+            return;
+        }
+
+        // Cardápio
+        if (k === 'menuItems' || k === scoped('menuItems')) {
+            void (async () => {
+                await loadItems();
+                populateCategoryFilter();
+                filterAndRender();
+            })();
+        }
+    });
 
     // --- Inicialização ---
     (async () => {

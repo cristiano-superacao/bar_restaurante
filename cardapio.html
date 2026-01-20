@@ -211,44 +211,44 @@
             gap: var(--spacing-2xl);
         }
         
-        .menu-card {
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            border: 1px solid rgba(148, 163, 184, 0.15);
-            border-radius: 24px;
+        .menu-item-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(148, 163, 184, 0.12);
+            border-radius: 20px;
             overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
             display: flex;
             flex-direction: column;
         }
         
-        .menu-card::before {
+        .menu-item-card::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             height: 6px;
-            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
-            opacity: 0;
-            transition: opacity 0.4s ease;
+            background: linear-gradient(90deg, var(--category-color, #3b82f6) 0%, var(--category-color, #8b5cf6) 100%);
+            transition: height 0.3s ease;
         }
         
-        .menu-card:hover::before {
-            opacity: 1;
+        .menu-item-card:hover::before {
+            height: 8px;
         }
         
-        .menu-card:hover {
-            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.25), 0 0 0 1px rgba(59, 130, 246, 0.1);
-            transform: translateY(-12px) scale(1.03);
-            border-color: rgba(59, 130, 246, 0.3);
+        .menu-item-card:hover {
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.18), 0 0 0 1px rgba(59, 130, 246, 0.08);
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(59, 130, 246, 0.25);
         }
         
         .menu-card-actions {
             position: absolute;
-            top: 1.25rem;
-            right: 1.25rem;
+            top: 1rem;
+            right: 1rem;
             display: flex;
             gap: 0.625rem;
             opacity: 0;
@@ -257,9 +257,40 @@
             z-index: 10;
         }
         
-        .menu-card:hover .menu-card-actions {
+        .menu-item-card:hover .menu-card-actions {
             opacity: 1;
             transform: translateY(0);
+        }
+        
+        .menu-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing);
+            padding: var(--spacing-xl) var(--spacing-xl) var(--spacing);
+        }
+        
+        .menu-card-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .menu-item-card:hover .menu-card-icon {
+            transform: scale(1.08) rotate(3deg);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .menu-card-info {
+            flex: 1;
+            min-width: 0;
+            padding-top: 0.25rem;
         }
 
         /* Acompanhamentos por produto (Premium) */
@@ -406,62 +437,41 @@
         }
         
         .menu-card-body {
-            padding: var(--spacing-xl);
+            padding: 0 var(--spacing-xl) var(--spacing);
+            flex: 1;
         }
         
         .menu-card-category {
             display: inline-block;
-            padding: 6px 14px;
-            background: linear-gradient(135deg, rgba(74, 144, 226, 0.1), rgba(74, 144, 226, 0.15));
-            color: var(--primary-700);
-            font-size: var(--font-size-xs);
-            font-weight: var(--font-weight-bold);
-            border-radius: 20px;
-            margin-bottom: var(--spacing);
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 12px;
+            margin-bottom: 0.625rem;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border: 1px solid rgba(74, 144, 226, 0.2);
+            letter-spacing: 0.8px;
+            border: 1px solid;
             transition: all 0.3s ease;
         }
         
-        .menu-card:hover .menu-card-category {
-            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-            color: white;
-            border-color: transparent;
-            transform: scale(1.05);
-        }
-        
         .menu-card-name {
-            font-size: 1.25rem;
-            font-weight: var(--font-weight-bold);
+            font-size: 1.125rem;
+            font-weight: 700;
             color: var(--text-primary);
-            margin-bottom: 0.75rem;
+            margin-bottom: 0;
             display: -webkit-box;
-            line-clamp: 2;
-            -webkit-line-clamp: 2;
+            line-clamp: 1;
+            -webkit-line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            line-height: 1.4;
+            line-height: 1.3;
             letter-spacing: -0.01em;
         }
         
         .menu-card-description {
-            font-size: var(--font-size-sm);
+            font-size: 0.875rem;
             color: var(--text-muted);
-            margin-bottom: var(--spacing-lg);
-            display: -webkit-box;
-            line-clamp: 2;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            min-height: 2.5rem;
-            line-height: 1.6;
-        }
-
-        .menu-card-addons {
-            margin-top: 10px;
-            font-size: 12px;
-            color: var(--text-muted);
+            margin-bottom: var(--spacing);
             display: -webkit-box;
             line-clamp: 2;
             -webkit-line-clamp: 2;
@@ -470,27 +480,73 @@
             line-height: 1.5;
         }
 
-        .menu-card-addons strong {
-            color: var(--primary-700);
+        .menu-card-addons-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: var(--spacing);
+            padding: var(--spacing-sm);
+            background: rgba(148, 163, 184, 0.05);
+            border-radius: 10px;
+            border: 1px dashed rgba(148, 163, 184, 0.2);
+        }
+
+        .addons-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 700;
+            border: 1px solid;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+
+        .addons-badge i {
+            font-size: 10px;
+        }
+
+        .addons-preview {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.4;
+            display: -webkit-box;
+            line-clamp: 1;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
         .menu-card-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: var(--spacing-lg) var(--spacing-xl);
-            border-top: 2px solid rgba(74, 144, 226, 0.1);
-            background: linear-gradient(135deg, rgba(74, 144, 226, 0.02), rgba(74, 144, 226, 0.05));
+            padding: var(--spacing) var(--spacing-xl) var(--spacing-xl);
+            margin-top: auto;
+        }
+        
+        .menu-card-price-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .price-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
         
         .menu-card-price {
-            font-size: 1.75rem;
-            font-weight: var(--font-weight-bold);
-            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-size: 1.875rem;
+            font-weight: 800;
             letter-spacing: -0.02em;
+            line-height: 1;
         }
         
         .menu-card-badge {
