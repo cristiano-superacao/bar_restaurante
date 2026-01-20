@@ -139,12 +139,23 @@ document.addEventListener('DOMContentLoaded', function () {
         setApiStatus('Testando conexão...', null);
 
         try {
-            const res = await fetch(`${baseUrl}/health`, { signal: controller.signal });
+            const tryUrl = async (path) => {
+                const res = await fetch(`${baseUrl}${path}`, { signal: controller.signal });
+                return res;
+            };
+
+            let res = await tryUrl('/health');
             if (!res.ok) {
-                setApiStatus(`Falha no /health (HTTP ${res.status}).`, 'err');
+                // fallback para ambientes onde apenas /api/health está exposto
+                res = await tryUrl('/api/health');
+            }
+
+            if (!res.ok) {
+                setApiStatus(`Falha no health check (HTTP ${res.status}).`, 'err');
                 return;
             }
-            setApiStatus('Conexão OK. /health respondeu com sucesso.', 'ok');
+
+            setApiStatus('Conexão OK. Health check respondeu com sucesso.', 'ok');
         } catch (e) {
             const msg = (e && e.name === 'AbortError') ? 'Timeout no teste.' : 'Falha ao conectar (CORS/URL/servidor offline).';
             setApiStatus(msg, 'err');
