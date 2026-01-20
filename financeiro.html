@@ -17,46 +17,280 @@
         .filter-group { display: flex; gap: var(--spacing-sm); align-items: center; }
 
         
-        /* Transações List */
-        .transacoes-list { display: flex; flex-direction: column; gap: var(--spacing); }
-        .transacao-item { background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: var(--spacing-lg); display: grid; grid-template-columns: auto 1fr auto auto; gap: var(--spacing-lg); align-items: center; transition: all var(--transition); }
-        .transacao-item:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-        .transacao-icon { width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-lg); font-size: 1.25rem; flex-shrink: 0; }
-        .transacao-item.receita .transacao-icon { background-color: var(--success-50); color: var(--success-600); }
-        .transacao-item.despesa .transacao-icon { background-color: var(--error-50); color: var(--error-600); }
-        .transacao-info { flex: 1; min-width: 0; }
-        .transacao-descricao { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--text-primary); margin-bottom: 0.25rem; }
-        .transacao-meta { display: flex; gap: var(--spacing); flex-wrap: wrap; }
-        .transacao-data { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.625rem; background-color: var(--bg-body); border-radius: var(--radius-full); font-size: var(--font-size-xs); color: var(--text-muted); }
-        .transacao-data i { font-size: 0.75rem; }
-        .transacao-tipo { display: inline-block; padding: 0.25rem 0.625rem; border-radius: var(--radius-full); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); text-transform: uppercase; }
-        .transacao-item.receita .transacao-tipo { background-color: var(--success-50); color: var(--success-700); }
-        .transacao-item.despesa .transacao-tipo { background-color: var(--error-50); color: var(--error-700); }
-        .transacao-valor { text-align: right; }
-        .valor-display { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); display: block; line-height: 1; }
-        .transacao-item.receita .valor-display { color: var(--success-600); }
-        .transacao-item.despesa .valor-display { color: var(--error-600); }
-        .transacao-actions { display: flex; gap: var(--spacing-xs); }
-        .transacao-action-btn { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: none; background-color: transparent; color: var(--text-secondary); border-radius: var(--radius); cursor: pointer; transition: all var(--transition-fast); }
-        .transacao-action-btn:hover { background-color: var(--bg-hover); color: var(--text-primary); }
-        .transacao-action-btn.edit:hover { background-color: var(--primary-50); color: var(--primary-600); }
-        .transacao-action-btn.delete:hover { background-color: var(--error-50); color: var(--error-600); }
+        /* Transações List Premium */
+        .transacoes-list { 
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: var(--spacing-xl);
+        }
+        
+        .transacao-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(148, 163, 184, 0.12);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .transacao-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--tipo-color, #3b82f6) 0%, var(--tipo-color, #8b5cf6) 100%);
+            transition: height 0.3s ease;
+        }
+        
+        .transacao-card:hover::before {
+            height: 8px;
+        }
+        
+        .transacao-card:hover {
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.18), 0 0 0 1px rgba(59, 130, 246, 0.08);
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(59, 130, 246, 0.25);
+        }
+        
+        .transacao-card-actions {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.625rem;
+            opacity: 0;
+            transform: translateY(-8px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+        
+        .transacao-card:hover .transacao-card-actions {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .transacao-card-action-btn { 
+            width: 40px; 
+            height: 40px; 
+            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .transacao-card-action-btn:hover {
+            transform: scale(1.15) rotate(5deg);
+        }
+        
+        .transacao-card-action-btn.edit:hover {
+            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+            color: white;
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+        
+        .transacao-card-action-btn.delete:hover {
+            background: linear-gradient(135deg, var(--error-500), var(--error-600));
+            color: white;
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        .transacao-card-header {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing);
+            padding: var(--spacing-xl) var(--spacing-xl) var(--spacing);
+        }
+        
+        .transacao-card-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .transacao-card:hover .transacao-card-icon {
+            transform: scale(1.08) rotate(3deg);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .transacao-card-info {
+            flex: 1;
+            min-width: 0;
+            padding-top: 0.25rem;
+        }
+        
+        .transacao-card-tipo-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: 700;
+            border-radius: 12px;
+            margin-bottom: 0.625rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border: 1px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .transacao-card-descricao {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            display: -webkit-box;
+            line-clamp: 2;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+            letter-spacing: -0.01em;
+        }
+        
+        .transacao-card-body {
+            padding: 0 var(--spacing-xl) var(--spacing);
+            flex: 1;
+        }
+        
+        .transacao-card-meta {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(148, 163, 184, 0.1);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        
+        .meta-item i {
+            font-size: 11px;
+        }
+        
+        .status-badge.pago {
+            background: linear-gradient(135deg, #10b98115, #10b98125);
+            color: #10b981;
+            border-color: #10b98130;
+        }
+        
+        .status-badge.pendente {
+            background: linear-gradient(135deg, #f59e0b15, #f59e0b25);
+            color: #f59e0b;
+            border-color: #f59e0b30;
+        }
+        
+        .transacao-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing) var(--spacing-xl) var(--spacing-xl);
+            margin-top: auto;
+        }
+        
+        .transacao-card-valor-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            width: 100%;
+        }
+
+        .valor-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+        
+        .transacao-card-valor {
+            font-size: 1.875rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            line-height: 1;
+        }
         .empty-state { text-align: center; padding: var(--spacing-2xl); }
         .empty-state-icon { width: 80px; height: 80px; margin: 0 auto var(--spacing-lg); display: flex; align-items: center; justify-content: center; background-color: var(--bg-hover); border-radius: var(--radius-full); color: var(--text-muted); font-size: 2rem; }
         .empty-state h3 { font-size: var(--font-size-xl); color: var(--text-primary); margin-bottom: 0.5rem; }
         .empty-state p { font-size: var(--font-size-sm); color: var(--text-muted); }
         
-        @media (max-width: 1024px) {
-            .transacao-item { grid-template-columns: auto 1fr auto; }
-            .transacao-actions { grid-column: 1 / -1; justify-content: flex-end; margin-top: var(--spacing-sm); }
+        
+        @media (max-width: 1280px) {
+            .transacoes-list {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                gap: var(--spacing-lg);
+            }
         }
+        
+        @media (max-width: 1024px) {
+            .transacoes-list {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            }
+            .transacao-card-icon {
+                width: 56px;
+                height: 56px;
+                font-size: 1.75rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .toolbar { 
+                flex-direction: column; 
+                align-items: stretch; 
+            }
+            .filter-group { 
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .stats-row { 
+                grid-template-columns: 1fr; 
+            }
+            .transacoes-list {
+                grid-template-columns: 1fr;
+            }
+            .transacao-card-actions {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         @media (max-width: 640px) {
-            .toolbar { flex-direction: column; align-items: stretch; }
-            
-            .filter-group { flex-wrap: wrap; }
-            .stats-row { grid-template-columns: 1fr; }
-            .transacao-item { grid-template-columns: auto 1fr; padding: var(--spacing); }
-            .transacao-valor { grid-column: 1 / -1; text-align: left; margin-top: var(--spacing-sm); }
+            .transacao-card-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.5rem;
+            }
+            .transacao-card-valor {
+                font-size: 1.5rem;
+            }
+            .transacao-card-descricao {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>

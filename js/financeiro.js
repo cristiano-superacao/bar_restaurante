@@ -34,15 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderFinanceiro = () => {
         const empty = document.getElementById('transacoes-empty');
-        transacoesList.innerHTML = `
-            <div class="transacao-header">
-                <div>Descrição</div>
-                <div>Valor</div>
-                <div>Tipo</div>
-                <div>Data</div>
-                <div>Ações</div>
-            </div>
-        `;
+        transacoesList.innerHTML = '';
+        
         let totalReceitas = 0;
         let totalDespesas = 0;
 
@@ -57,24 +50,75 @@ document.addEventListener('DOMContentLoaded', () => {
             return matchSearch && matchTipo && matchStatus;
         });
 
-        filtered.forEach(transacao => {
-            const item = document.createElement('div');
-            item.className = 'transacao-item';
+        // Configuração de cores e ícones por tipo
+        const tipoConfig = {
+            'Receita': { 
+                icon: '💰', 
+                color: '#10b981',
+                iconClass: 'fa-arrow-trend-up',
+                borderColor: '#10b981'
+            },
+            'Despesa': { 
+                icon: '💸', 
+                color: '#ef4444',
+                iconClass: 'fa-arrow-trend-down',
+                borderColor: '#ef4444'
+            }
+        };
 
+        filtered.forEach(transacao => {
+            const config = tipoConfig[transacao.tipo] || tipoConfig['Receita'];
+            const isPago = (transacao.status || 'pago') === 'pago';
+            
             if(transacao.tipo === 'Receita') {
                 totalReceitas += transacao.valor;
             } else {
                 totalDespesas += transacao.valor;
             }
 
+            const item = document.createElement('div');
+            item.className = `transacao-card ${transacao.tipo.toLowerCase()}`;
+            item.setAttribute('data-tipo-color', config.color);
+            
             item.innerHTML = `
-                <div>${transacao.descricao}</div>
-                <div class="valor ${transacao.tipo.toLowerCase()}">${formatCurrency(transacao.valor)}</div>
-                <div>${transacao.tipo}</div>
-                <div>${formatDate(transacao.data)}</div>
-                <div class="transacao-actions">
-                    <button class="btn btn-secondary edit-btn" data-id="${transacao.id}"><i class="fas fa-edit"></i></button>
-                    <button class="btn btn-danger delete-btn" data-id="${transacao.id}"><i class="fas fa-trash"></i></button>
+                <div class="transacao-card-actions">
+                    <button class="transacao-card-action-btn edit edit-btn" data-id="${transacao.id}" title="Editar">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="transacao-card-action-btn delete delete-btn" data-id="${transacao.id}" title="Excluir">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+                <div class="transacao-card-header">
+                    <div class="transacao-card-icon" style="background: linear-gradient(135deg, ${config.color}15, ${config.color}25); color: ${config.color};">
+                        <span class="icon-emoji">${config.icon}</span>
+                    </div>
+                    <div class="transacao-card-info">
+                        <div class="transacao-card-tipo-badge" style="background: linear-gradient(135deg, ${config.color}15, ${config.color}25); color: ${config.color}; border-color: ${config.color}30;">
+                            <i class="fas ${config.iconClass}"></i> ${transacao.tipo}
+                        </div>
+                        <h3 class="transacao-card-descricao">${transacao.descricao}</h3>
+                    </div>
+                </div>
+                <div class="transacao-card-body">
+                    <div class="transacao-card-meta">
+                        <span class="meta-item">
+                            <i class="fas fa-calendar"></i>
+                            ${formatDate(transacao.data)}
+                        </span>
+                        <span class="meta-item status-badge ${isPago ? 'pago' : 'pendente'}">
+                            <i class="fas ${isPago ? 'fa-check-circle' : 'fa-clock'}"></i>
+                            ${isPago ? 'Pago' : 'Pendente'}
+                        </span>
+                    </div>
+                </div>
+                <div class="transacao-card-footer">
+                    <div class="transacao-card-valor-wrapper">
+                        <span class="valor-label">Valor</span>
+                        <span class="transacao-card-valor" style="background: linear-gradient(135deg, ${config.color}, ${config.color}dd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                            ${transacao.tipo === 'Receita' ? '+' : '-'} ${formatCurrency(transacao.valor)}
+                        </span>
+                    </div>
                 </div>
             `;
             transacoesList.appendChild(item);
