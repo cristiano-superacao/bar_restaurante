@@ -649,28 +649,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         const closedOrder = updated.find(o => String(o.id) === String(id));
         
-        // MOVIMENTAÇÃO DE ESTOQUE AO FINALIZAR PEDIDO
-        if (closedOrder && closedOrder.items) {
-            const estoqueAtual = STORE.get('estoque', estoque, ['estoque', 'stock']) || estoque;
-            const safeNumber = (v) => { const n = Number(v); return Number.isFinite(n) ? n : 0; };
-            
-            closedOrder.items.forEach(orderItem => {
-                // Deduzir acompanhamentos do estoque
-                if (Array.isArray(orderItem.addons)) {
-                    orderItem.addons.forEach(addon => {
-                        const stockId = String(addon.stockId || addon.stock_id || '');
-                        const qtyToDeduct = safeNumber(addon.quantity) * safeNumber(orderItem.quantity);
-                        const stockItem = estoqueAtual.find(s => String(s.id) === stockId);
-                        if (stockItem && qtyToDeduct > 0) {
-                            stockItem.quantity = Math.max(0, safeNumber(stockItem.quantity) - qtyToDeduct);
-                        }
-                    });
-                }
-            });
-            
-            STORE.set('estoque', estoqueAtual);
-            estoque = estoqueAtual;
-        }
+        // Estoque (LocalStorage): a baixa já é feita na criação do pedido.
+        // Não deduz novamente aqui para evitar baixa dupla.
         
         pedidos = updated;
         saveOrders();

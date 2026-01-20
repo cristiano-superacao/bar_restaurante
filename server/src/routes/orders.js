@@ -171,6 +171,12 @@ router.post('/', [
         await client.query('ROLLBACK');
         return res.status(400).json({ error: 'Mesa inválida para esta empresa' });
       }
+
+      // Mantém Mesas e Pedidos sincronizados (modo API)
+      await client.query(
+        "UPDATE tables SET status='Ocupada' WHERE company_id=$1 AND id=$2",
+        [req.companyId, tableId]
+      );
     } else {
       // Delivery
       if (!String(customerName || '').trim()) {
@@ -356,7 +362,7 @@ router.put('/:id', [
     } = req.body || {};
 
     const current = await query(
-      'SELECT id, subtotal, discount, delivery_fee, order_type FROM orders WHERE company_id=$1 AND id=$2',
+      'SELECT id, table_id, status, subtotal, discount, delivery_fee, order_type FROM orders WHERE company_id=$1 AND id=$2',
       [req.companyId, id]
     );
     if (current.rowCount === 0) return res.status(404).json({ error: 'Pedido não encontrado' });
@@ -404,6 +410,34 @@ router.put('/:id', [
         id,
       ]
     );
+
+    // Mantém status da mesa coerente quando status do pedido mudar via PUT
+    try {
+      const base = current.rows[0] || {};
+      const orderType = base.order_type;
+      const tableId = base.table_id;
+      const nextStatus = String(status ?? base.status ?? '').trim();
+      if (orderType === 'Mesa' && tableId && nextStatus) {
+        if (nextStatus === 'Cancelado' || nextStatus === 'Pago') {
+          const open = await query(
+            "SELECT COUNT(*)::int AS cnt FROM orders WHERE company_id=$1 AND table_id=$2 AND order_type='Mesa' AND status NOT IN ('Pago','Cancelado') AND id <> $3",
+            [req.companyId, tableId, id]
+          );
+          const cnt = Number(open.rows[0]?.cnt) || 0;
+          if (cnt === 0) {
+            await query(
+              "UPDATE tables SET status='Livre' WHERE company_id=$1 AND id=$2",
+              [req.companyId, tableId]
+            );
+          }
+        } else {
+          await query(
+            "UPDATE tables SET status='Ocupada' WHERE company_id=$1 AND id=$2",
+            [req.companyId, tableId]
+          );
+        }
+      }
+    } catch {}
     res.json(rows[0] || null);
   } catch (e) { res.status(500).json({ error: 'Erro ao atualizar' }); }
 });
@@ -425,7 +459,7 @@ router.post('/:id/close', [
     await client.query('BEGIN');
 
     const o = await client.query(
-      'SELECT id, order_type, created_at FROM orders WHERE company_id=$1 AND id=$2',
+      'SELECT id, order_type, table_id, created_at FROM orders WHERE company_id=$1 AND id=$2',
       [req.companyId, id]
     );
     if (o.rowCount === 0) {
@@ -464,6 +498,23 @@ router.post('/:id/close', [
       'INSERT INTO transactions(company_id, descricao, valor, tipo, data) VALUES ($1,$2,$3,$4,$5)',
       [req.companyId, descricao, total, 'Receita', data]
     );
+
+    // Libera mesa ao fechar conta (somente se não houver outro pedido aberto na mesma mesa)
+    const orderType = o.rows[0]?.order_type;
+    const tableId = o.rows[0]?.table_id;
+    if (orderType === 'Mesa' && tableId) {
+      const open = await client.query(
+        "SELECT COUNT(*)::int AS cnt FROM orders WHERE company_id=$1 AND table_id=$2 AND order_type='Mesa' AND status NOT IN ('Pago','Cancelado') AND id <> $3",
+        [req.companyId, tableId, id]
+      );
+      const cnt = Number(open.rows[0]?.cnt) || 0;
+      if (cnt === 0) {
+        await client.query(
+          "UPDATE tables SET status='Livre' WHERE company_id=$1 AND id=$2",
+          [req.companyId, tableId]
+        );
+      }
+    }
 
     await client.query('COMMIT');
     res.json({ ok: true, order: upd.rows[0] });
