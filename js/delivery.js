@@ -243,7 +243,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const addonsSection = document.getElementById('delivery-addons-section');
   const addonsOptions = document.getElementById('delivery-addons-options');
   const addonsCountEl = document.getElementById('delivery-addons-count');
-  const ADDONS_MAX = 4;
+  const ADDONS_MAX = Number(window.CONFIG?.CONSTS?.ADDONS_MAX ?? 4);
 
   const subtotalEl = document.getElementById('delivery-subtotal');
   const totalEl = document.getElementById('delivery-total');
@@ -404,7 +404,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const show = !!menuItem && (hasConfigured || menuItemAllowsAddons(menuItem));
 
     addonsSection.style.display = show ? 'block' : 'none';
-    if (show) renderAddonOptions(menuItem);
+    if (show) {
+      const titleEl = addonsSection.querySelector('.addons-title');
+      if (titleEl) titleEl.textContent = `Acompanhamentos (até ${ADDONS_MAX})`;
+      renderAddonOptions(menuItem);
+    }
     else clearAddonSelection();
     updateAddonsLimitUI();
   }

@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const addonsSection = document.getElementById('addons-section');
     const addonsOptions = document.getElementById('addons-options');
     const addonsCountEl = document.getElementById('addons-count');
-    const ADDONS_MAX = 4;
+    const ADDONS_MAX = Number(window.CONFIG?.CONSTS?.ADDONS_MAX ?? 4);
     const orderItemsContainer = document.getElementById('order-items-container');
     const orderTotalPriceEl = document.getElementById('order-total-price');
     const orderDiscountInput = document.getElementById('order-discount');
@@ -247,6 +247,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         addonsSection.style.display = show ? 'block' : 'none';
         if (show) {
+            const titleEl = addonsSection.querySelector('.addons-title');
+            if (titleEl) titleEl.textContent = `Acompanhamentos (até ${ADDONS_MAX})`;
             renderAddonOptions(menuItem);
         } else {
             clearAddonSelection();

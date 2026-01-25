@@ -218,7 +218,9 @@ const CONFIG = {
         ORDER_TYPES: ['Mesa', 'Delivery'],
         ORDER_STATUS_MESA: ['Pendente', 'Em Preparo', 'Entregue', 'Pago', 'Cancelado'],
         ORDER_STATUS_DELIVERY: ['Pendente', 'Em Preparo', 'Saiu para Entrega', 'Entregue', 'Pago', 'Cancelado'],
-        PAYMENT_METHODS: ['Dinheiro', 'Cartão', 'PIX']
+        PAYMENT_METHODS: ['Dinheiro', 'Cartão', 'PIX'],
+        // Limite máximo de acompanhamentos por item elegível
+        ADDONS_MAX: 4
     }
 };
 
