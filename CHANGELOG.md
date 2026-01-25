@@ -7,6 +7,26 @@ e este projeto adere ao [Semantic Versioning](https://semver.org/lang/pt-BR/).
 
 ---
 
+## [3.1.0] - 2026-01-24
+
+### ✨ Novidades
+- Acompanhamentos com quantidades (±) por item, com limite global de 4 por item (iguais ou variados) em Pedidos e Delivery.
+- Baixa automática de estoque considerando: produto base (quando vinculado) + acompanhamentos × quantidade do item.
+- CRUD de Motoboy no Delivery (LocalStorage) com integração opcional via API e autopreenchimento de usuário/email.
+
+### 🛠️ Correções e Melhorias
+- Dashboard: correção de IDs para `stat-*` e descrições (pendentes, taxa de ocupação); métricas agora renderizam corretamente.
+- Responsividade: ajustes de layout mobile em Dashboard, Pedidos, Mesas, Estoque, Delivery e Relatórios (cards compactos, tipografia e espaçamentos).
+- Entregas/Delivery: comportamento de acompanhamentos espelhado ao de Pedidos, inclusive validação e baixa de estoque no modo local.
+
+### 📄 Impacto nos Arquivos Principais
+- js/pedidos.js: seleção de acompanhamentos com quantidades e validação de estoque; baixa consolidada na criação do pedido.
+- js/delivery.js: mesma regra de acompanhamentos/estoque; CRUD de Motoboy e payloads prontos para API.
+- js/dashboard.js: vinculação correta aos elementos `stat-*` e textos descritivos.
+- css/*.css e *.html relevantes: melhorias de responsividade e legibilidade em mobile.
+
+> Observação: a versão do package.json permanece 3.0.0; esta entrada documenta o conjunto de mudanças introduzidas após 3.0.0.
+
 ## [3.0.0] - 2026-01-12
 
 ### 🎨 Design Premium Azul Profissional
