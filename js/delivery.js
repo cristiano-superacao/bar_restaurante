@@ -6,12 +6,27 @@ document.addEventListener('DOMContentLoaded', function () {
   let menuItems = STORE.get('menuItems', [], ['menuItems']) || [];
   let deliveries = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
   let estoque = STORE.get('estoque', [], ['estoque']) || [];
+  let motoboys = STORE.get('motoboys', [], ['motoboys','drivers']) || [];
 
   const grid = document.getElementById('delivery-grid');
   const emptyEl = document.getElementById('delivery-empty');
   const searchInput = document.getElementById('search-delivery-input');
   const statusFilter = document.getElementById('delivery-status-filter');
   const addBtn = document.getElementById('add-delivery-btn');
+
+  // Motoboy Manager elements
+  const motoboyListEl = document.getElementById('motoboy-list');
+  const motoboyAddBtn = document.getElementById('motoboy-add-btn');
+  const motoboyModal = document.getElementById('motoboy-modal');
+  const motoboyForm = document.getElementById('motoboy-form');
+  const motoboyModalTitle = document.getElementById('motoboy-modal-title');
+  const motoboyIdInput = document.getElementById('motoboy-id');
+  const motoboyNameInput = document.getElementById('motoboy-name');
+  const motoboyPhoneInput = document.getElementById('motoboy-phone');
+  const motoboyUsernameInput = document.getElementById('motoboy-username');
+  const motoboyEmailInput = document.getElementById('motoboy-email');
+  const motoboyPasswordInput = document.getElementById('motoboy-password');
+  const motoboyStatusSelect = document.getElementById('motoboy-status');
 
   const modal = document.getElementById('delivery-modal');
   const closeModalBtn = modal.querySelector('.close-btn');
@@ -32,11 +47,16 @@ document.addEventListener('DOMContentLoaded', function () {
   
   function populateDriverSelect() {
     if (!driverSelect) return;
-    // Buscar usuários com função "Motoboy"
-    const users = window.APP_STORAGE?.get('users', []) || [];
-    const motoboys = users.filter(u => u.function === 'Motoboy' && u.status !== 'Inativo');
+    // Preferir lista local de motoboys; fallback para usuários com função 'Motoboy'
+    let list = Array.isArray(motoboys) ? motoboys : [];
+    if (!list || list.length === 0) {
+      const users = window.APP_STORAGE?.get('users', []) || [];
+      list = users
+        .filter(u => u.function === 'Motoboy' && u.status !== 'Inativo')
+        .map(u => ({ id: u.id || String(Date.now()), name: u.name || u.username, phone: u.phone || '', status: u.status || 'Ativo' }));
+    }
     driverSelect.innerHTML = '<option value="">Selecione o motoboy...</option>';
-    motoboys.forEach(m => {
+    list.forEach(m => {
       const opt = document.createElement('option');
       opt.value = m.name || m.username;
       opt.textContent = m.name || m.username;
@@ -53,6 +73,154 @@ document.addEventListener('DOMContentLoaded', function () {
     (window.UTILS?.populateSelect ? window.UTILS.populateSelect(sel, statuses) : (() => {
       const current = sel.value; sel.innerHTML=''; statuses.forEach(s=>{const opt=document.createElement('option');opt.value=s;opt.textContent=s;sel.appendChild(opt);}); if(current) sel.value=current;
     })());
+  }
+
+  // Motoboy CRUD (LocalStorage)
+  async function loadMotoboys() {
+    if (apiEnabled && window.API) {
+      try {
+        const users = await window.API.users.list();
+        const list = (users || []).filter(u => String(u.function || '').toLowerCase() === 'motoboy');
+        motoboys = list.map(u => ({
+          id: u.id,
+          name: u.name || u.username || u.email || '',
+          phone: u.phone || '',
+          status: (u.active === false) ? 'Inativo' : 'Ativo'
+        }));
+        return;
+      } catch (e) {
+        console.warn('Falha ao carregar motoboys via API, usando LocalStorage.', e);
+      }
+    }
+    motoboys = STORE.get('motoboys', motoboys, ['motoboys','drivers']) || motoboys;
+  }
+  function saveMotoboys() {
+    STORE.set('motoboys', motoboys);
+  }
+  function renderMotoboys() {
+    if (!motoboyListEl) return;
+    motoboyListEl.innerHTML = '';
+    const list = Array.isArray(motoboys) ? motoboys : [];
+    if (list.length === 0) {
+      motoboyListEl.innerHTML = '<div class="empty-message">Nenhum motoboy cadastrado.</div>';
+      return;
+    }
+    list.forEach(m => {
+      const card = document.createElement('div');
+      card.className = 'data-list-item';
+      card.innerHTML = `
+        <div class=\"data-list-main\">
+          <div class=\"data-list-title\">${String(m.name || '')}</div>
+          <div class=\"data-list-sub\">
+            <span class=\"badge ${m.status === 'Ativo' ? 'badge-success' : 'badge-muted'}\">${m.status || 'Ativo'}</span>
+            ${m.phone ? `<span class=\"muted\">${m.phone}</span>` : ''}
+          </div>
+        </div>
+        <div class=\"data-list-actions\">
+          <button class=\"btn btn-secondary\" data-action=\"edit\" data-id=\"${String(m.id)}\">Editar</button>
+          <button class=\"btn btn-secondary\" data-action=\"delete\" data-id=\"${String(m.id)}\">Excluir</button>
+        </div>
+      `;
+      motoboyListEl.appendChild(card);
+    });
+  }
+  function openMotoboyModal(m = null) {
+    if (!motoboyModal || !motoboyForm) return;
+    motoboyForm.reset();
+    if (m) {
+      motoboyModalTitle.textContent = 'Editar Motoboy';
+      motoboyIdInput.value = String(m.id);
+      motoboyNameInput.value = m.name || '';
+      motoboyPhoneInput.value = m.phone || '';
+      motoboyStatusSelect.value = m.status || 'Ativo';
+      if (motoboyUsernameInput) motoboyUsernameInput.value = m.username || '';
+      if (motoboyEmailInput) motoboyEmailInput.value = m.email || '';
+    } else {
+      motoboyModalTitle.textContent = 'Novo Motoboy';
+      motoboyIdInput.value = '';
+      motoboyStatusSelect.value = 'Ativo';
+    }
+    motoboyModal.classList.add('show');
+  }
+  function closeMotoboyModal() { if (motoboyModal) motoboyModal.classList.remove('show'); }
+  async function submitMotoboy(e) {
+    e.preventDefault();
+    const idRaw = motoboyIdInput.value ? motoboyIdInput.value : '';
+    const rec = {
+      id: idRaw ? (Number(idRaw) || idRaw) : String(Date.now()),
+      name: motoboyNameInput.value.trim(),
+      phone: motoboyPhoneInput.value.trim(),
+      status: motoboyStatusSelect.value || 'Ativo'
+    };
+    if (!rec.name) return;
+
+    // Criação via API (requer username, email, password)
+    if (apiEnabled && window.API && !idRaw) {
+      const username = ((motoboyUsernameInput?.value || '').trim()) || createUsernameFromName(rec.name);
+      const email = ((motoboyEmailInput?.value || '').trim()) || createEmailFromUsername(username);
+      const password = (motoboyPasswordInput?.value || '').trim();
+      if (!username || !email || !password || password.length < 6) {
+        alert('Para criar via API, informe usuário, email e senha (mín. 6 caracteres).');
+      } else {
+        try {
+          await window.API.users.create({ username, email, password, role: 'staff', function: 'Motoboy' });
+          await loadMotoboys();
+          renderMotoboys();
+          populateDriverSelect();
+          closeMotoboyModal();
+          return;
+        } catch (err) {
+          console.warn('Falha ao criar motoboy via API, mantendo operação local.', err);
+        }
+      }
+    }
+
+    if (apiEnabled && window.API && idRaw) {
+      try {
+        await window.API.users.update(Number(idRaw), { function: 'Motoboy', active: rec.status === 'Ativo' });
+        await loadMotoboys();
+        renderMotoboys();
+        populateDriverSelect();
+        closeMotoboyModal();
+        return;
+      } catch (err) {
+        console.warn('Falha ao atualizar motoboy via API, mantendo alteração local.', err);
+      }
+    }
+
+    const exists = Array.isArray(motoboys) && motoboys.some(x => String(x.id) === String(rec.id));
+    motoboys = exists ? motoboys.map(x => (String(x.id) === String(rec.id) ? rec : x)) : [...(motoboys || []), rec];
+    saveMotoboys();
+    renderMotoboys();
+    populateDriverSelect();
+    closeMotoboyModal();
+  }
+  async function handleMotoboyListClick(e) {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const act = btn.dataset.action;
+    if (!id || !act) return;
+    const m = (motoboys || []).find(x => String(x.id) === String(id));
+    if (act === 'edit') { openMotoboyModal(m); return; }
+    if (act === 'delete') {
+      if (apiEnabled && window.API && id && !isNaN(Number(id))) {
+        try {
+          await window.API.users.remove(Number(id));
+          await loadMotoboys();
+          renderMotoboys();
+          populateDriverSelect();
+          return;
+        } catch (err) {
+          console.warn('Falha ao excluir motoboy via API, removendo apenas localmente.', err);
+        }
+      }
+      motoboys = (motoboys || []).filter(x => String(x.id) !== String(id));
+      saveMotoboys();
+      renderMotoboys();
+      populateDriverSelect();
+      return;
+    }
   }
 
   function populatePaymentSelect() {
@@ -93,6 +261,25 @@ document.addEventListener('DOMContentLoaded', function () {
       return String(v || '').toLowerCase();
     }
   }
+  function createUsernameFromName(name) {
+    const base = normalizeText(name || '');
+    let slug = base.replace(/\s+/g, '.').replace(/[^a-z0-9.]/g, '');
+    slug = slug.replace(/\.+/g, '.').replace(/^\.+|\.+$/g, '');
+    return slug;
+  }
+  function getCompanyDomain() {
+    try {
+      const companyName = localStorage.getItem('activeCompanyName') || (window.CONFIG?.APP?.name || 'empresa');
+      const base = normalizeText(companyName);
+      const slug = base.replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+      return (slug || 'empresa') + '.local';
+    } catch { return 'empresa.local'; }
+  }
+  function createEmailFromUsername(username) {
+    const user = String(username || '').trim().toLowerCase();
+    const safeUser = user.replace(/[^a-z0-9.]/g, '').replace(/\.+/g, '.').replace(/^\.+|\.+$/g, '');
+    return `${safeUser}@${getCompanyDomain()}`;
+  }
 
   function menuItemAllowsAddons(menuItem) {
     const base = `${menuItem?.category || ''} ${menuItem?.name || ''}`;
@@ -128,26 +315,31 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function clearAddonSelection() {
     if (!addonsOptions) return;
-    addonsOptions.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+    const qtyEls = addonsOptions.querySelectorAll('.addon-qty');
+    qtyEls.forEach(el => { el.textContent = '0'; });
     updateAddonsLimitUI();
   }
 
   function updateAddonsLimitUI() {
     if (!addonsOptions) return;
-    const checkboxes = Array.from(addonsOptions.querySelectorAll('input[type="checkbox"]'));
-    const labels = Array.from(addonsOptions.querySelectorAll('.addon-option'));
-    const selectedCount = checkboxes.filter(cb => cb.checked).length;
-    if (addonsCountEl) addonsCountEl.textContent = `${selectedCount}/${ADDONS_MAX}`;
+    const options = Array.from(addonsOptions.querySelectorAll('.addon-option'));
+    const totalQty = options.reduce((sum, opt) => {
+      const qEl = opt.querySelector('.addon-qty');
+      const q = qEl ? Number(qEl.textContent || 0) : 0;
+      return sum + (Number.isFinite(q) ? q : 0);
+    }, 0);
+    if (addonsCountEl) addonsCountEl.textContent = `${totalQty}/${ADDONS_MAX}`;
 
-    const shouldLock = selectedCount >= ADDONS_MAX;
-    checkboxes.forEach((cb, idx) => {
-      const label = labels[idx];
-      if (!label) return;
-      const isSelected = cb.checked;
-      const shouldDisable = shouldLock && !isSelected;
-      cb.disabled = cb.disabled || shouldDisable;
-      label.classList.toggle('is-disabled', cb.disabled);
-      label.classList.toggle('is-locked', shouldLock && isSelected);
+    const remaining = Math.max(0, ADDONS_MAX - totalQty);
+    options.forEach((opt) => {
+      const incBtn = opt.querySelector('.addon-qty-btn.inc');
+      const decBtn = opt.querySelector('.addon-qty-btn.dec');
+      const qEl = opt.querySelector('.addon-qty');
+      const q = qEl ? Number(qEl.textContent || 0) : 0;
+
+      if (incBtn) incBtn.disabled = remaining <= 0;
+      if (decBtn) decBtn.disabled = q <= 0;
+      opt.classList.toggle('is-locked', remaining <= 0 && q > 0);
     });
   }
 
@@ -163,14 +355,19 @@ document.addEventListener('DOMContentLoaded', function () {
     addonsOptions.innerHTML = '';
     opts.forEach((s) => {
       const isOut = s.quantity <= 0;
-      const label = document.createElement('label');
-      label.className = `addon-option${isOut ? ' is-disabled' : ''}`;
-      label.innerHTML = `
-        <input type="checkbox" value="${String(s.id)}" ${(isOut) ? 'disabled' : ''}>
+      const wrap = document.createElement('div');
+      wrap.className = `addon-option${isOut ? ' is-disabled' : ''}`;
+      wrap.dataset.stockId = String(s.id);
+      wrap.innerHTML = `
         <span class="addon-name">${String(s.name)}</span>
         <span class="addon-meta">${Number.isFinite(s.quantity) ? s.quantity : 0} ${String(s.unit)}</span>
+        <div class="addon-qty-controls">
+          <button type="button" class="addon-qty-btn dec" aria-label="Remover" ${(isOut) ? 'disabled' : ''}>−</button>
+          <span class="addon-qty">0</span>
+          <button type="button" class="addon-qty-btn inc" aria-label="Adicionar" ${(isOut) ? 'disabled' : ''}>+</button>
+        </div>
       `;
-      addonsOptions.appendChild(label);
+      addonsOptions.appendChild(wrap);
     });
 
     updateAddonsLimitUI();
@@ -178,13 +375,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function getSelectedAddons() {
     if (!addonsSection || addonsSection.style.display === 'none' || !addonsOptions) return [];
-    const checked = Array.from(addonsOptions.querySelectorAll('input[type="checkbox"]:checked'));
-    const ids = checked.map(i => i.value).filter(Boolean);
     const opts = getAddonStockOptions();
-    return ids.map(raw => {
-      const match = opts.find(o => String(o.id) === String(raw));
-      return match ? { stockId: match.id, name: match.name, quantity: 1 } : null;
-    }).filter(Boolean);
+    const selected = [];
+    const nodes = Array.from(addonsOptions.querySelectorAll('.addon-option'));
+    nodes.forEach((n) => {
+      const qEl = n.querySelector('.addon-qty');
+      const qty = qEl ? Number(qEl.textContent || 0) : 0;
+      if (!qty) return;
+      const stockId = n.dataset.stockId;
+      const match = opts.find(o => String(o.id) === String(stockId));
+      if (match) selected.push({ stockId: match.id, name: match.name, quantity: qty });
+    });
+    return selected;
   }
 
   function orderItemKey(menuItemId, addons = []) {
@@ -207,12 +409,28 @@ document.addEventListener('DOMContentLoaded', function () {
     updateAddonsLimitUI();
   }
 
-  function onAddonToggle(e) {
-    const target = e.target;
-    if (!target || target.tagName !== 'INPUT' || target.type !== 'checkbox') return;
-    const checked = Array.from(addonsOptions.querySelectorAll('input[type="checkbox"]:checked'));
-    if (checked.length > ADDONS_MAX) {
-      target.checked = false;
+  function onAddonQtyClick(e) {
+    const btn = e.target.closest('.addon-qty-btn');
+    if (!btn) return;
+    const opt = btn.closest('.addon-option');
+    const qEl = opt ? opt.querySelector('.addon-qty') : null;
+    if (!qEl) return;
+
+    const options = Array.from(addonsOptions.querySelectorAll('.addon-option'));
+    const totalQty = options.reduce((sum, o) => {
+      const el = o.querySelector('.addon-qty');
+      const q = el ? Number(el.textContent || 0) : 0;
+      return sum + (Number.isFinite(q) ? q : 0);
+    }, 0);
+    const remaining = Math.max(0, ADDONS_MAX - totalQty);
+    const current = Number(qEl.textContent || 0);
+
+    if (btn.classList.contains('inc')) {
+      if (remaining <= 0) return;
+      qEl.textContent = String(current + 1);
+    } else {
+      if (current <= 0) return;
+      qEl.textContent = String(current - 1);
     }
     updateAddonsLimitUI();
   }
@@ -356,7 +574,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const headerTitle = order.customerName || order.customer_name || 'Cliente';
       const phone = order.customerPhone || order.customer_phone || '';
       const address = order.customerAddress || order.customer_address || '';
-      const subtitle = [phone, address].filter(Boolean).join(' • ');
+      const driver = order.deliveryDriver || order.delivery_driver || '';
+      const subtitle = [phone, address, (driver ? `Motoboy: ${driver}` : '')].filter(Boolean).join(' • ');
 
       const iconClass = (order.status === 'Cancelado')
         ? 'fa-ban'
@@ -634,7 +853,7 @@ document.addEventListener('DOMContentLoaded', function () {
   window.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
   addItemBtn.addEventListener('click', addItem);
   if (menuItemSelect) menuItemSelect.addEventListener('change', syncAddonsVisibility);
-  if (addonsOptions) addonsOptions.addEventListener('change', onAddonToggle);
+  if (addonsOptions) addonsOptions.addEventListener('click', onAddonQtyClick);
   itemsContainer.addEventListener('click', removeItem);
   feeInput.addEventListener('input', renderItems);
   discountInput.addEventListener('input', renderItems);
@@ -642,10 +861,38 @@ document.addEventListener('DOMContentLoaded', function () {
   closeBtn.addEventListener('click', closeAccount);
   grid.addEventListener('click', handleGridClick);
 
+  // Motoboy Manager listeners
+  if (motoboyAddBtn) motoboyAddBtn.addEventListener('click', () => openMotoboyModal());
+  if (motoboyListEl) motoboyListEl.addEventListener('click', handleMotoboyListClick);
+  if (motoboyForm) motoboyForm.addEventListener('submit', submitMotoboy);
+  if (motoboyNameInput && motoboyUsernameInput) {
+    motoboyNameInput.addEventListener('input', () => {
+      if (!motoboyUsernameInput.value) {
+        motoboyUsernameInput.value = createUsernameFromName(motoboyNameInput.value);
+      }
+      if (motoboyEmailInput && !motoboyEmailInput.value && motoboyUsernameInput.value) {
+        motoboyEmailInput.value = createEmailFromUsername(motoboyUsernameInput.value);
+      }
+    });
+  }
+  if (motoboyUsernameInput && motoboyEmailInput) {
+    motoboyUsernameInput.addEventListener('input', () => {
+      if (!motoboyEmailInput.value && motoboyUsernameInput.value) {
+        motoboyEmailInput.value = createEmailFromUsername(motoboyUsernameInput.value);
+      }
+    });
+  }
+  const motoboyCloseBtn = motoboyModal ? motoboyModal.querySelector('.close-btn') : null;
+  if (motoboyCloseBtn) motoboyCloseBtn.addEventListener('click', closeMotoboyModal);
+  window.addEventListener('click', (e) => { if (e.target === motoboyModal) closeMotoboyModal(); });
+
   (async () => {
     await loadData();
     populateMenu();
     filterAndRender();
+    await loadMotoboys();
+    renderMotoboys();
+    populateDriverSelect();
   })();
 });
 

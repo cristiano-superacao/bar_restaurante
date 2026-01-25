@@ -45,10 +45,29 @@ router.put('/:id', [
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ error: 'Dados inválidos', details: errors.array() });
     const { id } = req.params;
-    const { descricao, valor, tipo, data } = req.body;
+    const existing = await query(
+      'SELECT id, descricao, valor, tipo, data FROM transactions WHERE company_id=$1 AND id=$2',
+      [req.companyId, id]
+    );
+    if (existing.rowCount === 0) return res.status(404).json({ error: 'Transação não encontrada' });
+
+    const prev = existing.rows[0];
+    const nextDescricao = (Object.prototype.hasOwnProperty.call(req.body, 'descricao') && req.body.descricao !== undefined)
+      ? req.body.descricao
+      : prev.descricao;
+    const nextValor = (Object.prototype.hasOwnProperty.call(req.body, 'valor') && req.body.valor !== undefined)
+      ? req.body.valor
+      : prev.valor;
+    const nextTipo = (Object.prototype.hasOwnProperty.call(req.body, 'tipo') && req.body.tipo !== undefined)
+      ? req.body.tipo
+      : prev.tipo;
+    const nextData = (Object.prototype.hasOwnProperty.call(req.body, 'data') && req.body.data !== undefined)
+      ? req.body.data
+      : prev.data;
+
     const { rows } = await query(
       'UPDATE transactions SET descricao=$1, valor=$2, tipo=$3, data=$4 WHERE company_id=$5 AND id=$6 RETURNING *',
-      [descricao, valor, tipo, data, req.companyId, id]
+      [nextDescricao, nextValor, nextTipo, nextData, req.companyId, id]
     );
     res.json(rows[0] || null);
   } catch (e) { res.status(500).json({ error: 'Erro ao atualizar' }); }

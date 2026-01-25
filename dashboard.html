@@ -571,23 +571,49 @@
                 grid-template-columns: 1fr;
                 gap: var(--spacing);
             }
-            
+
+            /* Layout compacto e legível para mobile */
             .stat-card {
                 padding: var(--spacing);
+                display: grid;
+                grid-template-columns: auto 1fr;
+                grid-template-rows: auto auto;
+                align-items: center;
+                gap: var(--spacing-sm);
             }
-            
+
+            .stat-card-header {
+                grid-column: 1 / -1;
+                margin-bottom: 8px;
+            }
+
             .stat-icon {
-                width: 52px;
-                height: 52px;
-                font-size: 1.375rem;
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
             }
-            
-            .stat-value {
-                font-size: 1.5rem;
-            }
-            
+
             .stat-label {
                 font-size: 11px;
+                margin: 0;
+            }
+
+            .stat-value {
+                font-size: 1.75rem;
+                margin: 0;
+                line-height: 1.2;
+            }
+
+            .stat-description {
+                font-size: 12px;
+                margin-top: 4px;
+            }
+
+            /* Mantém o indicador de tendência visível sem poluir o layout */
+            .stat-trend {
+                position: absolute;
+                right: 16px;
+                top: 16px;
             }
             
             .chart-card {
@@ -606,7 +632,7 @@
             }
             
             .chart-container {
-                height: 250px;
+                height: 240px;
             }
             
             .activity-card {
@@ -617,20 +643,22 @@
         @media (max-width: 480px) {
             .stat-card {
                 padding: var(--spacing);
+                grid-template-columns: 44px 1fr;
             }
-            
+
             .stat-card-header {
-                margin-bottom: 12px;
+                margin-bottom: 10px;
             }
-            
+
             .stat-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 1.25rem;
+                width: 44px;
+                height: 44px;
+                font-size: 1.125rem;
             }
-            
+
             .stat-value {
-                font-size: 1.75rem;
+                font-size: 1.8rem;
+                white-space: nowrap;
             }
             
             .stat-trend {
@@ -652,7 +680,7 @@
             }
             
             .chart-container {
-                height: 220px;
+                height: 200px;
             }
             
             .activity-item {
@@ -675,6 +703,14 @@
             
             .activity-time {
                 font-size: 11px;
+            }
+            /* Garante espaçamento entre valores 2/5 no card de mesas */
+            #stat-tables-occupied,
+            #stat-tables-total {
+                display: inline-block;
+                padding: 0 2px;
+                min-width: 20px;
+                text-align: center;
             }
         }
     </style>

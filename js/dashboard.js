@@ -118,8 +118,10 @@ function loadDashboardData() {
     const mesas = STORE.get('tables', [], ['tables', 'mesas']) || [];
     const mesasOcupadas = mesas.filter(m => m.status === 'Ocupada').length;
     const totalMesas = mesas.length;
-    const mesasEl = document.getElementById('mesas-ocupadas-valor');
-    if (mesasEl) mesasEl.textContent = `${mesasOcupadas} / ${totalMesas}`;
+    const occElO = document.getElementById('stat-tables-occupied');
+    const occElT = document.getElementById('stat-tables-total');
+    if (occElO) occElO.textContent = String(mesasOcupadas);
+    if (occElT) occElT.textContent = String(totalMesas);
 
     // Vendas Hoje
     const pedidos = STORE.get('pedidos', [], ['pedidos', 'orders']) || [];
@@ -127,16 +129,22 @@ function loadDashboardData() {
     const vendasHoje = pedidos
         .filter(p => p.data && p.data.startsWith(hoje) && p.status === 'Pago')
         .reduce((acc, p) => acc + (p.total || 0), 0);
-    const vendasEl = document.getElementById('vendas-hoje-valor');
+    const vendasEl = document.getElementById('stat-revenue');
     if (vendasEl) {
         const fmt = window.CONFIG?.UTILS?.formatCurrency || (v => `R$ ${Number(v || 0).toFixed(2).replace('.', ',')}`);
         vendasEl.textContent = fmt(vendasHoje);
     }
 
     // Pedidos Pendentes
-    const pedidosPendentes = pedidos.filter(p => p.status === 'Pendente').length;
-    const pendentesEl = document.getElementById('pedidos-pendentes-valor');
-    if(pendentesEl) pendentesEl.textContent = pedidosPendentes;
+    const pedidosHojeTotal = pedidos.filter(p => p.data && p.data.startsWith(hoje)).length;
+    const pedidosEl = document.getElementById('stat-orders');
+    if (pedidosEl) {
+        pedidosEl.textContent = String(pedidosHojeTotal);
+        const card = pedidosEl.closest('.stat-card');
+        const desc = card ? card.querySelector('.stat-description') : null;
+        const pedidosPendentes = pedidos.filter(p => p.status === 'Pendente').length;
+        if (desc) desc.textContent = `${pedidosPendentes} pendentes`;
+    }
 
     // Itens em Baixa no Estoque
     const estoque = STORE.get('estoque', [], ['estoque']) || [];
@@ -148,6 +156,14 @@ function loadDashboardData() {
         if (min <= 0) return q === 0;
         return q <= min;
     }).length;
-    const estoqueEl = document.getElementById('estoque-baixo-valor');
+    const estoqueEl = document.getElementById('stat-low-stock');
     if(estoqueEl) estoqueEl.textContent = itensEmBaixa;
+
+    // Atualiza taxa de ocupação na descrição do card de mesas
+    const occCard = occElO ? occElO.closest('.stat-card') : null;
+    const occDesc = occCard ? occCard.querySelector('.stat-description') : null;
+    if (occDesc && totalMesas > 0) {
+        const taxa = Math.round((mesasOcupadas / totalMesas) * 100);
+        occDesc.textContent = `Taxa de ocupação ${taxa}%`;
+    }
 }

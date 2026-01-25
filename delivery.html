@@ -578,6 +578,39 @@
                 grid-template-columns: 1fr;
                 gap: var(--spacing);
             }
+
+            /* Cards de pedido compactos e legíveis em mobile */
+            .order-card {
+                text-align: left;
+                display: grid;
+                grid-template-columns: 56px 1fr;
+                grid-template-rows: auto auto auto;
+                align-items: center;
+                gap: 8px 12px;
+                padding: var(--spacing);
+            }
+
+            .order-icon {
+                margin: 0;
+                grid-row: 1 / span 3;
+                grid-column: 1;
+            }
+
+            .order-card h3 {
+                margin: 0;
+                grid-column: 2;
+                font-size: 1rem;
+            }
+
+            .order-card p {
+                grid-column: 2;
+                font-size: var(--font-size-xs);
+            }
+
+            .order-status-text,
+            .order-total-price {
+                grid-column: 2;
+            }
         }
         
         @media (max-width: 480px) {
@@ -590,17 +623,17 @@
             }
             
             .order-icon {
-                width: 56px;
-                height: 56px;
-                font-size: 1.5rem;
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
             }
             
             .order-card h3 {
-                font-size: 1rem;
+                font-size: 0.95rem;
             }
             
             .order-total-price {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
         }
     </style>
@@ -631,6 +664,17 @@
                     <button class="btn btn-primary" id="add-delivery-btn"><i class="fas fa-plus"></i> Novo Delivery</button>
                 </div>
             </div>
+            <!-- Gerenciar Motoboys -->
+            <section class="card" id="motoboy-manager" style="margin-bottom: var(--spacing-xl);">
+                <div class="card-header" style="display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <div class="card-title" style="font-weight: var(--font-weight-bold);">Motoboys</div>
+                        <div class="card-subtitle" style="color: var(--text-secondary); font-size: var(--font-size-sm);">Cadastre e gerencie os entregadores para o Delivery</div>
+                    </div>
+                    <button class="btn btn-secondary" id="motoboy-add-btn"><i class="fas fa-user-plus"></i> Novo Motoboy</button>
+                </div>
+                <div class="card-body" id="motoboy-list" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--spacing);"></div>
+            </section>
             <div class="stats-row">
                 <div class="stat-card stripe-warning">
                     <div class="stat-icon"><i class="fas fa-hourglass-start"></i></div>
@@ -772,6 +816,51 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" id="delivery-close-btn" style="display:none;"><i class="fas fa-receipt"></i> Fechar conta + Cupom</button>
                 <button type="submit" form="delivery-form" class="btn btn-primary"><i class="fas fa-save"></i> Salvar Delivery</button>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Motoboy -->
+    <div id="motoboy-modal" class="modal">
+        <div class="modal-content" style="max-width: 560px;">
+            <div class="modal-header">
+                <h2 id="motoboy-modal-title">Novo Motoboy</h2>
+                <button class="close-btn" aria-label="Fechar modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="motoboy-form">
+                    <input type="hidden" id="motoboy-id">
+                    <div class="form-group">
+                        <label for="motoboy-name">Nome *</label>
+                        <input type="text" id="motoboy-name" required placeholder="Nome completo">
+                    </div>
+                    <div class="form-group">
+                        <label for="motoboy-phone">Telefone</label>
+                        <input type="tel" id="motoboy-phone" placeholder="(DDD) 9xxxx-xxxx">
+                    </div>
+                    <div class="form-group">
+                        <label for="motoboy-username">Usuário (API)</label>
+                        <input type="text" id="motoboy-username" placeholder="usuario.motoboy">
+                        <small class="muted">Usado ao criar via API. Opcional no modo local.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="motoboy-email">Email (API)</label>
+                        <input type="email" id="motoboy-email" placeholder="motoboy@empresa.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="motoboy-password">Senha (API)</label>
+                        <input type="password" id="motoboy-password" placeholder="mín. 6 caracteres">
+                    </div>
+                    <div class="form-group">
+                        <label for="motoboy-status">Status</label>
+                        <select id="motoboy-status">
+                            <option value="Ativo">Ativo</option>
+                            <option value="Inativo">Inativo</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" form="motoboy-form" class="btn btn-primary"><i class="fas fa-save"></i> Salvar</button>
             </div>
         </div>
     </div>

@@ -149,37 +149,61 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function clearAddonSelection() {
         if (!addonsOptions) return;
-        const inputs = addonsOptions.querySelectorAll('input[type="checkbox"]');
-        inputs.forEach(i => { i.checked = false; });
+        const qtyEls = addonsOptions.querySelectorAll('.addon-qty');
+        qtyEls.forEach(el => { el.textContent = '0'; });
         updateAddonsLimitUI();
     }
 
     function updateAddonsLimitUI() {
         if (!addonsOptions) return;
 
-        const checkboxes = Array.from(addonsOptions.querySelectorAll('input[type="checkbox"]'));
-        const labels = Array.from(addonsOptions.querySelectorAll('.addon-option'));
-        const selectedCount = checkboxes.filter(cb => cb.checked).length;
-        if (addonsCountEl) addonsCountEl.textContent = `${selectedCount}/${ADDONS_MAX}`;
+        const options = Array.from(addonsOptions.querySelectorAll('.addon-option'));
+        const totalQty = options.reduce((sum, opt) => {
+            const qEl = opt.querySelector('.addon-qty');
+            const q = qEl ? Number(qEl.textContent || 0) : 0;
+            return sum + (Number.isFinite(q) ? q : 0);
+        }, 0);
+        if (addonsCountEl) addonsCountEl.textContent = `${totalQty}/${ADDONS_MAX}`;
 
-        const shouldLock = selectedCount >= ADDONS_MAX;
-        checkboxes.forEach((cb, idx) => {
-            const label = labels[idx];
-            if (!label) return;
-            const isSelected = cb.checked;
-            const shouldDisable = shouldLock && !isSelected;
-            cb.disabled = cb.disabled || shouldDisable;
-            label.classList.toggle('is-disabled', cb.disabled);
-            label.classList.toggle('is-locked', shouldLock && isSelected);
+        const remaining = Math.max(0, ADDONS_MAX - totalQty);
+        options.forEach((opt) => {
+            const incBtn = opt.querySelector('.addon-qty-btn.inc');
+            const decBtn = opt.querySelector('.addon-qty-btn.dec');
+            const qEl = opt.querySelector('.addon-qty');
+            const q = qEl ? Number(qEl.textContent || 0) : 0;
+
+            // Desabilita + quando não há espaço restante
+            if (incBtn) incBtn.disabled = remaining <= 0;
+            // Desabilita - quando quantidade é 0
+            if (decBtn) decBtn.disabled = q <= 0;
+
+            // Feedback visual
+            opt.classList.toggle('is-locked', remaining <= 0 && q > 0);
         });
     }
 
-    function onAddonToggle(e) {
-        const target = e.target;
-        if (!target || target.tagName !== 'INPUT' || target.type !== 'checkbox') return;
-        const checked = Array.from(addonsOptions.querySelectorAll('input[type="checkbox"]:checked'));
-        if (checked.length > ADDONS_MAX) {
-            target.checked = false;
+    function onAddonQtyClick(e) {
+        const btn = e.target.closest('.addon-qty-btn');
+        if (!btn) return;
+        const opt = btn.closest('.addon-option');
+        const qEl = opt ? opt.querySelector('.addon-qty') : null;
+        if (!qEl) return;
+
+        const options = Array.from(addonsOptions.querySelectorAll('.addon-option'));
+        const totalQty = options.reduce((sum, o) => {
+            const el = o.querySelector('.addon-qty');
+            const q = el ? Number(el.textContent || 0) : 0;
+            return sum + (Number.isFinite(q) ? q : 0);
+        }, 0);
+        const remaining = Math.max(0, ADDONS_MAX - totalQty);
+        const current = Number(qEl.textContent || 0);
+
+        if (btn.classList.contains('inc')) {
+            if (remaining <= 0) return;
+            qEl.textContent = String(current + 1);
+        } else {
+            if (current <= 0) return;
+            qEl.textContent = String(current - 1);
         }
         updateAddonsLimitUI();
     }
@@ -194,14 +218,19 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         addonsOptions.innerHTML = '';
         opts.forEach((s) => {
-            const label = document.createElement('label');
-            label.className = `addon-option${(s.quantity <= 0) ? ' is-disabled' : ''}`;
-            label.innerHTML = `
-                <input type="checkbox" value="${String(s.id)}" ${(s.quantity <= 0) ? 'disabled' : ''}>
+            const wrap = document.createElement('div');
+            wrap.className = `addon-option${(s.quantity <= 0) ? ' is-disabled' : ''}`;
+            wrap.dataset.stockId = String(s.id);
+            wrap.innerHTML = `
                 <span class="addon-name">${String(s.name)}</span>
                 <span class="addon-meta">${Number.isFinite(s.quantity) ? s.quantity : 0} ${String(s.unit)}</span>
+                <div class="addon-qty-controls">
+                    <button type="button" class="addon-qty-btn dec" aria-label="Remover" ${(s.quantity <= 0) ? 'disabled' : ''}>−</button>
+                    <span class="addon-qty">0</span>
+                    <button type="button" class="addon-qty-btn inc" aria-label="Adicionar" ${(s.quantity <= 0) ? 'disabled' : ''}>+</button>
+                </div>
             `;
-            addonsOptions.appendChild(label);
+            addonsOptions.appendChild(wrap);
         });
 
         updateAddonsLimitUI();
@@ -228,13 +257,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function getSelectedAddons() {
         if (!addonsSection || addonsSection.style.display === 'none' || !addonsOptions) return [];
-        const checked = Array.from(addonsOptions.querySelectorAll('input[type="checkbox"]:checked'));
-        const ids = checked.map(i => i.value).filter(Boolean);
         const opts = getAddonStockOptions();
-        const selected = ids.map((raw) => {
-            const match = opts.find(o => String(o.id) === String(raw));
-            return match ? { stockId: match.id, name: match.name, quantity: 1 } : null;
-        }).filter(Boolean);
+        const selected = [];
+        const nodes = Array.from(addonsOptions.querySelectorAll('.addon-option'));
+        nodes.forEach((n) => {
+            const qEl = n.querySelector('.addon-qty');
+            const qty = qEl ? Number(qEl.textContent || 0) : 0;
+            if (!qty) return;
+            const stockId = n.dataset.stockId;
+            const match = opts.find(o => String(o.id) === String(stockId));
+            if (match) selected.push({ stockId: match.id, name: match.name, quantity: qty });
+        });
         return selected;
     }
 
@@ -707,7 +740,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
     addItemToOrderBtn.addEventListener('click', handleAddItemToOrder);
     if (menuItemSelect) menuItemSelect.addEventListener('change', syncAddonsVisibility);
-    if (addonsOptions) addonsOptions.addEventListener('change', onAddonToggle);
+    if (addonsOptions) addonsOptions.addEventListener('click', onAddonQtyClick);
     orderItemsContainer.addEventListener('click', handleRemoveOrderItem);
     if (orderDiscountInput) orderDiscountInput.addEventListener('input', updateOrderTotal);
     orderForm.addEventListener('submit', handleFormSubmit);

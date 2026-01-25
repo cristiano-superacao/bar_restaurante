@@ -48,3 +48,47 @@
     justify-content: flex-end;
 }
 
+/* Responsividade: tornar lista legível em telas pequenas */
+@media (max-width: 1024px) {
+    .estoque-header, .estoque-item {
+        grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .estoque-filters {
+        flex-wrap: wrap;
+    }
+
+    .estoque-header {
+        display: none; /* esconde cabeçalho tabular em mobile */
+    }
+
+    .estoque-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        padding: 0.875rem 1rem;
+    }
+
+    .estoque-item > * {
+        width: 100%;
+    }
+
+    .estoque-item .status {
+        justify-self: start;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .item-actions {
+        justify-content: flex-start;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .estoque-item {
+        padding: 0.75rem 0.875rem;
+    }
+}
+

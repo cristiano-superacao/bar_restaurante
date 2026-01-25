@@ -574,6 +574,37 @@ body {
     flex-shrink: 0;
 }
 
+/* Controles de quantidade para acompanhamentos (pedidos/delivery) */
+.addon-qty-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+}
+.addon-qty {
+    min-width: 1.5rem;
+    text-align: center;
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-primary);
+}
+.addon-qty-btn {
+    height: 28px;
+    min-width: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--text-secondary);
+    box-shadow: var(--shadow-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+.addon-qty-btn:hover { background: var(--bg-hover); }
+.addon-qty-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.addon-option.is-locked .addon-qty-btn.inc { opacity: 0.5; cursor: not-allowed; }
+
 .addon-option.is-disabled {
     opacity: 0.5;
     cursor: not-allowed;
