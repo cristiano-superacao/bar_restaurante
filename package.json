@@ -4,7 +4,7 @@
   "description": "Sistema de Gestão para Bar e Restaurante - Cliente Estático",
   "main": "index.html",
   "scripts": {
-    "start": "npx http-server . -p 8000 -c-1",
+    "start": "node scripts/start-frontend.mjs",
     "dev": "npm run serve:node",
     "serve": "npm run serve:node",
     "serve:node": "node scripts/serve.mjs",

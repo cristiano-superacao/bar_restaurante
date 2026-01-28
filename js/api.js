@@ -399,6 +399,8 @@
           table: o.table_name || '',
           status: o.status,
           orderType: o.order_type || 'Mesa',
+          deliveryDriverId: (o.delivery_driver_id !== undefined && o.delivery_driver_id !== null) ? String(o.delivery_driver_id) : null,
+          deliveryDriverName: o.delivery_driver_name || '',
           customerName: o.customer_name || '',
           customerPhone: o.customer_phone || '',
           customerAddress: o.customer_address || '',

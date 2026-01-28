@@ -46,6 +46,24 @@ function itemAllowsAddons(menuItemRow) {
   return ['pastel', 'hamburguer', 'crepe', 'tapioca'].some((k) => t.includes(k));
 }
 
+async function validateMotoboyUserId(client, { companyId, userId }) {
+  if (!userId) return null;
+  const uid = Number(userId);
+  if (!Number.isFinite(uid) || uid < 1) return null;
+  const r = await client.query(
+    `SELECT id, username, email, function, active
+     FROM users
+     WHERE id=$1 AND company_id=$2`,
+    [uid, companyId]
+  );
+  if (r.rowCount === 0) return null;
+  const u = r.rows[0];
+  const fn = String(u.function || '').trim().toLowerCase();
+  if (fn !== 'motoboy') return null;
+  if (u.active === false) return null;
+  return u;
+}
+
 router.get('/', async (req, res) => {
   try {
     const type = normalizeOrderType(req.query.type);
@@ -60,6 +78,8 @@ router.get('/', async (req, res) => {
               t.name as table_name,
               o.status,
               o.order_type,
+              o.delivery_driver_id,
+              COALESCE(NULLIF(o.delivery_driver_name, ''), du.username, du.email) as delivery_driver_name,
               o.customer_name,
               o.customer_phone,
               o.customer_address,
@@ -74,6 +94,7 @@ router.get('/', async (req, res) => {
               o.created_at
        FROM orders o
        LEFT JOIN tables t ON t.id = o.table_id AND t.company_id = o.company_id
+       LEFT JOIN users du ON du.id = o.delivery_driver_id AND du.company_id = o.company_id
        WHERE ${where.join(' AND ')}
        ORDER BY o.created_at DESC, o.id DESC`,
       params
@@ -129,6 +150,9 @@ router.post('/', [
   body('customerAddress').optional().isString().trim().isLength({ min: 5 }),
   body('customerNeighborhood').optional().isString().trim(),
   body('customerReference').optional().isString().trim(),
+  body('deliveryDriverId').optional({ nullable: true }).isInt({ min: 1 }),
+  body('deliveryDriverName').optional({ nullable: true }).isString().trim().isLength({ min: 2 }),
+  body('paymentMethod').optional().isString().trim().isLength({ min: 2 }),
   body('discount').optional().isFloat({ min: 0 }),
   body('deliveryFee').optional().isFloat({ min: 0 }),
 ], async (req, res) => {
@@ -149,6 +173,9 @@ router.post('/', [
       customerAddress,
       customerNeighborhood,
       customerReference,
+      deliveryDriverId,
+      deliveryDriverName,
+      paymentMethod,
       discount = 0,
       deliveryFee = 0,
     } = req.body;
@@ -193,6 +220,21 @@ router.post('/', [
       }
     }
 
+    // Motoboy (opcional) para Delivery
+    let motoboy = null;
+    let motoboyName = null;
+    if (normalizedType === 'Delivery') {
+      if (deliveryDriverId) {
+        motoboy = await validateMotoboyUserId(client, { companyId: req.companyId, userId: deliveryDriverId });
+        if (!motoboy) {
+          await client.query('ROLLBACK');
+          return res.status(400).json({ error: 'Motoboy inválido para esta empresa' });
+        }
+      }
+      const dn = String(deliveryDriverName || '').trim();
+      if (!motoboy && dn) motoboyName = dn;
+    }
+
     // Valida itens pertencem à empresa (e guarda metadados para regras de acompanhamentos)
     const menuMetaById = new Map();
     for (const it of items) {
@@ -214,28 +256,34 @@ router.post('/', [
           table_id,
           status,
           order_type,
+          delivery_driver_id,
+          delivery_driver_name,
           customer_name,
           customer_phone,
           customer_address,
           customer_neighborhood,
           customer_reference,
+          payment_method,
           discount,
           delivery_fee,
           subtotal,
           total
         )
-        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
         RETURNING id, table_id, status, order_type, subtotal, discount, delivery_fee, total, created_at`,
       [
         req.companyId,
         normalizedType === 'Mesa' ? tableId : null,
         status,
         normalizedType,
+        motoboy?.id || null,
+        motoboyName,
         customerName || null,
         customerPhone || null,
         customerAddress || null,
         customerNeighborhood || null,
         customerReference || null,
+        paymentMethod || null,
         totals.discount,
         totals.deliveryFee,
         totals.subtotal,
@@ -341,6 +389,8 @@ router.put('/:id', [
   body('customerAddress').optional().isString().trim().isLength({ min: 5 }),
   body('customerNeighborhood').optional().isString().trim(),
   body('customerReference').optional().isString().trim(),
+  body('deliveryDriverId').optional({ nullable: true }).isInt({ min: 1 }),
+  body('deliveryDriverName').optional({ nullable: true }).isString().trim().isLength({ min: 2 }),
   body('discount').optional().isFloat({ min: 0 }),
   body('deliveryFee').optional().isFloat({ min: 0 }),
   body('paymentMethod').optional().isString().trim().isLength({ min: 2 }),
@@ -356,6 +406,8 @@ router.put('/:id', [
       customerAddress,
       customerNeighborhood,
       customerReference,
+      deliveryDriverId,
+      deliveryDriverName,
       discount,
       deliveryFee,
       paymentMethod,
@@ -379,6 +431,30 @@ router.put('/:id', [
     const subtotal = Number(base.subtotal) || 0;
     const total = Math.max(0, subtotal + f - d);
 
+    const driverIdTouched = deliveryDriverId !== undefined;
+    const driverNameTouched = deliveryDriverName !== undefined;
+    let nextDriverId = null;
+    let nextDriverName = null;
+    if (base.order_type === 'Delivery') {
+      if (driverIdTouched) {
+        if (deliveryDriverId === null) {
+          nextDriverId = null;
+        } else {
+          const client = await (await import('../db.js')).pool.connect();
+          try {
+            const motoboy = await validateMotoboyUserId(client, { companyId: req.companyId, userId: deliveryDriverId });
+            if (!motoboy) return res.status(400).json({ error: 'Motoboy inválido para esta empresa' });
+            nextDriverId = motoboy.id;
+          } finally {
+            client.release();
+          }
+        }
+      }
+      if (driverNameTouched) {
+        nextDriverName = String(deliveryDriverName || '').trim() || null;
+      }
+    }
+
     const { rows } = await query(
       `UPDATE orders
        SET status = COALESCE($1, status),
@@ -387,12 +463,14 @@ router.put('/:id', [
            customer_address = COALESCE($4, customer_address),
            customer_neighborhood = COALESCE($5, customer_neighborhood),
            customer_reference = COALESCE($6, customer_reference),
-           discount = $7,
-           delivery_fee = $8,
-           subtotal = COALESCE(NULLIF($9, 0), subtotal),
-           total = $10,
-           payment_method = COALESCE($11, payment_method)
-       WHERE company_id=$12 AND id=$13
+           delivery_driver_id = CASE WHEN $7 THEN $8 ELSE delivery_driver_id END,
+           delivery_driver_name = CASE WHEN $9 THEN $10 ELSE delivery_driver_name END,
+           discount = $11,
+           delivery_fee = $12,
+           subtotal = COALESCE(NULLIF($13, 0), subtotal),
+           total = $14,
+           payment_method = COALESCE($15, payment_method)
+       WHERE company_id=$16 AND id=$17
        RETURNING *`,
       [
         status ?? null,
@@ -401,6 +479,10 @@ router.put('/:id', [
         customerAddress ?? null,
         customerNeighborhood ?? null,
         customerReference ?? null,
+        !!(base.order_type === 'Delivery' && driverIdTouched),
+        (base.order_type === 'Delivery' && driverIdTouched) ? nextDriverId : null,
+        !!(base.order_type === 'Delivery' && driverNameTouched),
+        (base.order_type === 'Delivery' && driverNameTouched) ? nextDriverName : null,
         d,
         f,
         subtotal,

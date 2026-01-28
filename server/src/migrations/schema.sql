@@ -101,6 +101,8 @@ CREATE TABLE IF NOT EXISTS orders (
   table_id INT REFERENCES tables(id) ON DELETE SET NULL,
   status TEXT NOT NULL DEFAULT 'Pendente',
   order_type TEXT NOT NULL DEFAULT 'Mesa',
+  delivery_driver_id INT REFERENCES users(id) ON DELETE SET NULL,
+  delivery_driver_name TEXT,
   customer_name TEXT,
   customer_phone TEXT,
   customer_address TEXT,
@@ -116,6 +118,8 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS company_id INT REFERENCES companies(id) ON DELETE CASCADE;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_type TEXT NOT NULL DEFAULT 'Mesa';
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_driver_id INT REFERENCES users(id) ON DELETE SET NULL;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_driver_name TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_name TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_phone TEXT;
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_address TEXT;
@@ -357,6 +361,7 @@ CREATE INDEX IF NOT EXISTS idx_orders_table ON orders(table_id);
 CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
 CREATE INDEX IF NOT EXISTS idx_orders_type ON orders(order_type);
 CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_orders_delivery_driver ON orders(delivery_driver_id);
 
 CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 CREATE INDEX IF NOT EXISTS idx_order_items_menu ON order_items(menu_item_id);
