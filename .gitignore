@@ -33,6 +33,7 @@ jspm_packages/
 # Server-specific
 /server/node_modules/
 /server/.env
+/server/.local-credentials.txt
 /server/*.log
 /server/coverage/
 
