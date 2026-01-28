@@ -91,14 +91,20 @@
     if (!modal || !form) return;
     document.getElementById('modal-title').textContent = 'Novo Usuário';
     form.reset();
-    const errEl = document.getElementById('user-form-error');
-    if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
-    modal.classList.add('active');
+    if (window.UTILS?.formError) window.UTILS.formError.clear('user-form-error');
+    else {
+      const errEl = document.getElementById('user-form-error');
+      if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+    }
+    if (window.UTILS?.modal) window.UTILS.modal.open(modal, { activeClass: 'active' });
+    else modal.classList.add('active');
   }
 
   function closeUserModal() {
     const modal = document.getElementById('user-modal');
-    if (modal) modal.classList.remove('active');
+    if (!modal) return;
+    if (window.UTILS?.modal) window.UTILS.modal.close(modal, { activeClass: 'active' });
+    else modal.classList.remove('active');
   }
 
   async function submitUserForm() {
@@ -117,7 +123,10 @@
     const selectedFunction = (roleEl.value || '').trim(); // Agora é a função operacional
     const status = (statusEl.value || 'active');
 
-    const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
+    const showError = (msg) => {
+      if (window.UTILS?.formError) window.UTILS.formError.show(errEl, msg);
+      else if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; }
+    };
     if (!username || !email) { showError('Preencha nome e email.'); return; }
     if (!password) { showError('Informe uma senha.'); return; }
     if (!selectedFunction) { showError('Selecione uma função.'); return; }
@@ -146,7 +155,8 @@
       const cid = getSelectedCompanyId();
       const companyId = cid || null;
       if (!companyId) {
-        alert('companyId é obrigatório. Selecione uma empresa em Empresas.');
+        if (window.UTILS?.notify) window.UTILS.notify('companyId é obrigatório. Selecione uma empresa em Empresas.', 'error');
+        else alert('companyId é obrigatório. Selecione uma empresa em Empresas.');
         return;
       }
       payload.companyId = companyId;
@@ -184,6 +194,14 @@
     const modalCancel = document.getElementById('modal-cancel');
     const modalSave = document.getElementById('modal-save');
 
+    const userModal = document.getElementById('user-modal');
+    if (window.UTILS?.modal && userModal) {
+      window.UTILS.modal.bind(userModal, {
+        activeClass: 'active',
+        closeBtnSelector: '.modal-close, .close-btn, #modal-close, #modal-cancel'
+      });
+    }
+
     let users = [];
     try {
       users = await loadUsers();
@@ -205,8 +223,10 @@
       });
     }
 
-    if (modalClose) modalClose.addEventListener('click', closeUserModal);
-    if (modalCancel) modalCancel.addEventListener('click', closeUserModal);
+    if (!window.UTILS?.modal) {
+      if (modalClose) modalClose.addEventListener('click', closeUserModal);
+      if (modalCancel) modalCancel.addEventListener('click', closeUserModal);
+    }
     if (modalSave) {
       modalSave.addEventListener('click', async () => {
         try {
