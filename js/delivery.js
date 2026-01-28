@@ -45,8 +45,72 @@ document.addEventListener('DOMContentLoaded', function () {
   const discountInput = document.getElementById('delivery-discount');
   const paymentSelect = document.getElementById('delivery-payment');
   
-  function populateDriverSelect() {
+  function getMotoboyById(id) {
+    if (!id) return null;
+    return (motoboys || []).find(m => String(m.id) === String(id)) || null;
+  }
+
+  function getMotoboyDisplayName(m) {
+    if (!m) return '';
+    return String(m.name || m.username || m.email || '').trim();
+  }
+
+  function getOrderMotoboyId(order) {
+    const id = order?.deliveryDriverId ?? order?.delivery_driver_id ?? order?.delivery_driverId;
+    if (id !== undefined && id !== null && String(id).trim() !== '') return String(id);
+
+    const legacyName = String(order?.deliveryDriver || order?.delivery_driver || '').trim();
+    if (!legacyName) return '';
+    const found = (motoboys || []).find(m => {
+      const n = getMotoboyDisplayName(m);
+      return n && n.toLowerCase() === legacyName.toLowerCase();
+    });
+    return found ? String(found.id) : '';
+  }
+
+  function getOrderMotoboyName(order) {
+    const direct = String(order?.deliveryDriverName || order?.delivery_driver_name || '').trim();
+    if (direct) return direct;
+    const byId = getMotoboyById(getOrderMotoboyId(order));
+    const fromId = getMotoboyDisplayName(byId);
+    if (fromId) return fromId;
+    return String(order?.deliveryDriver || order?.delivery_driver || '').trim();
+  }
+
+  function isOrderOpenForDriver(status) {
+    const s = String(status || '').trim();
+    return s && !['Entregue', 'Pago', 'Cancelado'].includes(s);
+  }
+
+  function motoboyIsInUse(motoboy) {
+    if (!motoboy) return false;
+    const idStr = String(motoboy.id);
+    const name = getMotoboyDisplayName(motoboy);
+    return (deliveries || []).some(o => {
+      const oid = String(o?.deliveryDriverId ?? o?.delivery_driver_id ?? '');
+      if (oid && oid === idStr) return true;
+      const legacy = String(o?.deliveryDriver || o?.delivery_driver || '');
+      return legacy && name && legacy.toLowerCase() === name.toLowerCase();
+    });
+  }
+
+  function motoboyHasOpenDeliveries(motoboy) {
+    if (!motoboy) return false;
+    const idStr = String(motoboy.id);
+    const name = getMotoboyDisplayName(motoboy);
+    return (deliveries || []).some(o => {
+      const status = o?.status;
+      if (!isOrderOpenForDriver(status)) return false;
+      const oid = String(o?.deliveryDriverId ?? o?.delivery_driver_id ?? '');
+      if (oid && oid === idStr) return true;
+      const legacy = String(o?.deliveryDriver || o?.delivery_driver || '');
+      return legacy && name && legacy.toLowerCase() === name.toLowerCase();
+    });
+  }
+  
+  function populateDriverSelect(currentOrder = null) {
     if (!driverSelect) return;
+    const currentId = currentOrder ? getOrderMotoboyId(currentOrder) : String(driverSelect.value || '').trim();
     // Preferir lista local de motoboys; fallback para usuários com função 'Motoboy'
     let list = Array.isArray(motoboys) ? motoboys : [];
     if (!list || list.length === 0) {
@@ -56,12 +120,28 @@ document.addEventListener('DOMContentLoaded', function () {
         .map(u => ({ id: u.id || String(Date.now()), name: u.name || u.username, phone: u.phone || '', status: u.status || 'Ativo' }));
     }
     driverSelect.innerHTML = '<option value="">Selecione o motoboy...</option>';
-    list.forEach(m => {
+
+    const active = (list || []).filter(m => String(m.status || 'Ativo') !== 'Inativo');
+    active.forEach(m => {
       const opt = document.createElement('option');
-      opt.value = m.name || m.username;
-      opt.textContent = m.name || m.username;
+      opt.value = String(m.id);
+      opt.textContent = getMotoboyDisplayName(m);
       driverSelect.appendChild(opt);
     });
+
+    // Se estiver editando um delivery que já tem motoboy inativo, manter visível/selecionado
+    if (currentId && !active.some(m => String(m.id) === String(currentId))) {
+      const inactive = (list || []).find(m => String(m.id) === String(currentId));
+      if (inactive) {
+        const opt = document.createElement('option');
+        opt.value = String(inactive.id);
+        opt.textContent = `${getMotoboyDisplayName(inactive)} (Inativo)`;
+        opt.disabled = true;
+        driverSelect.appendChild(opt);
+      }
+    }
+
+    if (currentId) driverSelect.value = String(currentId);
   }
   
   function populateStatusSelect() {
@@ -106,18 +186,21 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
     list.forEach(m => {
+      const isActive = (m.status || 'Ativo') === 'Ativo';
+      const toggleLabel = isActive ? 'Inativar' : 'Ativar';
       const card = document.createElement('div');
       card.className = 'data-list-item';
       card.innerHTML = `
         <div class=\"data-list-main\">
           <div class=\"data-list-title\">${String(m.name || '')}</div>
           <div class=\"data-list-sub\">
-            <span class=\"badge ${m.status === 'Ativo' ? 'badge-success' : 'badge-muted'}\">${m.status || 'Ativo'}</span>
+            <span class=\"badge ${isActive ? 'badge-success' : 'badge-muted'}\">${m.status || 'Ativo'}</span>
             ${m.phone ? `<span class=\"muted\">${m.phone}</span>` : ''}
           </div>
         </div>
         <div class=\"data-list-actions\">
           <button class=\"btn btn-secondary\" data-action=\"edit\" data-id=\"${String(m.id)}\">Editar</button>
+          <button class=\"btn btn-secondary\" data-action=\"toggle\" data-id=\"${String(m.id)}\">${toggleLabel}</button>
           <button class=\"btn btn-secondary\" data-action=\"delete\" data-id=\"${String(m.id)}\">Excluir</button>
         </div>
       `;
@@ -160,7 +243,8 @@ document.addEventListener('DOMContentLoaded', function () {
       const email = ((motoboyEmailInput?.value || '').trim()) || createEmailFromUsername(username);
       const password = (motoboyPasswordInput?.value || '').trim();
       if (!username || !email || !password || password.length < 6) {
-        alert('Para criar via API, informe usuário, email e senha (mín. 6 caracteres).');
+        if (window.UTILS?.notify) window.UTILS.notify('Para criar via API, informe usuário, email e senha (mín. 6 caracteres).', 'error');
+        else alert('Para criar via API, informe usuário, email e senha (mín. 6 caracteres).');
       } else {
         try {
           await window.API.users.create({ username, email, password, role: 'staff', function: 'Motoboy' });
@@ -203,7 +287,42 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!id || !act) return;
     const m = (motoboys || []).find(x => String(x.id) === String(id));
     if (act === 'edit') { openMotoboyModal(m); return; }
+    if (act === 'toggle') {
+      if (!m) return;
+      const nextStatus = (m.status || 'Ativo') === 'Ativo' ? 'Inativo' : 'Ativo';
+      if (nextStatus === 'Inativo' && motoboyHasOpenDeliveries(m)) {
+        if (window.UTILS?.notify) window.UTILS.notify('Não é possível inativar: motoboy vinculado a deliveries em aberto.', 'error');
+        else alert('Não é possível inativar: motoboy vinculado a deliveries em aberto.');
+        return;
+      }
+
+      if (apiEnabled && window.API && id && !isNaN(Number(id))) {
+        try {
+          await window.API.users.update(Number(id), { function: 'Motoboy', active: nextStatus === 'Ativo' });
+          await loadMotoboys();
+          renderMotoboys();
+          populateDriverSelect();
+          return;
+        } catch (err) {
+          console.warn('Falha ao alterar status via API, mantendo alteração local.', err);
+        }
+      }
+
+      motoboys = (motoboys || []).map(x => (String(x.id) === String(id) ? { ...x, status: nextStatus } : x));
+      saveMotoboys();
+      renderMotoboys();
+      populateDriverSelect();
+      return;
+    }
     if (act === 'delete') {
+      if (!m) return;
+      if (motoboyIsInUse(m)) {
+        if (window.UTILS?.notify) window.UTILS.notify('Não é possível excluir: motoboy já vinculado a deliveries. Inative ao invés de excluir.', 'error');
+        else alert('Não é possível excluir: motoboy já vinculado a deliveries. Inative ao invés de excluir.');
+        return;
+      }
+      if (!confirm(`Excluir motoboy "${getMotoboyDisplayName(m)}"?`)) return;
+
       if (apiEnabled && window.API && id && !isNaN(Number(id))) {
         try {
           await window.API.users.remove(Number(id));
@@ -578,7 +697,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const headerTitle = order.customerName || order.customer_name || 'Cliente';
       const phone = order.customerPhone || order.customer_phone || '';
       const address = order.customerAddress || order.customer_address || '';
-      const driver = order.deliveryDriver || order.delivery_driver || '';
+      const driver = getOrderMotoboyName(order);
       const subtitle = [phone, address, (driver ? `Motoboy: ${driver}` : '')].filter(Boolean).join(' • ');
 
       const iconClass = (order.status === 'Cancelado')
@@ -621,9 +740,12 @@ document.addEventListener('DOMContentLoaded', function () {
     populateMenu();
     populateStatusSelect();
     populatePaymentSelect();
-    populateDriverSelect();
-    const errEl = document.getElementById('delivery-form-error');
-    if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+    populateDriverSelect(order);
+    if (window.UTILS?.formError) window.UTILS.formError.clear('delivery-form-error');
+    else {
+      const errEl = document.getElementById('delivery-form-error');
+      if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+    }
     currentItems = [];
 
     if (order) {
@@ -634,7 +756,7 @@ document.addEventListener('DOMContentLoaded', function () {
       customerAddressInput.value = order.customerAddress || order.customer_address || '';
       customerNeighborhoodInput.value = order.customerNeighborhood || order.customer_neighborhood || '';
       customerReferenceInput.value = order.customerReference || order.customer_reference || '';
-      driverSelect.value = order.deliveryDriver || order.delivery_driver || '';
+      driverSelect.value = getOrderMotoboyId(order) || '';
       statusSelect.value = order.status || 'Pendente';
       feeInput.value = Number(order.deliveryFee ?? order.delivery_fee ?? 0);
       discountInput.value = Number(order.discount ?? 0);
@@ -665,11 +787,18 @@ document.addEventListener('DOMContentLoaded', function () {
   async function submit(e) {
     e.preventDefault();
     const errEl = document.getElementById('delivery-form-error');
-    const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
+    const showError = (msg) => {
+      if (window.UTILS?.formError) window.UTILS.formError.show(errEl, msg);
+      else if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; }
+    };
     if (currentItems.length === 0) {
       showError('Adicione pelo menos um item ao delivery.');
       return;
     }
+
+    const selectedDriverId = String(driverSelect.value || '').trim();
+    const selectedMotoboy = selectedDriverId ? getMotoboyById(selectedDriverId) : null;
+    const selectedDriverName = selectedMotoboy ? getMotoboyDisplayName(selectedMotoboy) : '';
 
     const totals = calcTotals();
     const payload = {
@@ -680,7 +809,10 @@ document.addEventListener('DOMContentLoaded', function () {
       customerAddress: customerAddressInput.value,
       customerNeighborhood: customerNeighborhoodInput.value,
       customerReference: customerReferenceInput.value,
-      deliveryDriver: driverSelect.value,
+      deliveryDriverId: selectedDriverId || null,
+      deliveryDriverName: selectedDriverName,
+      // compat: manter também o campo antigo por nome
+      deliveryDriver: selectedDriverName,
       deliveryFee: totals.fee,
       discount: totals.discount,
       paymentMethod: paymentSelect.value,
@@ -722,6 +854,8 @@ document.addEventListener('DOMContentLoaded', function () {
       customerAddress: payload.customerAddress,
       customerNeighborhood: payload.customerNeighborhood,
       customerReference: payload.customerReference,
+      deliveryDriverId: payload.deliveryDriverId,
+      deliveryDriverName: payload.deliveryDriverName,
       deliveryDriver: payload.deliveryDriver,
       paymentMethod: payload.paymentMethod,
       deliveryFee: payload.deliveryFee,
@@ -810,7 +944,8 @@ document.addEventListener('DOMContentLoaded', function () {
         window.open(`cupom.html?orderId=${encodeURIComponent(String(id))}`, '_blank');
       } catch (e) {
         const errEl = document.getElementById('delivery-form-error');
-        if (errEl) { errEl.textContent = 'Erro ao fechar conta via API.'; errEl.style.display = 'block'; }
+        if (window.UTILS?.formError) window.UTILS.formError.show(errEl, 'Erro ao fechar conta via API.');
+        else if (errEl) { errEl.textContent = 'Erro ao fechar conta via API.'; errEl.style.display = 'block'; }
       }
       return;
     }

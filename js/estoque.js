@@ -148,8 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const openModal = (produto = null) => {
         produtoForm.reset();
-        const errEl = document.getElementById('estoque-form-error');
-        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+        if (window.UTILS?.formError) window.UTILS.formError.clear('estoque-form-error');
+        else {
+            const errEl = document.getElementById('estoque-form-error');
+            if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+        }
         if (produto) {
             document.getElementById('produto-modal-title').textContent = 'Editar Produto';
             const p = normalizeProduto(produto);
@@ -184,8 +187,12 @@ document.addEventListener('DOMContentLoaded', () => {
     produtoForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const errEl = document.getElementById('estoque-form-error');
-        const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
-        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+        const showError = (msg) => {
+            if (window.UTILS?.formError) window.UTILS.formError.show(errEl, msg);
+            else if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; }
+        };
+        if (window.UTILS?.formError) window.UTILS.formError.clear(errEl);
+        else if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
         const isAddonCheckbox = document.getElementById('produto-is-addon');
         const produtoData = {
             id: editingProdutoId || Date.now().toString(),
@@ -268,7 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     await window.API.stock.remove(Number(id));
                     await loadEstoque();
                 } catch (err) {
-                    alert('Erro ao excluir item de estoque via API.');
+                    if (window.UTILS?.notify) window.UTILS.notify('Erro ao excluir item de estoque via API.', 'error');
+                    else alert('Erro ao excluir item de estoque via API.');
                 }
             } else {
                 estoque = (estoque || []).filter(p => String(p.id) !== String(id));

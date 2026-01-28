@@ -218,6 +218,11 @@ document.addEventListener('DOMContentLoaded', () => {
             clearSignupError();
 
             const companyName = (document.getElementById('su-company')?.value || '').trim();
+            const companyLegalName = (document.getElementById('su-company-legal-name')?.value || '').trim();
+            const companyDocument = (document.getElementById('su-company-document')?.value || '').trim();
+            const companyPhone = (document.getElementById('su-company-phone')?.value || '').trim();
+            const companyEmail = (document.getElementById('su-company-email')?.value || '').trim();
+            const companyAddress = (document.getElementById('su-company-address')?.value || '').trim();
             const name = (document.getElementById('su-name')?.value || '').trim();
             const email = (document.getElementById('su-email')?.value || '').trim();
             const username = (document.getElementById('su-username')?.value || '').trim();
@@ -265,7 +270,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         showSignupError('Informe o nome da empresa.');
                         return;
                     }
-                    await window.API.auth.register({ username, email, password: pass1, name, companyName });
+                    await window.API.auth.register({
+                        username,
+                        email,
+                        password: pass1,
+                        name,
+                        companyName,
+                        companyLegalName,
+                        companyDocument,
+                        companyPhone,
+                        companyEmail,
+                        companyAddress,
+                    });
                 } else {
                     // Fallback direto para LocalStorage
                     createLocalUser();
@@ -274,7 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 closeSignup();
                 const userInput = document.getElementById('username');
                 if (userInput) userInput.value = username;
-                alert('Conta criada com sucesso! Faça login para continuar.');
+                if (window.UTILS?.notify) window.UTILS.notify('Conta criada com sucesso! Faça login para continuar.', 'success');
+                else alert('Conta criada com sucesso! Faça login para continuar.');
             } catch (err) {
                 // Se a API estiver fora do ar (Railway 502), cria em modo local para não bloquear o usuário
                 const code = String(err && err.code || '').toUpperCase();
@@ -287,7 +304,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         closeSignup();
                         const userInput = document.getElementById('username');
                         if (userInput) userInput.value = username;
-                        alert('API indisponível no momento. Conta criada em modo local (demo). Faça login para continuar.');
+                        if (window.UTILS?.notify) window.UTILS.notify('API indisponível no momento. Conta criada em modo local (demo). Faça login para continuar.', 'warning');
+                        else alert('API indisponível no momento. Conta criada em modo local (demo). Faça login para continuar.');
                         return;
                     } catch (e2) {
                         err = e2;

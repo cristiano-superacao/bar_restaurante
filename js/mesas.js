@@ -122,11 +122,13 @@ document.addEventListener('DOMContentLoaded', function () {
             modalTitle.textContent = 'Adicionar Nova Mesa';
             tableIdInput.value = '';
         }
-        modal.classList.add('show');
+        if (window.UTILS?.modal) window.UTILS.modal.open(modal, { activeClass: 'show' });
+        else modal.classList.add('show');
     }
 
     function closeModal() {
-        modal.classList.remove('show');
+        if (window.UTILS?.modal) window.UTILS.modal.close(modal, { activeClass: 'show' });
+        else modal.classList.remove('show');
     }
 
     async function handleFormSubmit(e) {
@@ -150,7 +152,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 filterAndRenderTables();
                 closeModal();
             } catch (err) {
-                alert('Erro ao salvar a mesa via API.');
+                if (window.UTILS?.notify) window.UTILS.notify('Erro ao salvar a mesa via API.', 'error');
+                else alert('Erro ao salvar a mesa via API.');
             }
         } else {
             if (id) {
@@ -200,7 +203,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 await window.API.tables.remove(id);
                 await loadTables();
             } catch (err) {
-                alert('Erro ao excluir mesa via API.');
+                if (window.UTILS?.notify) window.UTILS.notify('Erro ao excluir mesa via API.', 'error');
+                else alert('Erro ao excluir mesa via API.');
             }
         } else {
             tables = tables.filter(t => t.id !== id);
@@ -213,10 +217,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (searchInput) searchInput.addEventListener('input', filterAndRenderTables);
     statusFilter.addEventListener('change', filterAndRenderTables);
     addTableBtn.addEventListener('click', () => openModal());
-    closeModalBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
+    if (window.UTILS?.modal) window.UTILS.modal.bind(modal, { activeClass: 'show' });
+    else closeModalBtn.addEventListener('click', closeModal);
     tableForm.addEventListener('submit', handleFormSubmit);
     tablesGrid.addEventListener('click', handleGridClick);
 

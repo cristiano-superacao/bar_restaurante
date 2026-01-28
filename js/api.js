@@ -201,6 +201,24 @@
               localStorage.setItem('activeCompanyName', String(res.user.companyName));
             }
 
+            // Detalhes completos da empresa (para badge/visão pós-login)
+            try {
+              const company = res.user.company || null;
+              if (company && (company.id || company.name)) {
+                localStorage.setItem('activeCompany', JSON.stringify(company));
+                if (company.companyNumber != null) {
+                  localStorage.setItem('activeCompanyNumber', String(company.companyNumber));
+                } else {
+                  localStorage.removeItem('activeCompanyNumber');
+                }
+              } else {
+                localStorage.removeItem('activeCompany');
+                localStorage.removeItem('activeCompanyNumber');
+              }
+            } catch {
+              // noop
+            }
+
             // Se o usuário vier com companyId (admin/staff), guardar para contexto
             if (res.user.companyId) {
               localStorage.setItem('activeCompanyId', String(res.user.companyId));
@@ -289,6 +307,15 @@
           LS.set('companies', upd); return upd.find(c => c.id === id) || null;
         }
         return fetchWithTimeout(`/api/companies/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+      },
+      async remove(id, data = {}) {
+        if (!enabled) {
+          const curr = LS.get('companies', []);
+          LS.set('companies', curr.filter(c => c.id !== id));
+          return true;
+        }
+        await fetchWithTimeout(`/api/companies/${id}`, { method: 'DELETE', body: JSON.stringify(data || {}) });
+        return true;
       }
     },
 

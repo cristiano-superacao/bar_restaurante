@@ -4,7 +4,7 @@
   "description": "Sistema de Gestão para Bar e Restaurante - Cliente Estático",
   "main": "index.html",
   "scripts": {
-    "start": "npm run serve:node",
+    "start": "npx http-server . -p 8000 -c-1",
     "dev": "npm run serve:node",
     "serve": "npm run serve:node",
     "serve:node": "node scripts/serve.mjs",
@@ -27,7 +27,7 @@
     "type": "git",
     "url": "https://github.com/cristiano-superacao/bar_restaurante.git"
   },
-  "homepage": "https://barestaurante.netlify.app",
+  "homepage": "https://barestaurante.up.railway.app",
   "devDependencies": {
     "http-server": "^14.1.1"
   }

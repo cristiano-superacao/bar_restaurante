@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const apiSaveBtn = document.getElementById('api-save-btn');
     const apiResetBtn = document.getElementById('api-reset-btn');
     const apiStatusEl = document.getElementById('api-status');
+    const apiPresetLocalBtn = document.getElementById('api-preset-local');
+    const apiPresetRailwayBtn = document.getElementById('api-preset-railway');
 
     // --- Funções ---
 
@@ -90,6 +92,14 @@ document.addEventListener('DOMContentLoaded', function () {
         const u = String(url || '').trim();
         if (!u) return '';
         return u.replace(/\/$/, '');
+    }
+
+    function applyApiPreset(baseUrl, label) {
+        if (!apiEnabledToggle || !apiBaseUrlEl || !apiTimeoutEl) return;
+        apiEnabledToggle.checked = true;
+        apiBaseUrlEl.value = normalizeBaseUrl(baseUrl);
+        if (!apiTimeoutEl.value) apiTimeoutEl.value = '8000';
+        setApiStatus(`Preset aplicado: ${label}. Clique em “Testar Conexão” e depois “Salvar Configurações”.`, null);
     }
 
     function saveApiOverride() {
@@ -221,7 +231,8 @@ document.addEventListener('DOMContentLoaded', function () {
             localStorage.removeItem('userRole');
         } catch {}
 
-        alert('Dados limpos. A aplicação será recarregada.');
+        if (window.UTILS?.notify) window.UTILS.notify('Dados limpos. A aplicação será recarregada.', 'success');
+        else alert('Dados limpos. A aplicação será recarregada.');
         window.location.href = 'index.html';
     }
 
@@ -238,6 +249,8 @@ document.addEventListener('DOMContentLoaded', function () {
     if (apiTestBtn) apiTestBtn.addEventListener('click', testApiConnection);
     if (apiSaveBtn) apiSaveBtn.addEventListener('click', saveApiOverride);
     if (apiResetBtn) apiResetBtn.addEventListener('click', resetApiOverride);
+    if (apiPresetLocalBtn) apiPresetLocalBtn.addEventListener('click', () => applyApiPreset('http://localhost:3000', 'Local (http://localhost:3000)'));
+    if (apiPresetRailwayBtn) apiPresetRailwayBtn.addEventListener('click', () => applyApiPreset('https://barestaurante.up.railway.app', 'Railway (https://barestaurante.up.railway.app)'));
 
     tabButtons.forEach((btn) => {
         btn.addEventListener('click', () => {

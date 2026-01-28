@@ -12,10 +12,19 @@ function detectApiBaseUrl() {
 
         // Permite forçar a API via querystring (útil para testes locais sem backend)
         // Ex.: http://localhost:8000/dashboard.html?api=railway
+        // Ex.: http://localhost:8000/dashboard.html?api=local
+        // Ex.: http://localhost:8000/dashboard.html?api=https://minha-api.up.railway.app
         try {
             const params = new URLSearchParams(window.location.search || '');
             const api = (params.get('api') || '').toLowerCase();
             if (api === 'railway') return DEFAULT_RAILWAY;
+            if (api === 'local') return `${protocol || 'http:'}//localhost:3000`;
+
+            // Permite passar uma URL completa como valor do parâmetro api
+            const apiRaw = String(params.get('api') || '').trim();
+            if (apiRaw && (apiRaw.startsWith('http://') || apiRaw.startsWith('https://'))) {
+                return apiRaw.replace(/\/$/, '');
+            }
         } catch {
             // ignora
         }
@@ -30,14 +39,9 @@ function detectApiBaseUrl() {
             return window.__API_BASE_URL__;
         }
 
-        // Netlify: detecta domínio .netlify.app ou deploy previews
-        if (hostname && (hostname.includes('netlify.app') || hostname.includes('netlify.com'))) {
-            return DEFAULT_RAILWAY; // Frontend no Netlify, backend no Railway
-        }
-
-        // Railway: detecta domínio .up.railway.app (caso hospede frontend também)
+        // Railway: detecta domínio .up.railway.app
         if (hostname && hostname.includes('railway.app')) {
-            return DEFAULT_RAILWAY; // Mesmo domínio para frontend e backend
+            return DEFAULT_RAILWAY; // Frontend e backend no Railway
         }
 
         // Produção: padrão Railway
@@ -60,7 +64,7 @@ const CONFIG = {
     // URLs e Endpoints
     URLS: {
         local: 'http://localhost:8000',
-        production: 'https://barestaurante.netlify.app',
+        production: 'https://barestaurante.up.railway.app',
         github: 'https://github.com/cristiano-superacao/bar_restaurante'
     },
 
@@ -224,6 +228,20 @@ const CONFIG = {
     }
 };
 
+// Logs/debug somente quando explicitamente habilitado (evita poluir console em produção)
+try {
+    if (typeof window !== 'undefined' && window.location) {
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const params = new URLSearchParams(window.location.search || '');
+        const forceDebug = params.get('debug') === '1';
+        const allowDevLogs = isLocalhost || forceDebug;
+        CONFIG.DEV.debug = !!(CONFIG.DEV.debug && allowDevLogs);
+        CONFIG.DEV.logs = !!(CONFIG.DEV.logs && allowDevLogs);
+    }
+} catch {
+    // Ignorar
+}
+
 // Override de API via LocalStorage (útil em produção sem rebuild)
 // Chave: apiConfigOverride = { enabled?: boolean, baseUrl?: string, timeoutMs?: number }
 try {
@@ -251,4 +269,6 @@ if (typeof module !== 'undefined' && module.exports) {
     module.exports = CONFIG;
 }
 
-console.log('⚙️ Configurações do sistema carregadas:', CONFIG.APP.name, 'v' + CONFIG.APP.version);
+if (typeof window !== 'undefined' && CONFIG.DEV && CONFIG.DEV.logs) {
+    console.log('⚙️ Configurações do sistema carregadas:', CONFIG.APP.name, 'v' + CONFIG.APP.version);
+}

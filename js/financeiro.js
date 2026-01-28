@@ -184,7 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderFinanceiro();
                 closeModal();
             } catch (err) {
-                alert('Erro ao salvar transação via API.');
+                if (window.UTILS?.notify) window.UTILS.notify('Erro ao salvar transação via API.', 'error');
+                else alert('Erro ao salvar transação via API.');
             }
         } else {
             if (editingTransacaoId) {
@@ -211,7 +212,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     await window.API.transactions.remove(Number(id));
                     await loadTransacoes();
                 } catch (err) {
-                    alert('Erro ao excluir transação via API.');
+                    if (window.UTILS?.notify) window.UTILS.notify('Erro ao excluir transação via API.', 'error');
+                    else alert('Erro ao excluir transação via API.');
                 }
             } else {
                 transacoes = transacoes.filter(t => t.id !== id);

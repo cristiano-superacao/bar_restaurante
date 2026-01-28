@@ -59,6 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const formatBRL = window.CONFIG?.UTILS?.formatCurrency || ((v) => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
 
     const showFormError = (msg) => {
+        if (window.UTILS?.formError) { window.UTILS.formError.show(itemFormErrorWrap, msg); return; }
         if (!itemFormErrorWrap) return;
         const box = itemFormErrorWrap.querySelector('.alert');
         if (box) box.textContent = String(msg || 'Erro');
@@ -66,6 +67,7 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
     const clearFormError = () => {
+        if (window.UTILS?.formError) { window.UTILS.formError.clear(itemFormErrorWrap); return; }
         if (!itemFormErrorWrap) return;
         const box = itemFormErrorWrap.querySelector('.alert');
         if (box) box.textContent = '';
@@ -420,7 +422,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         await window.API.menu.remove(id);
                         await loadItems();
                     } catch (err) {
-                        alert('Erro ao excluir item via API.');
+                        if (window.UTILS?.notify) window.UTILS.notify('Erro ao excluir item via API.', 'error');
+                        else alert('Erro ao excluir item via API.');
                     }
                 } else {
                     menuItems = menuItems.filter(item => item.id !== id);

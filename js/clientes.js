@@ -29,8 +29,11 @@
   function openModal(editing){
     el.modal.classList.add('show');
     el.modalTitle.textContent = editing ? 'Editar Cliente' : 'Novo Cliente';
-    const errEl = document.getElementById('client-form-error');
-    if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+    if (window.UTILS?.formError) window.UTILS.formError.clear('client-form-error');
+    else {
+      const errEl = document.getElementById('client-form-error');
+      if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+    }
   }
   function closeModal(){ el.modal.classList.remove('show'); }
 
@@ -45,7 +48,10 @@
   el.form.addEventListener('submit', async (ev) => {
     ev.preventDefault();
     const errEl = document.getElementById('client-form-error');
-    const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
+    const showError = (msg) => {
+      if (window.UTILS?.formError) window.UTILS.formError.show(errEl, msg);
+      else if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; }
+    };
     const payload = {
       name: el.name.value.trim(),
       email: el.email.value.trim() || null,
@@ -133,7 +139,11 @@
       });
       card.querySelector('.btn-delete').addEventListener('click', async () => {
         if (!confirm('Excluir este cliente?')) return;
-        try { await API.customers.remove(c.id); load(); } catch { alert('Erro ao excluir'); }
+        try { await API.customers.remove(c.id); load(); }
+        catch {
+          if (window.UTILS?.notify) window.UTILS.notify('Erro ao excluir', 'error');
+          else alert('Erro ao excluir');
+        }
       });
       frag.appendChild(card);
     });
