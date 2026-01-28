@@ -6,11 +6,11 @@ nixPkgs = ["nodejs-18_x"]
 
 [phases.install]
 cmds = [
-    "if [ -d server ]; then cd server; elif [ -d ../server ]; then cd ../server; fi; npm ci --omit=dev"
+    "sh -lc 'if [ -d server ]; then cd server; elif [ -d ../server ]; then cd ../server; fi; npm ci --omit=dev'"
 ]
 
 [phases.build]
 cmds = ["echo 'Build complete'"]
 
 [start]
-cmd = "if [ -d server ]; then cd server; elif [ -d ../server ]; then cd ../server; fi; npm start"
+cmd = "sh -lc 'if [ -d server ]; then cd server; elif [ -d ../server ]; then cd ../server; fi; npm start'"
