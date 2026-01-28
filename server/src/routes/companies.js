@@ -12,7 +12,23 @@ router.use(requireRole(['superadmin']));
 router.get('/', async (_req, res) => {
   try {
     const { rows } = await query(
-      'SELECT id, name, active, created_at FROM companies ORDER BY created_at DESC, id DESC'
+      `SELECT
+        id,
+        company_number,
+        name,
+        legal_name,
+        document,
+        phone,
+        email,
+        address,
+        active,
+        blocked_at,
+        blocked_reason,
+        trial_start_at,
+        trial_end_at,
+        created_at
+       FROM companies
+       ORDER BY created_at DESC, id DESC`
     );
     res.json(rows);
   } catch (e) {
@@ -22,7 +38,15 @@ router.get('/', async (_req, res) => {
 
 router.post('/', [
   body('name').isString().trim().isLength({ min: 2 }),
+  body('legalName').optional().isString().trim().isLength({ min: 2 }),
+  body('document').optional().isString().trim().isLength({ min: 8 }),
+  body('phone').optional().isString().trim().isLength({ min: 6 }),
+  body('email').optional().isString().isEmail().normalizeEmail(),
+  body('address').optional().isString().trim().isLength({ min: 3 }),
   body('active').optional().isBoolean().toBoolean(),
+  body('blockedReason').optional().isString().trim().isLength({ min: 2 }),
+  body('trialStartAt').optional().isISO8601(),
+  body('trialEndAt').optional().isISO8601(),
   body('adminUsername').optional().isString().trim().isLength({ min: 3 }),
   body('adminEmail').optional().isString().isEmail().normalizeEmail(),
   body('adminPassword').optional().isString().isLength({ min: 6 }),
@@ -31,15 +55,56 @@ router.post('/', [
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ error: 'Dados inválidos', details: errors.array() });
-    const { name, active = true, adminUsername, adminEmail, adminPassword } = req.body || {};
+    const {
+      name,
+      legalName,
+      document,
+      phone,
+      email,
+      address,
+      active = true,
+      blockedReason,
+      trialStartAt,
+      trialEndAt,
+      adminUsername,
+      adminEmail,
+      adminPassword
+    } = req.body || {};
     if (!name || String(name).trim().length < 2) {
       return res.status(400).json({ error: 'Nome da empresa é obrigatório' });
     }
 
+    const start = trialStartAt ? new Date(String(trialStartAt)) : null;
+    const end = trialEndAt ? new Date(String(trialEndAt)) : null;
+    if ((start && Number.isNaN(start.getTime())) || (end && Number.isNaN(end.getTime()))) {
+      return res.status(400).json({ error: 'Datas de trial inválidas' });
+    }
+    if (start && end && end.getTime() < start.getTime()) {
+      return res.status(400).json({ error: 'trialEndAt deve ser maior ou igual a trialStartAt' });
+    }
+
+    const isActive = !!active;
+    const blockedAt = isActive ? null : new Date();
+    const blockedReasonDb = isActive ? null : (blockedReason ? String(blockedReason).trim() : 'Bloqueada pelo superadmin');
+
     await client.query('BEGIN');
     const { rows } = await client.query(
-      'INSERT INTO companies(name, active) VALUES ($1,$2) RETURNING id, name, active, created_at',
-      [String(name).trim(), !!active]
+      `INSERT INTO companies(name, legal_name, document, phone, email, address, active, blocked_at, blocked_reason, trial_start_at, trial_end_at)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+       RETURNING id, company_number, name, legal_name, document, phone, email, address, active, blocked_at, blocked_reason, trial_start_at, trial_end_at, created_at`,
+      [
+        String(name).trim(),
+        legalName !== undefined ? String(legalName).trim() : null,
+        document !== undefined ? String(document).trim() : null,
+        phone !== undefined ? String(phone).trim() : null,
+        email !== undefined ? String(email).trim() : null,
+        address !== undefined ? String(address).trim() : null,
+        isActive,
+        blockedAt,
+        blockedReasonDb,
+        start,
+        end
+      ]
     );
     const company = rows[0];
 
@@ -69,20 +134,105 @@ router.post('/', [
 
 router.put('/:id', [
   body('name').optional().isString().trim().isLength({ min: 2 }),
+  body('legalName').optional().isString().trim().isLength({ min: 2 }),
+  body('document').optional().isString().trim().isLength({ min: 8 }),
+  body('phone').optional().isString().trim().isLength({ min: 6 }),
+  body('email').optional().isString().isEmail().normalizeEmail(),
+  body('address').optional().isString().trim().isLength({ min: 3 }),
   body('active').optional().isBoolean().toBoolean(),
+  body('blockedReason').optional().isString().trim().isLength({ min: 2 }),
+  body('trialStartAt').optional().isISO8601(),
+  body('trialEndAt').optional().isISO8601(),
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ error: 'Dados inválidos', details: errors.array() });
     const { id } = req.params;
-    const { name, active } = req.body || {};
+    const { name, legalName, document, phone, email, address, active, blockedReason, trialStartAt, trialEndAt } = req.body || {};
+
+    const start = trialStartAt ? new Date(String(trialStartAt)) : null;
+    const end = trialEndAt ? new Date(String(trialEndAt)) : null;
+    if ((start && Number.isNaN(start.getTime())) || (end && Number.isNaN(end.getTime()))) {
+      return res.status(400).json({ error: 'Datas de trial inválidas' });
+    }
+    if (start && end && end.getTime() < start.getTime()) {
+      return res.status(400).json({ error: 'trialEndAt deve ser maior ou igual a trialStartAt' });
+    }
+
+    // Regra de bloqueio: ao desativar, registra blocked_at/blocked_reason; ao ativar, limpa
+    const activeProvided = active !== undefined;
+    const newActive = activeProvided ? !!active : null;
+    const blockNow = activeProvided && newActive === false;
+    const unblock = activeProvided && newActive === true;
+
+    const shouldUpdateBlocked = blockNow || unblock;
+    const blockedAtValue = blockNow ? new Date() : (unblock ? null : null);
+    const blockedReasonValue = blockNow
+      ? (blockedReason ? String(blockedReason).trim() : 'Bloqueada pelo superadmin')
+      : null;
+
     const { rows } = await query(
-      'UPDATE companies SET name = COALESCE($1, name), active = COALESCE($2, active) WHERE id=$3 RETURNING id, name, active, created_at',
-      [name !== undefined ? String(name).trim() : null, active !== undefined ? !!active : null, Number(id)]
+      `UPDATE companies SET
+        name = COALESCE($1, name),
+        legal_name = COALESCE($2, legal_name),
+        document = COALESCE($3, document),
+        phone = COALESCE($4, phone),
+        email = COALESCE($5, email),
+        address = COALESCE($6, address),
+        active = COALESCE($7, active),
+        blocked_at = CASE WHEN $8 THEN $9 ELSE blocked_at END,
+        blocked_reason = CASE WHEN $8 THEN $10 ELSE blocked_reason END,
+        trial_start_at = COALESCE($11, trial_start_at),
+        trial_end_at = COALESCE($12, trial_end_at)
+       WHERE id=$13
+       RETURNING id, company_number, name, legal_name, document, phone, email, address, active, blocked_at, blocked_reason, trial_start_at, trial_end_at, created_at`,
+      [
+        name !== undefined ? String(name).trim() : null,
+        legalName !== undefined ? String(legalName).trim() : null,
+        document !== undefined ? String(document).trim() : null,
+        phone !== undefined ? String(phone).trim() : null,
+        email !== undefined ? String(email).trim() : null,
+        address !== undefined ? String(address).trim() : null,
+        activeProvided ? newActive : null,
+        shouldUpdateBlocked,
+        blockedAtValue,
+        blockedReasonValue,
+        start,
+        end,
+        Number(id)
+      ]
     );
     res.json(rows[0] || null);
   } catch (e) {
     res.status(500).json({ error: 'Erro ao atualizar empresa' });
+  }
+});
+
+router.delete('/:id', [
+  body('confirm').isString().trim().isLength({ min: 1 }),
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ error: 'Dados inválidos', details: errors.array() });
+    const { id } = req.params;
+    const { confirm } = req.body || {};
+
+    const c = await query('SELECT id, name, company_number FROM companies WHERE id=$1', [Number(id)]);
+    if (c.rowCount === 0) return res.status(404).json({ error: 'Empresa não encontrada' });
+    const company = c.rows[0];
+
+    const confirmValue = String(confirm || '').trim();
+    const ok = confirmValue === String(company.name)
+      || confirmValue === String(company.company_number)
+      || confirmValue.toUpperCase() === 'DELETE';
+    if (!ok) {
+      return res.status(400).json({ error: 'Confirmação inválida para exclusão' });
+    }
+
+    await query('DELETE FROM companies WHERE id=$1', [Number(id)]);
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Erro ao excluir empresa' });
   }
 });
 
