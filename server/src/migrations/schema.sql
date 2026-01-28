@@ -3,19 +3,53 @@
 -- Empresas (multi-tenant)
 CREATE TABLE IF NOT EXISTS companies (
   id SERIAL PRIMARY KEY,
+  company_number INT UNIQUE,
   name TEXT NOT NULL UNIQUE,
   legal_name TEXT,
   document TEXT,
   phone TEXT,
+  email TEXT,
   address TEXT,
   active BOOLEAN NOT NULL DEFAULT true,
+  blocked_at TIMESTAMP WITHOUT TIME ZONE,
+  blocked_reason TEXT,
+  trial_start_at TIMESTAMP WITHOUT TIME ZONE,
+  trial_end_at TIMESTAMP WITHOUT TIME ZONE,
   created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW()
 );
+
+-- Numeração sequencial única por empresa
+CREATE SEQUENCE IF NOT EXISTS companies_number_seq;
+
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS company_number INT UNIQUE;
+ALTER TABLE companies ALTER COLUMN company_number SET DEFAULT nextval('companies_number_seq');
 
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS legal_name TEXT;
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS document TEXT;
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS email TEXT;
 ALTER TABLE companies ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS blocked_at TIMESTAMP WITHOUT TIME ZONE;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS blocked_reason TEXT;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS trial_start_at TIMESTAMP WITHOUT TIME ZONE;
+ALTER TABLE companies ADD COLUMN IF NOT EXISTS trial_end_at TIMESTAMP WITHOUT TIME ZONE;
+
+-- Backfill idempotente para empresas existentes: garante company_number e sincroniza sequence
+DO $$
+BEGIN
+  PERFORM setval(
+    'companies_number_seq',
+    COALESCE((SELECT MAX(company_number) FROM companies), 0) + 1,
+    false
+  );
+EXCEPTION WHEN undefined_table THEN
+  -- Em bancos novos, a tabela pode ainda não existir no momento do setval.
+  NULL;
+END $$;
+
+UPDATE companies
+SET company_number = nextval('companies_number_seq')
+WHERE company_number IS NULL;
 
 -- Usuários (superadmin sem company_id)
 CREATE TABLE IF NOT EXISTS users (
