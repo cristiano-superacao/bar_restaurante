@@ -324,6 +324,16 @@ class RBACSystem {
      * Mostra informações de debug do RBAC
      */
     debugInfo() {
+        const shouldLog = () => {
+            try {
+                return typeof CONFIG !== 'undefined' && CONFIG.DEV && CONFIG.DEV.logs;
+            } catch {
+                return false;
+            }
+        };
+
+        if (!shouldLog()) return;
+
         const user = this.getCurrentUser();
         console.group('🔐 RBAC Debug Info');
         console.log('Usuário:', user?.name || 'Não autenticado');
