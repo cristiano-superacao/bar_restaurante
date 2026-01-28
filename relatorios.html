@@ -11,113 +11,11 @@
     <link rel="stylesheet" href="css/sidebar-azul.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Premium Background */
-        .main-content {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: calc(100vh - 60px);
-        }
+        /* Fundo / app shell centralizados em css/design-system.css */
         
-        /* Toolbar Premium */
-        .toolbar {
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: var(--spacing-lg);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-            margin-bottom: var(--spacing-xl);
-            border: 1px solid rgba(255,255,255,0.8);
-            display: flex;
-            gap: var(--spacing);
-            align-items: center;
-        }
-        
-        .filter-select {
-            padding: 14px 16px;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            background: rgba(74, 144, 226, 0.05);
-            font-size: var(--font-size-sm);
-            font-weight: 500;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 250px;
-        }
-        
-        .filter-select:hover {
-            background: white;
-            border-color: var(--primary-300);
-        }
-        
-        .filter-select:focus {
-            background: white;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
-            outline: none;
-        }
+        /* Toolbar/filtros (inclui .filter-select) centralizados em css/design-system.css */
 
-        /* Stats Row Premium */
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: var(--spacing-xl);
-            margin-bottom: var(--spacing-2xl);
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.8);
-            border-radius: 20px;
-            padding: var(--spacing-xl);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing);
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            transition: height 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 12px 48px rgba(74, 144, 226, 0.15);
-        }
-        
-        .stat-card:hover::before {
-            height: 8px;
-        }
-        
-        .stat-card.stripe-success::before {
-            background: linear-gradient(90deg, #10b981, #059669);
-        }
-        
-        .stat-card.stripe-primary::before {
-            background: linear-gradient(90deg, #3b82f6, #2563eb);
-        }
-        
-        .stat-icon {
-            width: 64px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 16px;
-            font-size: 1.75rem;
-            flex-shrink: 0;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+        /* Stats (.stats-row/.stat-card/.stat-icon e stripes) centralizados em css/design-system.css */
         
         .stat-card:hover .stat-icon {
             transform: scale(1.1) rotate(5deg);
@@ -295,32 +193,17 @@
         
         /* Responsividade Premium - 4 Breakpoints */
         @media (max-width: 1280px) {
-            .stats-row {
-                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-                gap: var(--spacing-lg);
-            }
             .reports-grid {
                 grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
             }
         }
         
         @media (max-width: 1024px) {
-            .stats-row {
-                grid-template-columns: repeat(2, 1fr);
-            }
             .reports-grid {
                 grid-template-columns: 1fr;
             }
             .report-card.full-width {
                 grid-column: 1;
-            }
-            .toolbar {
-                padding: var(--spacing);
-            }
-            .stat-icon {
-                width: 56px;
-                height: 56px;
-                font-size: 1.5rem;
             }
             .chart-container {
                 height: 320px;
@@ -328,67 +211,12 @@
         }
         
         @media (max-width: 768px) {
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .filter-select {
-                width: 100%;
-            }
-            
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .stat-card {
-                padding: var(--spacing);
-            }
-            
-            .stat-icon {
-                width: 48px;
-                height: 48px;
-                font-size: 1.25rem;
-            }
-            
-            .stat-value {
-                font-size: 1.5rem;
-            }
-            
             .chart-container {
                 height: 280px;
             }
         }
         
         @media (max-width: 480px) {
-            .main-content {
-                padding: var(--spacing);
-            }
-            
-            .toolbar {
-                padding: var(--spacing-sm);
-                border-radius: 12px;
-            }
-            
-            .stat-card {
-                border-radius: 16px;
-            }
-            
-            .stat-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 1rem;
-                border-radius: 12px;
-            }
-            
-            .stat-label {
-                font-size: 10px;
-            }
-            
-            .stat-value {
-                font-size: 1.25rem;
-            }
-            
             .report-card {
                 border-radius: 16px;
                 padding: var(--spacing);

@@ -12,7 +12,6 @@
 
     /* Main Content */
     .main-content {
-      padding: 32px;
       max-width: 1000px;
       margin: 0 auto;
     }
@@ -20,34 +19,7 @@
     /* Search */
     .search-box {
       margin-bottom: 32px;
-      position: relative;
-    }
-    
-    
-    
-
-    .search-box i {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--neutral-400);
-      font-size: 16px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 12px 16px 12px 44px;
-      border: 2px solid var(--neutral-200);
-      border-radius: 8px;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .search-box input:focus {
-      outline: none;
-      border-color: var(--primary-500);
-      box-shadow: 0 0 0 3px var(--primary-50);
+      /* input/ícone vêm do design system */
     }
 
     /* Quick Links */
@@ -209,8 +181,6 @@
     }
 
     @media (max-width: 640px) {
-      .main-content { padding: 16px; }
-
       .quick-links {
         grid-template-columns: 1fr;
       }

@@ -9,150 +9,14 @@
   <link rel="stylesheet" href="css/sidebar-azul.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Main Content */
+    /* Main Content: complemento ao design system */
     .main-content {
-      padding: 32px;
       max-width: 1400px;
       margin: 0 auto;
     }
 
-    /* Toolbar */
-    .toolbar {
-      display: flex;
-      gap: 16px;
-      margin-bottom: 32px;
-      flex-wrap: wrap;
-      align-items: center;
-    }
+    /* Toolbar/busca/botões e stats centralizados em css/design-system.css */
 
-    .search-box {
-      flex: 1;
-      min-width: 300px;
-      position: relative;
-    }
-
-    .search-box i {
-      position: absolute;
-      left: 16px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--neutral-400);
-      font-size: 16px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 12px 16px 12px 44px;
-      border: 2px solid var(--neutral-200);
-      border-radius: 8px;
-      font-size: 14px;
-      transition: all 0.2s;
-    }
-
-    .search-box input:focus {
-      outline: none;
-      border-color: var(--primary-500);
-      box-shadow: 0 0 0 3px var(--primary-50);
-    }
-
-    .btn-primary {
-      background: var(--primary-600);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-700);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
-    }
-
-    /* Stats */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 24px;
-      margin-bottom: 32px;
-    }
-
-    .stat-card {
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      transition: all 0.3s;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .stat-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .stat-card:hover::before {
-      opacity: 1;
-    }
-
-
-    .stat-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 12px;
-    }
-
-    .stat-title {
-      font-size: 14px;
-      color: var(--neutral-600);
-      font-weight: 600;
-    }
-
-    .stat-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      color: var(--primary-600);
-      background: var(--primary-50);
-    }
-
-
-
-    .stat-value {
-      font-size: 28px;
-      font-weight: 800;
-      background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
 
     /* Users Grid */
     .users-grid {
@@ -376,19 +240,6 @@
     }
 
     @media (max-width: 640px) {
-      .toolbar {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .search-box {
-        min-width: 100%;
-      }
-
-      .stats-row {
-        grid-template-columns: 1fr;
-      }
-
       .users-grid {
         grid-template-columns: 1fr;
       }
@@ -414,7 +265,7 @@
           <i class="fas fa-search"></i>
           <input type="text" id="search-input" placeholder="Buscar usuários por nome, email ou função...">
         </div>
-        <button class="btn-primary" id="btn-new-user">
+        <button class="btn btn-primary" id="btn-new-user">
           <i class="fas fa-user-plus"></i>
           <span>Novo Usuário</span>
         </button>
@@ -422,41 +273,33 @@
 
       <!-- Stats -->
       <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-header">
-            <span class="stat-title">Total de Usuários</span>
-            <div class="stat-icon">
-              <i class="fas fa-users"></i>
-            </div>
+        <div class="stat-card stripe-primary">
+          <div class="stat-icon"><i class="fas fa-users"></i></div>
+          <div class="stat-content">
+            <div class="stat-label">Total de Usuários</div>
+            <div class="stat-value" id="users-total">0</div>
           </div>
-          <div class="stat-value" id="users-total">0</div>
         </div>
         <div class="stat-card stripe-success">
-          <div class="stat-header">
-            <span class="stat-title">Ativos</span>
-            <div class="stat-icon">
-              <i class="fas fa-user-check"></i>
-            </div>
+          <div class="stat-icon"><i class="fas fa-user-check"></i></div>
+          <div class="stat-content">
+            <div class="stat-label">Ativos</div>
+            <div class="stat-value" id="users-active">0</div>
           </div>
-          <div class="stat-value" id="users-active">0</div>
         </div>
         <div class="stat-card stripe-warning">
-          <div class="stat-header">
-            <span class="stat-title">Pendentes</span>
-            <div class="stat-icon">
-              <i class="fas fa-user-clock"></i>
-            </div>
+          <div class="stat-icon"><i class="fas fa-user-clock"></i></div>
+          <div class="stat-content">
+            <div class="stat-label">Pendentes</div>
+            <div class="stat-value" id="users-pending">0</div>
           </div>
-          <div class="stat-value" id="users-pending">0</div>
         </div>
         <div class="stat-card stripe-error">
-          <div class="stat-header">
-            <span class="stat-title">Inativos</span>
-            <div class="stat-icon">
-              <i class="fas fa-user-slash"></i>
-            </div>
+          <div class="stat-icon"><i class="fas fa-user-slash"></i></div>
+          <div class="stat-content">
+            <div class="stat-label">Inativos</div>
+            <div class="stat-value" id="users-inactive">0</div>
           </div>
-          <div class="stat-value" id="users-inactive">0</div>
         </div>
       </div>
 
