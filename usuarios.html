@@ -21,7 +21,7 @@
     /* Users Grid */
     .users-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
       gap: 24px;
     }
 
@@ -36,6 +36,10 @@
     .user-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .user-card:focus-within {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 4px 10px rgba(0, 0, 0, 0.08);
     }
 
     .user-card-header {

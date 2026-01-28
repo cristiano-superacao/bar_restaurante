@@ -20,7 +20,7 @@
     /* Companies Grid */
     .companies-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(350px, 100%), 1fr));
       gap: 24px;
     }
 
@@ -41,6 +41,10 @@
     .company-card.selected {
       border: 2px solid var(--primary-600);
       box-shadow: 0 0 0 3px var(--primary-50);
+    }
+
+    .company-card:focus-within {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 4px 10px rgba(0, 0, 0, 0.08);
     }
 
     .company-card-header {

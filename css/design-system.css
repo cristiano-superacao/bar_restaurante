@@ -902,6 +902,17 @@ a:hover {
     text-decoration: none;
 }
 
+.btn:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.35);
+    outline-offset: 2px;
+}
+
+/* Acessibilidade: botões de ação customizados (ex.: .order-action-btn, .company-action-btn, etc.) */
+:where(button, a)[class*='-action-btn']:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.35);
+    outline-offset: 2px;
+}
+
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -1602,6 +1613,38 @@ a:hover {
 
 @media (max-width: 768px) {
     .search-box { min-width: 100%; }
+
+    .toolbar {
+        padding: var(--spacing);
+        gap: var(--spacing-sm);
+        align-items: stretch;
+    }
+
+    /* Quando existe filter-group, faça os controles quebrarem bem */
+    .toolbar .filter-group {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .toolbar .filter-group > * {
+        flex: 1 1 220px;
+        min-width: 0;
+    }
+
+    /* Quando os botões estão direto na toolbar (sem filter-group) */
+    .toolbar > .btn,
+    .toolbar > button.btn,
+    .toolbar > a.btn {
+        flex: 1 1 220px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* No mobile bem pequeno, permite quebrar texto de botões sem estourar */
+    .toolbar .btn {
+        white-space: normal;
+        text-align: center;
+    }
 }
 
 /* === GRIDS DE ESTATÍSTICAS === */

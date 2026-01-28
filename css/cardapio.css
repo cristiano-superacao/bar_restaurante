@@ -36,26 +36,25 @@
 
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
     gap: var(--spacing-lg, 24px);
 }
 
 @media (max-width: 1280px) {
     .menu-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: var(--spacing-lg, 20px);
     }
 }
 
 @media (max-width: 1024px) {
     .menu-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
     }
 }
 
 @media (max-width: 768px) {
     .menu-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
         gap: var(--spacing, 16px);
     }
 }

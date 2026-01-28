@@ -35,7 +35,7 @@
         /* Delivery Grid Premium */
         .delivery-grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); 
+            grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr)); 
             gap: var(--spacing-xl); 
         }
         .delivery-card {
@@ -64,6 +64,10 @@
         .delivery-card:hover {
             box-shadow: 0 12px 48px rgba(74, 144, 226, 0.15);
             transform: translateY(-8px) scale(1.02);
+        }
+
+        .delivery-card:focus-within {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 12px 48px rgba(74, 144, 226, 0.12);
         }
         
         .delivery-card:hover::before {

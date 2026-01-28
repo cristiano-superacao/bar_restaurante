@@ -17,7 +17,7 @@
         /* Transações List Premium */
         .transacoes-list { 
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
             gap: var(--spacing-xl);
         }
         
@@ -53,6 +53,10 @@
             box-shadow: 0 20px 60px rgba(59, 130, 246, 0.18), 0 0 0 1px rgba(59, 130, 246, 0.08);
             transform: translateY(-8px) scale(1.02);
             border-color: rgba(59, 130, 246, 0.25);
+        }
+
+        .transacao-card:focus-within {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 16px 44px rgba(15, 23, 42, 0.12);
         }
         
         .transacao-card-actions {

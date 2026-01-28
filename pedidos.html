@@ -98,7 +98,7 @@
         /* Orders Grid Premium */
         .orders-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
             gap: var(--spacing-xl);
         }
         
@@ -745,7 +745,6 @@
             .empty-state h3 {
                 font-size: 1.25rem;
             }
-        }
             
             .order-id {
                 font-size: var(--font-size-lg);

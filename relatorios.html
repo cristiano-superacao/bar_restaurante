@@ -60,7 +60,7 @@
         /* Reports Grid Premium */
         .reports-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(500px, 100%), 1fr));
             gap: var(--spacing-xl);
         }
         
@@ -90,6 +90,10 @@
         .report-card:hover {
             box-shadow: 0 12px 48px rgba(74, 144, 226, 0.15);
             transform: translateY(-6px);
+        }
+
+        .report-card:focus-within {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 12px 48px rgba(74, 144, 226, 0.12);
         }
         
         .report-card:hover::before {
@@ -194,7 +198,7 @@
         /* Responsividade Premium - 4 Breakpoints */
         @media (max-width: 1280px) {
             .reports-grid {
-                grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(min(450px, 100%), 1fr));
             }
         }
         

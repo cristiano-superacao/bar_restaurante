@@ -112,7 +112,7 @@ body.page-cupom .company-info div {
 /* Order Meta Premium */
 body.page-cupom .order-meta {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 20px;
   margin-top: 32px;
 }
@@ -198,12 +198,14 @@ body.page-cupom .receipt-items {
   border-radius: 16px;
   padding: 20px;
   border: 1px solid rgba(74, 144, 226, 0.1);
+  overflow-x: auto;
 }
 
 body.page-cupom .items-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  min-width: 520px;
 }
 
 body.page-cupom .items-table thead {
@@ -406,6 +408,11 @@ body.page-cupom .receipt-btn {
   gap: 10px;
   position: relative;
   overflow: hidden;
+}
+
+body.page-cupom .receipt-btn:focus-visible {
+  outline: 3px solid rgba(59, 130, 246, 0.35);
+  outline-offset: 2px;
 }
 
 body.page-cupom .receipt-btn::before {

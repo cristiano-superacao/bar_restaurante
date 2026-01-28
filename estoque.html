@@ -16,8 +16,23 @@
         /* === ESTOQUE (ESPECÍFICO) === */
         .estoque-list {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            /* Cards responsivos sem estourar em telas pequenas */
+            grid-template-columns: repeat(auto-fit, minmax(min(360px, 100%), 1fr));
             gap: var(--spacing-lg);
+            align-items: start;
+        }
+
+        /* Ajustes finos do toolbar desta tela */
+        .toolbar {
+            justify-content: space-between;
+        }
+
+        .toolbar .search-box {
+            flex: 1 1 420px;
+        }
+
+        .toolbar .filter-group {
+            margin-left: auto;
         }
 
         .estoque-item {
@@ -93,6 +108,10 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            max-width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .estoque-quantity {
@@ -156,14 +175,27 @@
             transform: translateY(-1px);
         }
 
+        .estoque-action-btn:focus-visible {
+            outline: 3px solid rgba(59, 130, 246, 0.35);
+            outline-offset: 2px;
+        }
+
         .estoque-action-btn.delete {
             background: rgba(239, 68, 68, 0.06);
             color: var(--error-700);
         }
 
+        .estoque-action-btn.delete:focus-visible {
+            outline-color: rgba(239, 68, 68, 0.35);
+        }
+
         .estoque-action-btn.delete:hover {
             background-color: var(--error-50);
             border-color: rgba(220,38,38,.25);
+        }
+
+        .estoque-item:focus-within {
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.18);
         }
 
         .empty-state {
@@ -192,25 +224,37 @@
         .empty-state p { font-size: var(--font-size-sm); color: var(--text-muted); }
 
         /* Responsividade */
-        @media (max-width: 1400px) {
-            .estoque-list { grid-template-columns: repeat(3, 1fr); gap: var(--spacing); }
-        }
-
         @media (max-width: 1024px) {
-            .estoque-list { grid-template-columns: repeat(2, 1fr); }
+            .estoque-list { gap: var(--spacing); grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); }
             .estoque-item { grid-template-columns: 56px 1fr auto; }
             .estoque-actions { grid-column: 1 / -1; justify-content: flex-end; }
             .estoque-quantity { border-left: 0; padding-left: 0; }
         }
 
         @media (max-width: 768px) {
-            .estoque-list { grid-template-columns: 1fr; }
             .estoque-item { grid-template-columns: 52px 1fr; padding: var(--spacing); }
             .estoque-quantity { grid-column: 1 / -1; text-align: left; border-left: 0; padding-left: 0; }
             .estoque-actions { grid-column: 1 / -1; justify-content: flex-end; }
+
+            .toolbar .filter-group {
+                width: 100%;
+                margin-left: 0;
+                justify-content: flex-start;
+            }
+
+            #category-filter {
+                flex: 1 1 220px;
+                min-width: 0;
+            }
+
+            #add-produto-btn {
+                flex: 1 1 220px;
+                justify-content: center;
+            }
         }
 
         @media (max-width: 480px) {
+            .estoque-list { grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); }
             .quantity-value { font-size: 1.375rem; }
             .estoque-name { font-size: 1rem; }
         }

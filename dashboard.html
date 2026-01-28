@@ -81,7 +81,7 @@
         /* Charts Section */
         .charts-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(400px, 100%), 1fr));
             gap: 24px;
             margin-bottom: 32px;
         }
@@ -112,6 +112,10 @@
         .chart-card:hover {
             box-shadow: 0 12px 48px rgba(74, 144, 226, 0.12);
             transform: translateY(-4px);
+        }
+
+        .chart-card:focus-within {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 12px 48px rgba(74, 144, 226, 0.12);
         }
         
         .chart-card:hover::before {
@@ -210,6 +214,10 @@
         .activity-card:hover {
             box-shadow: 0 12px 48px rgba(74, 144, 226, 0.12);
             transform: translateY(-4px);
+        }
+
+        .activity-card:focus-within {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12), 0 12px 48px rgba(74, 144, 226, 0.12);
         }
         
         .activity-list {
