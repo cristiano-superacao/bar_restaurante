@@ -7,7 +7,7 @@
     "start": "npm run serve:node",
     "dev": "npm run serve:node",
     "serve": "npm run serve:node",
-    "serve:node": "npx http-server . -p 8000 -c-1 -o",
+    "serve:node": "node scripts/serve.mjs",
     "build": "echo 'Site estático - Pronto para deploy'",
     "deploy": "git add . && git commit -m 'Deploy automático' && git push origin main",
     "test": "echo 'Abrindo página de testes...' && start http://localhost:8000/test",
