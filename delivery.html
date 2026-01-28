@@ -11,90 +11,9 @@
     <link rel="stylesheet" href="css/sidebar-azul.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Premium Background */
-        .main-content {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: calc(100vh - 60px);
-        }
+        /* Fundo / app shell centralizados em css/design-system.css */
         
-        /* Toolbar Premium */
-        .toolbar {
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: var(--spacing-lg);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-            margin-bottom: var(--spacing-xl);
-            border: 1px solid rgba(255,255,255,0.8);
-            display: flex;
-            gap: var(--spacing);
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        
-        .search-box {
-            position: relative;
-            flex: 1;
-            min-width: 250px;
-        }
-        
-        .search-box i {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary-500);
-            font-size: 16px;
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 14px 16px 14px 48px;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            background: rgba(74, 144, 226, 0.05);
-            font-size: var(--font-size-sm);
-            transition: all 0.3s ease;
-        }
-        
-        .search-box input:focus {
-            background: white;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
-            outline: none;
-        }
-        
-        .filter-group { 
-            display: flex; 
-            gap: var(--spacing-sm); 
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .filter-select {
-            padding: 14px 16px;
-            border: 2px solid transparent;
-            border-radius: 12px;
-            background: rgba(74, 144, 226, 0.05);
-            font-size: var(--font-size-sm);
-            font-weight: 500;
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 200px;
-        }
-        
-        .filter-select:hover {
-            background: white;
-            border-color: var(--primary-300);
-        }
-        
-        .filter-select:focus {
-            background: white;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
-            outline: none;
-        }
+        /* Toolbar/busca/filtros centralizados em css/design-system.css */
         
         #add-delivery-btn {
             background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
@@ -111,51 +30,7 @@
             transform: translateY(-2px);
         }
         
-        /* Stats Row Premium */
-        .stats-row {
-            margin-bottom: var(--spacing-2xl);
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
-        }
-        
-        .stat-card.stripe-warning::before {
-            background: linear-gradient(90deg, #f59e0b, #d97706);
-        }
-        
-        .stat-card.stripe-violet::before {
-            background: linear-gradient(90deg, #7c3aed, #6d28d9);
-        }
-        
-        .stat-card.stripe-success::before {
-            background: linear-gradient(90deg, #10b981, #059669);
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-        }
-        
-        .stat-icon {
-            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-        }
+        /* Stats (.stats-row/.stat-card/.stat-icon e stripes) centralizados em css/design-system.css */
         
         /* Delivery Grid Premium */
         .delivery-grid { 
@@ -549,29 +424,9 @@
         }
         
         @media (max-width: 768px) {
-            .toolbar {
-                flex-direction: column;
-                gap: var(--spacing);
-            }
-            
-            .filter-group {
-                width: 100%;
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .filter-select {
-                width: 100%;
-            }
-            
             #add-delivery-btn {
                 width: 100%;
                 justify-content: center;
-            }
-            
-            .stats-row {
-                grid-template-columns: repeat(2, 1fr);
-                gap: var(--spacing);
             }
             
             .delivery-grid {
@@ -614,14 +469,6 @@
         }
         
         @media (max-width: 480px) {
-            .search-box {
-                min-width: unset;
-            }
-            
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
-            
             .order-icon {
                 width: 48px;
                 height: 48px;

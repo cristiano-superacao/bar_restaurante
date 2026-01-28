@@ -12,213 +12,19 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
-        /* Premium Background */
-        .main-content {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            min-height: calc(100vh - 60px);
-        }
+        /* Fundo / app shell centralizados em css/design-system.css */
         
-        /* Header Premium */
-        .main-header {
-            background: linear-gradient(135deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.95) 100%);
-            backdrop-filter: blur(12px);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-            border-bottom: 1px solid rgba(255,255,255,0.8);
-        }
-        
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing);
-        }
-        
-        .header-search {
-            position: relative;
-            width: 300px;
-        }
-        
-        .header-search input {
-            width: 100%;
-            padding: 0.625rem 1rem 0.625rem 2.5rem;
-            border: 2px solid transparent;
-            border-radius: var(--radius-full);
-            font-size: var(--font-size-sm);
-            background: rgba(74, 144, 226, 0.05);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .header-search input:focus {
-            outline: none;
-            background: white;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 4px rgba(74, 144, 226, 0.1);
-        }
-        
-        .header-search i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            pointer-events: none;
-        }
-        
-        .header-icon-btn {
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: none;
-            background: rgba(74, 144, 226, 0.05);
-            color: var(--text-secondary);
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .header-icon-btn:hover {
-            background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-        }
-        
-        .header-icon-btn .badge-dot {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            width: 8px;
-            height: 8px;
-            background-color: var(--error-500);
-            border: 2px solid var(--bg-card);
-            border-radius: var(--radius-full);
-        }
-        
-        /* Stats Cards Premium */
+        /* Stats (dashboard): grid próprio + pequenos ajustes, usando componentes do design system */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
             gap: var(--spacing-xl);
             margin-bottom: var(--spacing-2xl);
         }
-        
-        .stat-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.9) 100%);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.8);
-            border-radius: 20px;
-            padding: var(--spacing-xl);
-            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .stat-card::before { 
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
-            transition: height 0.3s ease;
-        }
-        
-        .stat-card:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 12px 48px rgba(74, 144, 226, 0.15);
-        }
-        
-        .stat-card:hover::before {
-            height: 8px;
-        }
-        
-        .stat-card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 16px;
-        }
-        
-        .stat-icon {
-            width: 64px;
-            height: 64px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 16px;
-            font-size: 1.75rem;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .stat-card:hover .stat-icon {
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
-        }
-        
-        /* Ícones com gradientes por card */
-        .stat-card:nth-child(1) .stat-icon {
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-            color: #1e40af;
-        }
-        
-        .stat-card:nth-child(2) .stat-icon {
-            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-            color: #065f46;
-        }
-        
-        .stat-card:nth-child(3) .stat-icon {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            color: #92400e;
-        }
-        
-        .stat-card:nth-child(4) .stat-icon {
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            color: #991b1b;
-        }
-        
-        .stat-card:nth-child(5) .stat-icon {
-            background: linear-gradient(135deg, #ede9fe, #ddd6fe);
-            color: #5b21b6;
-        }
-        
-        .stat-card:nth-child(6) .stat-icon {
-            background: linear-gradient(135deg, #fce7f3, #fbcfe8);
-            color: #9f1239;
-        }
-        
-        .stat-card:nth-child(7) .stat-icon {
-            background: linear-gradient(135deg, #ccfbf1, #99f6e4);
-            color: #134e4a;
-        }
-        
-        .stat-card:nth-child(8) .stat-icon {
-            background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
-            color: #312e81;
-        }
-        
-        .stat-icon.primary {
-            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
-            color: #1e40af;
-        }
-        
-        .stat-icon.success {
-            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-            color: #065f46;
-        }
-        
-        .stat-icon.warning {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            color: #92400e;
-        }
-        
-        .stat-icon.error {
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-            color: #991b1b;
+
+        .stats-grid .stat-trend {
+            margin-left: auto;
+            align-self: flex-start;
         }
         
         .stat-trend {
@@ -257,27 +63,6 @@
         
         .stat-trend i {
             font-size: 10px;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #64748b;
-            font-weight: 700;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary-600), var(--primary-700));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            line-height: 1.1;
-            margin-bottom: 8px;
-            letter-spacing: -0.02em;
         }
         
         .stat-description {
@@ -530,10 +315,6 @@
         }
         
         @media (max-width: 1024px) {
-            .header-search {
-                width: 200px;
-            }
-            
             .stats-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: var(--spacing);
@@ -559,14 +340,6 @@
         }
         
         @media (max-width: 768px) {
-            .header-actions {
-                gap: var(--spacing-sm);
-            }
-            
-            .header-search {
-                display: none;
-            }
-            
             .stats-grid {
                 grid-template-columns: 1fr;
                 gap: var(--spacing);
@@ -729,64 +502,56 @@
         <main class="main-content">
             <!-- Stats Grid -->
             <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div class="stat-icon primary">
-                            <i class="fas fa-dollar-sign"></i>
-                        </div>
-                        <div class="stat-trend up">
-                            <i class="fas fa-arrow-up"></i>
-                            <span>12%</span>
-                        </div>
+                <div class="stat-card stripe-primary">
+                    <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-label">Faturamento Hoje</div>
+                        <div class="stat-value" id="stat-revenue">R$ 0,00</div>
+                        <div class="stat-description">Comparado a ontem</div>
                     </div>
-                    <div class="stat-label">Faturamento Hoje</div>
-                    <div class="stat-value" id="stat-revenue">R$ 0,00</div>
-                    <div class="stat-description">Comparado a ontem</div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>12%</span>
+                    </div>
                 </div>
                 
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div class="stat-icon success">
-                            <i class="fas fa-receipt"></i>
-                        </div>
-                        <div class="stat-trend up">
-                            <i class="fas fa-arrow-up"></i>
-                            <span>8%</span>
-                        </div>
+                <div class="stat-card stripe-success">
+                    <div class="stat-icon"><i class="fas fa-receipt"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-label">Pedidos Hoje</div>
+                        <div class="stat-value" id="stat-orders">0</div>
+                        <div class="stat-description">3 pendentes</div>
                     </div>
-                    <div class="stat-label">Pedidos Hoje</div>
-                    <div class="stat-value" id="stat-orders">0</div>
-                    <div class="stat-description">3 pendentes</div>
+                    <div class="stat-trend up">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>8%</span>
+                    </div>
                 </div>
                 
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div class="stat-icon warning">
-                            <i class="fas fa-chair"></i>
-                        </div>
-                        <div class="stat-trend down">
-                            <i class="fas fa-arrow-down"></i>
-                            <span>5%</span>
-                        </div>
+                <div class="stat-card stripe-warning">
+                    <div class="stat-icon"><i class="fas fa-chair"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-label">Mesas Ocupadas</div>
+                        <div class="stat-value"><span id="stat-tables-occupied">0</span>/<span id="stat-tables-total">0</span></div>
+                        <div class="stat-description">Taxa de ocupação</div>
                     </div>
-                    <div class="stat-label">Mesas Ocupadas</div>
-                    <div class="stat-value"><span id="stat-tables-occupied">0</span>/<span id="stat-tables-total">0</span></div>
-                    <div class="stat-description">Taxa de ocupação</div>
+                    <div class="stat-trend down">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>5%</span>
+                    </div>
                 </div>
                 
-                <div class="stat-card">
-                    <div class="stat-card-header">
-                        <div class="stat-icon error">
-                            <i class="fas fa-boxes"></i>
-                        </div>
-                        <div class="stat-trend down">
-                            <i class="fas fa-exclamation-circle"></i>
-                            <span>Crítico</span>
-                        </div>
+                <div class="stat-card stripe-error">
+                    <div class="stat-icon"><i class="fas fa-boxes"></i></div>
+                    <div class="stat-content">
+                        <div class="stat-label">Itens em Estoque Baixo</div>
+                        <div class="stat-value" id="stat-low-stock">0</div>
+                        <div class="stat-description">Requer atenção</div>
                     </div>
-                    <div class="stat-label">Itens em Estoque Baixo</div>
-                    <div class="stat-value" id="stat-low-stock">0</div>
-                    <div class="stat-description">Requer atenção</div>
+                    <div class="stat-trend down">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>Crítico</span>
+                    </div>
                 </div>
             </div>
             

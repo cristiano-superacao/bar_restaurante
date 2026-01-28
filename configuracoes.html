@@ -12,7 +12,6 @@
   <style>
     /* Main Content */
     .main-content {
-      padding: 32px;
       max-width: 1200px;
       margin: 0 auto;
     }
@@ -281,8 +280,6 @@
     }
 
     @media (max-width: 640px) {
-      .main-content { padding: 16px; }
-
       .settings-card {
         padding: 24px 16px;
       }
@@ -389,6 +386,16 @@
             <label for="api-baseurl">URL da API (baseUrl)</label>
             <input type="url" id="api-baseurl" placeholder="https://sua-api.up.railway.app">
             <small>Dica: use HTTPS em produção</small>
+            <div class="button-group" style="margin-top: 10px;">
+              <button id="api-preset-local" class="btn btn-secondary" type="button">
+                <i class="fas fa-laptop"></i>
+                <span>Usar Local (localhost:3000)</span>
+              </button>
+              <button id="api-preset-railway" class="btn btn-secondary" type="button">
+                <i class="fas fa-cloud"></i>
+                <span>Usar Railway (padrão)</span>
+              </button>
+            </div>
           </div>
 
           <div class="form-group">

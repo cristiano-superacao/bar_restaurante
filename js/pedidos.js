@@ -413,7 +413,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const selectedAddons = getSelectedAddons();
         if (selectedAddons.length > ADDONS_MAX) {
             const errEl = document.getElementById('order-form-error');
-            if (errEl) { errEl.textContent = `Selecione no máximo ${ADDONS_MAX} acompanhamentos.`; errEl.style.display = 'block'; }
+            const msg = `Selecione no máximo ${ADDONS_MAX} acompanhamentos.`;
+            if (window.UTILS?.formError) window.UTILS.formError.show(errEl, msg);
+            else if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
             return;
         }
         
@@ -425,7 +427,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const qtyNeeded = quantity * (addon.quantity || 1);
             if (qtyAvailable < qtyNeeded) {
                 const errEl = document.getElementById('order-form-error');
-                if (errEl) { errEl.textContent = `Estoque insuficiente de "${addon.name}". Disponível: ${qtyAvailable}, Necessário: ${qtyNeeded}`; errEl.style.display = 'block'; }
+                const msg = `Estoque insuficiente de "${addon.name}". Disponível: ${qtyAvailable}, Necessário: ${qtyNeeded}`;
+                if (window.UTILS?.formError) window.UTILS.formError.show(errEl, msg);
+                else if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
                 return;
             }
         }
@@ -460,8 +464,11 @@ document.addEventListener('DOMContentLoaded', function () {
         populateTableSelect();
         populateStatusSelect();
         populatePaymentSelect();
-        const errEl = document.getElementById('order-form-error');
-        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+        if (window.UTILS?.formError) window.UTILS.formError.clear('order-form-error');
+        else {
+            const errEl = document.getElementById('order-form-error');
+            if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+        }
         if (order) {
             modalTitle.textContent = 'Editar Pedido';
             orderIdInput.value = order.id;
@@ -491,11 +498,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         renderCurrentOrderItems();
         syncAddonsVisibility();
-        modal.classList.add('show');
+        if (window.UTILS?.modal) window.UTILS.modal.open(modal, { activeClass: 'show' });
+        else modal.classList.add('show');
     }
 
     function closeModal() {
-        modal.classList.remove('show');
+        if (window.UTILS?.modal) window.UTILS.modal.close(modal, { activeClass: 'show' });
+        else modal.classList.remove('show');
     }
 
     async function handleFormSubmit(e) {
@@ -506,7 +515,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const total = Math.max(0, subtotal - discount);
         const paymentMethod = orderPaymentSelect ? orderPaymentSelect.value : '';
         const errEl = document.getElementById('order-form-error');
-        const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
+        const showError = (msg) => {
+            if (window.UTILS?.formError) window.UTILS.formError.show(errEl, msg);
+            else if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; }
+        };
 
         if (currentOrderItems.length === 0) {
             showError('Adicione pelo menos um item ao pedido.');
@@ -656,7 +668,10 @@ document.addEventListener('DOMContentLoaded', function () {
         const discount = orderDiscountInput ? (parseFloat(orderDiscountInput.value) || 0) : 0;
         const paymentMethod = (orderPaymentSelect && orderPaymentSelect.value) ? orderPaymentSelect.value : 'Dinheiro';
         const errEl = document.getElementById('order-form-error');
-        const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
+        const showError = (msg) => {
+            if (window.UTILS?.formError) window.UTILS.formError.show(errEl, msg);
+            else if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; }
+        };
 
         if (apiEnabled && window.API) {
             try {
@@ -736,10 +751,13 @@ document.addEventListener('DOMContentLoaded', function () {
     searchInput.addEventListener('input', filterAndRenderOrders);
     statusFilter.addEventListener('change', filterAndRenderOrders);
     addOrderBtn.addEventListener('click', () => openModal());
-    closeModalBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) closeModal();
-    });
+    if (window.UTILS?.modal) window.UTILS.modal.bind(modal, { activeClass: 'show' });
+    else {
+        closeModalBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
     addItemToOrderBtn.addEventListener('click', handleAddItemToOrder);
     if (menuItemSelect) menuItemSelect.addEventListener('change', syncAddonsVisibility);
     if (addonsOptions) addonsOptions.addEventListener('click', onAddonQtyClick);

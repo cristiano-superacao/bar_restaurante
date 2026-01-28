@@ -36,8 +36,35 @@
 
 .menu-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 25px;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--spacing-lg, 24px);
+}
+
+@media (max-width: 1280px) {
+    .menu-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: var(--spacing-lg, 20px);
+    }
+}
+
+@media (max-width: 1024px) {
+    .menu-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .menu-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: var(--spacing, 16px);
+    }
+}
+
+@media (max-width: 480px) {
+    .menu-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing, 14px);
+    }
 }
 
 .menu-item-card {

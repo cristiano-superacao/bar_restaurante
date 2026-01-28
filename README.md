@@ -3,15 +3,14 @@
 [![Version](https://img.shields.io/badge/version-3.0.0-brightgreen.svg)](https://github.com/cristiano-superacao/bar_restaurante)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Railway](https://img.shields.io/badge/deploy-Railway-purple.svg)](https://railway.app)
-[![Netlify](https://img.shields.io/badge/deploy-Netlify-00C7B7.svg)](https://barestaurante.netlify.app)
 [![Node](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
 [![PostgreSQL](https://img.shields.io/badge/postgresql-14%2B-blue.svg)](https://www.postgresql.org)
 [![Docker](https://img.shields.io/badge/docker-ready-2496ED.svg)](Dockerfile)
 
 > 🚀 **Sistema completo de gestão empresarial** para bares e restaurantes com **arquitetura híbrida progressiva** e **Design Premium Azul profissional**. Opera 100% offline (LocalStorage) ou com backend robusto (Express + PostgreSQL). Interface responsiva, moderna e pronta para produção.
 
-📍 **Demo Online**: [barestaurante.netlify.app](https://barestaurante.netlify.app)  
-📍 **API Backend**: [barestaurante.up.railway.app](https://barestaurante.up.railway.app/api/health)  
+📍 **Demo Online**: [barestaurante.up.railway.app](https://barestaurante.up.railway.app)  
+📍 **API Backend**: [barestaurante.up.railway.app/api/health](https://barestaurante.up.railway.app/api/health)  
 📍 **Repositório**: [github.com/cristiano-superacao/bar_restaurante](https://github.com/cristiano-superacao/bar_restaurante)
 
 ---

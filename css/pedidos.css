@@ -78,14 +78,6 @@
 
 
 /* Estilos do Modal de Pedido */
-.form-row {
-    display: flex;
-    gap: 20px;
-}
-.form-row .form-group {
-    flex: 1;
-}
-
 #order-items-container {
     border: 1px solid var(--border-color);
     border-radius: 8px;
@@ -149,7 +141,7 @@
     border-top: 1px solid var(--border-color);
 }
 
-/* Responsividade: layout compacto e legível para mobile */
+/* Responsividade (Pedidos): layout compacto e legível */
 @media (max-width: 1024px) {
     .orders-grid {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -201,11 +193,6 @@
         font-size: 11px;
         padding: 4px 8px;
         grid-column: 2;
-    }
-
-    .form-row {
-        flex-direction: column;
-        gap: 12px;
     }
 
     .add-item-form {

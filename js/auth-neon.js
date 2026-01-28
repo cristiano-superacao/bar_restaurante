@@ -3,6 +3,14 @@
  * Sistema Bar Restaurante Maria Flor
  */
 
+const shouldLog = () => {
+    try {
+        return typeof CONFIG !== 'undefined' && CONFIG.DEV && CONFIG.DEV.logs;
+    } catch {
+        return false;
+    }
+};
+
 class AuthSystemNeon {
     constructor() {
         this.currentUser = null;
@@ -19,7 +27,7 @@ class AuthSystemNeon {
             try {
                 this.token = savedToken;
                 this.currentUser = JSON.parse(savedUser);
-                console.log('✅ Sessão restaurada:', this.currentUser.nome);
+                if (shouldLog()) console.log('✅ Sessão restaurada:', this.currentUser.nome);
                 // Reaplicar contexto padrão
                 try {
                     localStorage.setItem('username', this.currentUser.username || this.currentUser.email || '');
@@ -42,7 +50,7 @@ class AuthSystemNeon {
             if (typeof CONFIG !== 'undefined' && CONFIG.API && CONFIG.API.enabled) {
                 return { success: false, message: 'Login via API habilitado (use a tela de login)' };
             }
-            console.log('🔄 Tentando login:', username);
+            if (shouldLog()) console.log('🔄 Tentando login:', username);
 
             // Usar credenciais do arquivo de configuração
             const validUsers = {};
@@ -103,9 +111,10 @@ class AuthSystemNeon {
                         localStorage.setItem('activeCompanyId', String(this.currentUser.company_id));
                     }
                 } catch {}
-
-                console.log('✅ Login realizado:', this.currentUser.nome);
-                console.log('👤 Usuário logado:', this.currentUser);
+                if (shouldLog()) {
+                    console.log('✅ Login realizado:', this.currentUser.nome);
+                    console.log('👤 Usuário logado:', this.currentUser);
+                }
                 return { success: true, user: this.currentUser };
             } else {
                 console.error('❌ Credenciais inválidas para:', username);
@@ -128,7 +137,7 @@ class AuthSystemNeon {
         localStorage.removeItem('authToken');
         localStorage.removeItem('currentUser');
 
-        console.log('✅ Logout realizado');
+        if (shouldLog()) console.log('✅ Logout realizado');
 
         // Redirecionar para login se não estiver na página de login
         if (!window.location.pathname.includes('index.html')) {
@@ -193,7 +202,7 @@ class AuthSystemNeon {
 
     // Testar conexão - Simulado para sistema estático
     async testConnection() {
-        console.log('✅ Sistema estático funcionando');
+        if (shouldLog()) console.log('✅ Sistema estático funcionando');
         return true;
     }
 }
@@ -215,7 +224,8 @@ function requireAuth() {
 function requireAdmin() {
     if (!auth.isAuthenticated() || !auth.isAdmin()) {
         console.warn('⚠️ Acesso negado - permissão de admin necessária');
-        alert('Acesso negado. Você precisa ser administrador.');
+        if (window.UTILS?.notify) window.UTILS.notify('Acesso negado. Você precisa ser administrador.', 'error');
+        else alert('Acesso negado. Você precisa ser administrador.');
         return false;
     }
     return true;
@@ -225,7 +235,8 @@ function requireAdmin() {
 function requireGerente() {
     if (!auth.isAuthenticated() || !auth.isGerente()) {
         console.warn('⚠️ Acesso negado - permissão de gerente necessária');
-        alert('Acesso negado. Você precisa ser gerente ou administrador.');
+        if (window.UTILS?.notify) window.UTILS.notify('Acesso negado. Você precisa ser gerente ou administrador.', 'error');
+        else alert('Acesso negado. Você precisa ser gerente ou administrador.');
         return false;
     }
     return true;
@@ -311,6 +322,15 @@ function renderCompanyBadge() {
         const userRole = localStorage.getItem('userRole') || '';
         const activeCompanyId = localStorage.getItem('activeCompanyId') || '';
         const activeCompanyName = localStorage.getItem('activeCompanyName') || '';
+        const activeCompanyNumber = localStorage.getItem('activeCompanyNumber') || '';
+
+        let activeCompany = null;
+        try {
+            const raw = localStorage.getItem('activeCompany');
+            activeCompany = raw ? JSON.parse(raw) : null;
+        } catch {
+            activeCompany = null;
+        }
         const hasApi = !!(typeof window !== 'undefined' && window.CONFIG && window.CONFIG.API && window.CONFIG.API.enabled);
 
         const headerActions = document.querySelector('.main-header .header-actions');
@@ -341,10 +361,32 @@ function renderCompanyBadge() {
             ? 'Selecione'
             : (activeCompanyName || '—');
 
+        // Meta: número + trial
+        let meta = '';
+        const num = String(activeCompanyNumber || activeCompany?.companyNumber || '').trim();
+        if (num) meta = `#${num}`;
+
+        const trialEnd = activeCompany?.trialEndAt;
+        if (trialEnd) {
+            try {
+                const endMs = new Date(trialEnd).getTime();
+                if (!Number.isNaN(endMs)) {
+                    const expired = Date.now() > endMs;
+                    const label = expired ? 'Trial expirado' : 'Trial até';
+                    const d = new Date(trialEnd);
+                    const dt = d.toLocaleDateString('pt-BR');
+                    meta = meta ? `${meta} • ${label} ${dt}` : `${label} ${dt}`;
+                }
+            } catch {
+                // noop
+            }
+        }
+
         pill.innerHTML = `
             <i class="fas fa-building"></i>
             <span class="label">${label}:</span>
             <span class="name" title="${String(activeCompanyName || name)}">${name}</span>
+            ${meta ? `<span class="meta" title="${meta}">${meta}</span>` : ''}
         `.trim();
 
         // Se não for superadmin (ou API desligada), não navega ao clicar
@@ -433,4 +475,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-console.log('🔐 Sistema de autenticação estático carregado');
+if (shouldLog()) console.log('🔐 Sistema de autenticação estático carregado');
