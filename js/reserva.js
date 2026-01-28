@@ -96,8 +96,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const openModal = (reserva = null) => {
         reservaForm.reset();
-        const errEl = document.getElementById('reserva-form-error');
-        if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+        if (window.UTILS?.formError) window.UTILS.formError.clear('reserva-form-error');
+        else {
+            const errEl = document.getElementById('reserva-form-error');
+            if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
+        }
         if (reserva) {
             document.getElementById('reserva-modal-title').textContent = 'Editar Reserva';
             editingReservaId = reserva.id;
@@ -112,25 +115,33 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('reserva-modal-title').textContent = 'Nova Reserva';
             editingReservaId = null;
         }
-        modal.style.display = 'block';
+        if (window.UTILS?.modal) window.UTILS.modal.open(modal, { activeClass: 'show' });
+        else modal.classList.add('show');
     };
 
     const closeModal = () => {
-        modal.style.display = 'none';
+        if (window.UTILS?.modal) window.UTILS.modal.close(modal, { activeClass: 'show' });
+        else modal.classList.remove('show');
     };
 
     addReservaBtn.addEventListener('click', () => openModal());
-    closeModalBtn.addEventListener('click', closeModal);
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+    if (window.UTILS?.modal) window.UTILS.modal.bind(modal, { activeClass: 'show' });
+    else {
+        closeModalBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+    }
 
     reservaForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const errEl = document.getElementById('reserva-form-error');
-        const showError = (msg) => { if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; } };
+        const showError = (msg) => {
+            if (window.UTILS?.formError) window.UTILS.formError.show(errEl, msg);
+            else if (errEl) { errEl.textContent = String(msg || 'Erro'); errEl.style.display = 'block'; }
+        };
         const reservaData = {
             id: editingReservaId || Date.now().toString(),
             name: document.getElementById('reserva-name').value,
@@ -194,7 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 } catch (err) {
                     const errEl = document.getElementById('reserva-form-error');
-                    if (errEl) { errEl.textContent = 'Erro ao excluir reserva via API.'; errEl.style.display = 'block'; }
+                    if (window.UTILS?.formError) window.UTILS.formError.show(errEl, 'Erro ao excluir reserva via API.');
+                    else if (errEl) { errEl.textContent = 'Erro ao excluir reserva via API.'; errEl.style.display = 'block'; }
                     return;
                 }
             }

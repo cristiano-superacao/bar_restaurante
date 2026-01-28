@@ -12,51 +12,7 @@
     <style>
         /* App shell (sidebar/header/main/overlay) centralizado no design-system.css */
         
-        /* Toolbar */
-        .toolbar {
-            display: flex;
-            gap: var(--spacing);
-            margin-bottom: var(--spacing-lg);
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        
-        .search-box {
-            position: relative;
-            flex: 1;
-            min-width: 250px;
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 0.625rem 1rem 0.625rem 2.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius-full);
-            font-size: var(--font-size-sm);
-            transition: all var(--transition-fast);
-        }
-        
-        .search-box input:focus {
-            outline: none;
-            border-color: var(--primary-500);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        .search-box i {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            pointer-events: none;
-        }
-        
-        .filter-group {
-            display: flex;
-            gap: var(--spacing-sm);
-            align-items: center;
-        }
-        
+        /* Toolbar/busca/filtros centralizados em css/design-system.css */
         
         /* Tables Grid Premium */
         .tables-grid {
@@ -334,23 +290,6 @@
         }
 
         @media (max-width: 640px) {
-            .toolbar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .search-box {
-                min-width: 100%;
-            }
-            
-            .filter-group {
-                flex-wrap: wrap;
-            }
-            
-            .stats-row {
-                grid-template-columns: 1fr;
-            }
-            
             .tables-grid {
                 grid-template-columns: 1fr;
                 gap: var(--spacing-lg);

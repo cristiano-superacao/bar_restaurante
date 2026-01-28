@@ -13,6 +13,7 @@
     "start": "node src/index.js",
     "migrate": "node src/migrate.js",
     "rebuild": "node src/rebuild.js",
+    "seed": "node src/seed.js",
     "check-env": "node src/check-env.js",
     "prestart": "npm run check-env || true"
   },
